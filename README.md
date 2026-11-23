@@ -30,6 +30,8 @@ gap mínimo, e otimiza o peso estrutural do casco e o Hs de heave (fronteira de 
 | `apresentacao/` | Apresentações em PPTX e PDF: versão completa (40 slides) e versão de 15 minutos (15 slides, com notas do apresentador e tempos) |
 | `apresentacao/figuras_apresentacao.py` | Figuras e equações das apresentações, no layout do grupo |
 | `apresentacao/gerar_apresentacoes.py` | Gera os dois PPTX (python-pptx) |
+| `apresentacao/roteiro_15min.py` | Roteiro dos 3 membros na versão de 15 min: notas do apresentador e comentários do PowerPoint |
+| `apresentacao/roteiro_apresentacao_15min.md` | O mesmo roteiro em texto, para ensaio |
 
 ## Como rodar
 

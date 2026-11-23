@@ -984,3 +984,6 @@ def focada():
 if __name__ == "__main__":
     completa().salvar(os.path.join(AQUI, "PNV3425_G02_apresentacao_completa.pptx"))
     focada().salvar(os.path.join(AQUI, "PNV3425_G02_apresentacao_15min.pptx"))
+    import roteiro_15min  # roteiro dos 3 membros: notas + comentários do PowerPoint
+    roteiro_15min.aplicar(os.path.join(AQUI, "PNV3425_G02_apresentacao_15min.pptx"))
+    roteiro_15min.exportar_md()
