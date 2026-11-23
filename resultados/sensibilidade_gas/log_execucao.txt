@@ -1,0 +1,318 @@
+==========================================================================================
+PNV3425 - TRABALHO FINAL - Grupo 02 - KZ-2026-B (Baixo Congo)
+==========================================================================================
+Produção de pico: 202,870.30 boe/dia (Q = 202.870 mil BOE/d) | gás incluído: SIM (fator óleo+gás = 1.277)
+Mar de projeto (100 anos): Hs = 5.6 m, Tp = 15.2 s | Tp/√Hs = 6.42 | γ = 3.3
+Ventos de verificação: [51.5, 36.0] m/s | hd = 8.0 m, hm = 12.0 m
+Área mínima de convés: 13,420.6 m² -> Lp ≥ 115.85 m
+Crista máxima η_max = 1,86·Hs/2 = 5.208 m | lastro mínimo = 0·V_pontoons
+
+==========================================================================================
+VALIDAÇÃO DO MODELO
+==========================================================================================
+(a) Plataforma de referência dos Exercícios 7-10: Lp=100, bp=hp=bc=15, hc=45, T=30 m,
+    BOE=120.000, Hs=12,2 m, Tp=14,6 s, hd=8 m, hm=15 m, γ=3.3.
+∇ [m³]                     58,500.000
+Δ [t]                      59,962.500
+KB [m]                         10.962
+BM_T [m]                       28.077
+BM_L [m]                       28.077
+KM_T [m]                       39.038
+KM_L [m]                       39.038
+W_casco [t]                23,085.000
+W_planta [t]                9,960.000
+W_topside [t]              16,932.000
+W_lastro [t]               15,748.125
+KG [m]                         33.213
+GM_T [m]                        5.825
+GM_L [m]                        5.825
+φal T [°]                      27.576
+φal L [°]                      30.395
+z_CLR T [m]                    10.962
+z_CLR L [m]                    15.000
+min A/B transversal [-]         2.310
+min A/B longitudinal [-]        2.273
+A33 [t]                    38,291.400
+Tn [s]                         20.703
+H1/3 heave [m]                  2.984
+H1/3 heave γ=1 [m]              2.983
+a [m]                          30.000
+a_mín [m]                      14.122
+
+(b) Comparação com os resultados das aulas:
+                Grandeza  Modelo   Aula  Erro_%
+                  KG [m]  33.213 33.000   0.646
+ min A/B transversal [-]   2.310  2.330  -0.859
+min A/B longitudinal [-]   2.273  2.360  -3.698
+                  Tn [s]  20.703 20.700   0.015
+          H1/3 heave [m]   2.984  2.980   0.148
+
+(c) Verificações de consistência:
+                        Verificação     Modelo   Esperado  Erro_%
+    dGZ/dφ em 0° (Transversal) x GM      5.825      5.825   0.000
+   dGZ/dφ em 0° (Longitudinal) x GM      5.825      5.825   0.000
+RAO(ω→0) x 1,0 (corpo segue a onda)      1.000      1.000  -0.002
+     Hs recuperado do espectro x Hs     12.210     12.200   0.085
+                    Σ pesos x Δ [t] 59,962.500 59,962.500   0.000
+    Observação: dGZ/dφ ≈ GM confirma que a GZ 2D reproduz a hidrostática do Ex.7;
+    RAO→1 em ω→0 e Hs recuperado validam força de excitação e integração espectral.
+    (com γ = 3,3 a normalização aproximada 1 − 0,287·ln γ da DNV dá ~1% de erro no Hs)
+
+==========================================================================================
+VARIAÇÃO SISTEMÁTICA: 20000 combinações (Latin Hypercube) nos limites:
+   Lp:  115.85 a  150.00 m
+   bp:    8.00 a   25.00 m
+   hp:    6.00 a   20.00 m
+   bc:    8.00 a   25.00 m
+   hc:   20.00 a   50.00 m
+    T:   12.00 a   40.00 m
+   [21 s]
+   Atendem às restrições estáticas/heave/air gap: 443
+   Viáveis (incluindo critério de áreas e GZ>0): 189
+
+OTIMIZAÇÃO POR SOMA PONDERADA: F = w1·Hz + w2·W_casco/10000 (SLSQP, multi-start + continuação)
+   w1= 0.00 | FALHA: nenhuma partida terminou em ponto viável
+      - LHS: success=True it=34 (Optimization terminated successfully)
+      - LHS: success=True it=34 (Optimization terminated successfully)
+      - LHS: success=True it=45 (Optimization terminated successfully)
+      - LHS: success=True it=39 (Optimization terminated successfully)
+      - LHS: success=True it=37 (Optimization terminated successfully)
+   w1= 0.05 | W_casco=  13028.4 t | Hz=1.9669 m | GM_T=4.00 | Tn=33.76 s | A/B=1.30 | ganho s/ melhor LHS= 19.9% | success=True (LHS, 4/5 partidas convergiram)
+   w1= 0.10 | FALHA: nenhuma partida terminou em ponto viável
+      - LHS: success=False it=145 (Positive directional derivative for linesearch)
+      - LHS: success=False it=116 (Positive directional derivative for linesearch)
+      - LHS: success=False it=200 (Iteration limit reached)
+      - LHS: success=True it=116 (Optimization terminated successfully)
+      - LHS: success=False it=200 (Iteration limit reached)
+      - w1 anterior: success=False it=145 (Positive directional derivative for linesearch)
+   w1= 0.15 | FALHA: nenhuma partida terminou em ponto viável
+      - LHS: success=False it=200 (Iteration limit reached)
+      - LHS: success=True it=42 (Optimization terminated successfully)
+      - LHS: success=True it=49 (Optimization terminated successfully)
+      - LHS: success=True it=56 (Optimization terminated successfully)
+      - LHS: success=False it=200 (Iteration limit reached)
+      - w1 anterior: success=False it=200 (Iteration limit reached)
+   w1= 0.20 | W_casco=  12970.6 t | Hz=1.9692 m | GM_T=4.00 | Tn=34.43 s | A/B=1.30 | ganho s/ melhor LHS=  0.3% | success=True (LHS, 5/6 partidas convergiram)
+   w1= 0.25 | W_casco=  13146.4 t | Hz=1.9120 m | GM_T=4.00 | Tn=31.83 s | A/B=1.30 | ganho s/ melhor LHS=  0.1% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.30 | W_casco=  13146.4 t | Hz=1.9120 m | GM_T=4.00 | Tn=31.83 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 5/6 partidas convergiram)
+   w1= 0.35 | W_casco=  13146.4 t | Hz=1.9120 m | GM_T=4.00 | Tn=31.83 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.40 | W_casco=  13146.4 t | Hz=1.9120 m | GM_T=4.00 | Tn=31.83 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.45 | W_casco=  13146.4 t | Hz=1.9120 m | GM_T=4.00 | Tn=31.83 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.50 | W_casco=  13146.4 t | Hz=1.9120 m | GM_T=4.00 | Tn=31.83 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.55 | W_casco=  13163.4 t | Hz=1.9106 m | GM_T=4.00 | Tn=31.80 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.60 | W_casco=  16276.4 t | Hz=1.6300 m | GM_T=4.00 | Tn=30.80 s | A/B=1.30 | ganho s/ melhor LHS=  2.6% | success=True (LHS, 2/6 partidas convergiram)
+   w1= 0.65 | W_casco=  18132.6 t | Hz=1.5207 m | GM_T=4.00 | Tn=29.47 s | A/B=1.30 | ganho s/ melhor LHS=  0.4% | success=False (LHS, 3/6 partidas convergiram)
+   w1= 0.70 | W_casco=  18132.6 t | Hz=1.5207 m | GM_T=4.00 | Tn=29.47 s | A/B=1.30 | ganho s/ melhor LHS= -0.0% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.75 | W_casco=  18203.6 t | Hz=1.5183 m | GM_T=4.00 | Tn=29.23 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=False (LHS, 5/6 partidas convergiram)
+   w1= 0.80 | W_casco=  22286.3 t | Hz=1.1712 m | GM_T=4.00 | Tn=22.43 s | A/B=1.30 | ganho s/ melhor LHS= 12.4% | success=False (LHS, 5/6 partidas convergiram)
+   w1= 0.85 | W_casco=  26155.2 t | Hz=1.0003 m | GM_T=4.00 | Tn=23.10 s | A/B=1.30 | ganho s/ melhor LHS=  6.6% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.90 | W_casco=  26155.2 t | Hz=1.0003 m | GM_T=4.00 | Tn=23.10 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 6/6 partidas convergiram)
+   w1= 0.95 | W_casco=  26160.3 t | Hz=1.0003 m | GM_T=4.00 | Tn=23.11 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 5/6 partidas convergiram)
+   w1= 1.00 | W_casco=  26212.1 t | Hz=1.0001 m | GM_T=4.00 | Tn=23.16 s | A/B=1.30 | ganho s/ melhor LHS=  0.0% | success=True (LHS, 5/6 partidas convergiram)
+   Ótimos locais dominados (descartados pela fronteira): w1 = [0.3, 0.35, 0.4, 0.45, 0.5, 0.7, 0.85]
+   [162 s]
+
+MÉTODO ε-RESTRITO: min W_casco sujeito a Hz ≤ ε (preenche trechos não convexos)
+   ε=1.0747 m | W_casco=  25004.9 t | Hz=1.0747 m | GM_T=4.00 | Tn=22.58 s | A/B=1.30 | success=True
+   ε=1.1492 m | W_casco=  23229.1 t | Hz=1.1492 m | GM_T=4.00 | Tn=22.68 s | A/B=1.30 | success=True
+   ε=1.2238 m | W_casco=  21513.2 t | Hz=1.2238 m | GM_T=4.00 | Tn=22.36 s | A/B=1.30 | success=False
+   ε=1.2983 m | W_casco=  19580.4 t | Hz=1.2983 m | GM_T=4.00 | Tn=22.66 s | A/B=1.30 | success=True
+   ε=1.3728 m | W_casco=  18718.3 t | Hz=1.3728 m | GM_T=4.00 | Tn=22.15 s | A/B=1.30 | success=True
+   ε=1.4474 m | W_casco=  18023.1 t | Hz=1.4474 m | GM_T=4.00 | Tn=22.11 s | A/B=1.30 | success=True
+   ε=1.5219 m | W_casco=  18118.1 t | Hz=1.5219 m | GM_T=4.00 | Tn=29.48 s | A/B=1.30 | success=True
+   ε=1.5965 m | W_casco=  17234.4 t | Hz=1.5965 m | GM_T=4.00 | Tn=30.29 s | A/B=1.30 | success=True
+   ε=1.6710 m | W_casco=  15851.2 t | Hz=1.6710 m | GM_T=4.00 | Tn=31.31 s | A/B=1.30 | success=False
+   ε=1.7456 m | W_casco=  15034.2 t | Hz=1.7456 m | GM_T=4.00 | Tn=32.33 s | A/B=1.30 | success=True
+   ε=1.8201 m | W_casco=  14383.3 t | Hz=1.8201 m | GM_T=4.00 | Tn=33.44 s | A/B=1.30 | success=True
+   ε=1.8946 m | W_casco=  13340.3 t | Hz=1.8946 m | GM_T=4.00 | Tn=31.46 s | A/B=1.30 | success=True
+   [24 s]
+
+Fronteira de Pareto: 20 pontos não dominados entre 219 soluções viáveis
+        Lp     bp     hp     bc     hc      T    W_casco    Hz          origem
+0  150.000 10.183 13.982  8.158 20.000 17.482 12,970.621 1.969  Soma ponderada
+1  150.000  9.677 14.781  8.173 20.000 17.770 13,028.359 1.967  Soma ponderada
+2  150.000  8.233 17.517  8.233 20.000 19.597 13,146.416 1.912  Soma ponderada
+3  150.000  8.247 17.492  8.247 20.138 19.603 13,163.382 1.911  Soma ponderada
+4  150.000  8.386 17.228  8.386 21.562 19.688 13,340.284 1.895      ε-restrito
+5  150.000 13.073 10.786  9.336 31.470 18.901 14,383.296 1.820      ε-restrito
+6  150.000 13.248 10.625  9.735 35.489 20.076 15,034.199 1.746      ε-restrito
+7  150.000 13.538 10.382 10.176 39.934 21.253 15,851.194 1.671      ε-restrito
+8  150.000 13.633 10.292 10.389 42.128 21.921 16,276.369 1.630  Soma ponderada
+9  150.000 14.233  9.903 10.811 46.083 22.383 17,234.434 1.596      ε-restrito
+10 115.937 13.970 11.861 13.544 38.609 26.206 18,023.106 1.447      ε-restrito
+11 118.199 14.047 11.452 13.656 41.955 27.064 18,718.298 1.373      ε-restrito
+12 122.958 14.172 10.919 13.604 46.560 27.844 19,580.421 1.298      ε-restrito
+13 122.496 14.519 11.123 14.162 50.000 29.573 21,513.177 1.224      ε-restrito
+14 121.703 14.251 12.086 14.251 50.000 31.587 22,286.326 1.171  Soma ponderada
+15 121.138 14.388 12.803 14.388 50.000 32.817 23,229.131 1.149      ε-restrito
+16 115.848 15.408 13.139 15.117 50.000 36.969 25,004.932 1.075      ε-restrito
+17 115.848 15.066 14.746 15.066 50.000 40.000 26,155.234 1.000  Soma ponderada
+18 115.866 15.064 14.754 15.064 50.000 40.000 26,160.325 1.000  Soma ponderada
+19 116.051 15.047 14.833 15.047 50.000 40.000 26,212.090 1.000  Soma ponderada
+   1. Mín. peso: origem = Soma ponderada
+   2. Mín. heave: origem = Soma ponderada
+   3. Intermediária (escolhida): origem = ε-restrito
+
+==========================================================================================
+JUSTIFICATIVA DA SOLUÇÃO FINAL (ponto 'joelho' da fronteira)
+==========================================================================================
+A solução escolhida é o ponto da fronteira mais próximo do ponto utópico (mín. peso, mín. Hz)
+no plano normalizado. Em relação à solução de mínimo peso, ela aumenta o peso do casco em
+44.3% e reduz o Hs de heave em 30.3%. Em relação à de mínimo heave, ela economiza
+28.6% do peso do casco, com Hs de heave 37.3% maior. Como o ponto está no
+'joelho', mover-se para qualquer lado custa mais em um objetivo do que se ganha no outro.
+Atende a todas as restrições; folga de air gap = 19.86 m.
+
+==========================================================================================
+FICHA TÉCNICA COMPARATIVA - 3 CENÁRIOS
+==========================================================================================
+                           1. Mín. peso  2. Mín. heave  3. Intermediária (escolhida)
+Lp [m]                          150.000        116.051                       118.199
+bp [m]                           10.183         15.047                        14.047
+hp [m]                           13.982         14.833                        11.452
+bc [m]                            8.158         15.047                        13.656
+hc [m]                           20.000         50.000                        41.955
+T [m]                            17.482         40.000                        27.064
+Área de convés [m²]          22,500.000     13,467.861                    13,971.076
+Área mínima [m²]             13,420.559     13,420.559                    13,420.559
+∇ [m³]                       43,647.124     74,593.210                    49,676.683
+Δ [t]                        44,738.302     76,458.040                    50,918.600
+KB [m]                            7.178         13.527                         8.899
+BM_T [m]                         29.840         31.193                        40.956
+BM_L [m]                         30.710         31.193                        41.262
+KM_T [m]                         37.018         44.720                        49.854
+KM_L [m]                         37.887         44.720                        50.161
+Peso casco [t]               12,970.621     26,212.090                    18,718.298
+  pontoons [t]               11,533.168     13,986.561                    10,268.351
+  colunas [t]                 1,437.453     12,225.529                     8,449.947
+Peso planta [t]              16,838.235     16,838.235                    16,838.235
+Peso topside [t]             28,625.000     28,625.000                    28,625.000
+Risers + amarração [t]        3,131.681      5,352.063                     3,564.302
+Peso lastro [t]                  11.000     16,268.888                        11.000
+V lastro / V pontoons [-]         0.000          0.306                         0.000
+KG [m]                           33.018         40.720                        45.855
+GM_T [m]                          4.000          4.000                         4.000
+GM_L [m]                          4.870          4.000                         4.306
+φal transversal [°]               8.272         23.169                        21.443
+φal longitudinal [°]              9.537         23.169                        23.511
+min A/B (4 casos) [-]             1.305          1.304                         1.303
+A33 [t]                      35,642.352     47,216.695                    42,326.021
+C33 [kN/m]                    2,676.657      9,105.982                     7,500.734
+ωn [rad/s]                        0.182          0.271                         0.284
+Tn [s]                           34.432         23.156                        22.153
+H1/3 heave γ=3.3 [m]              1.969          1.000                         1.373
+H1/3 heave γ=1 [m]                2.153          0.953                         1.301
+η_max [m]                         5.208          5.208                         5.208
+z_min [m]                        -1.831         -0.930                        -1.277
+a_mín [m]                         7.039          6.138                         6.485
+a [m]                            16.500         24.833                        26.343
+Folga air gap [m]                 9.461         18.695                        19.858
+
+--- Tabela-resumo de restrições: 1. Mín. peso ---
+                            Restrição Unid      Valor Sentido     Limite      Folga  Folga_pct Atende Ativa
+                   Área de convés Lp²   m² 22,500.000       ≥ 13,420.559  9,079.441     67.653    SIM      
+                          GM_T mínimo    m      4.000       ≥      1.000      3.000    299.990    SIM      
+                          GM_T máximo    m      4.000       ≤      4.000      0.000      0.003    SIM ATIVA
+          Período natural de heave Tn    s     34.432       >     20.000     14.432     72.159    SIM      
+              Peso de lastro positivo    t     11.000       >      0.000     11.000      0.110    SIM ATIVA
+            V_lastro ≤ 0,9·V_pontoons   m³     10.732       ≤ 38,443.895 38,433.163     99.972    SIM      
+                              bc ≤ bp    m      8.158       ≤     10.183      2.025     19.889    SIM      
+                    Air gap a ≥ a_mín    m     16.500       ≥      7.039      9.461    134.397    SIM      
+Imersão das colunas T−hp (geométrica)    m      3.500       ≥      1.000      2.500    250.001    SIM      
+  Critério de áreas min(A/B), 4 casos    -      1.305       ≥      1.300      0.005      0.371    SIM ATIVA
+        GZ>0 até φ2/φal: min(GZ/senφ)    m      4.000       >      0.000      4.000    400.018    SIM      
+   Restrições ativas (folga < 1%): ['GM_T máximo', 'Peso de lastro positivo', 'Critério de áreas min(A/B), 4 casos']
+   Variáveis no limite do domínio: ['Lp = 150.00 (máx)', 'hc = 20.00 (mín)']
+
+--- Tabela-resumo de restrições: 2. Mín. heave ---
+                            Restrição Unid      Valor Sentido     Limite      Folga  Folga_pct Atende Ativa
+                   Área de convés Lp²   m² 13,467.861       ≥ 13,420.559     47.303      0.352    SIM ATIVA
+                          GM_T mínimo    m      4.000       ≥      1.000      3.000    299.990    SIM      
+                          GM_T máximo    m      4.000       ≤      4.000      0.000      0.003    SIM ATIVA
+          Período natural de heave Tn    s     23.156       >     20.000      3.156     15.778    SIM      
+              Peso de lastro positivo    t 16,268.888       >      0.000 16,268.888    162.689    SIM      
+            V_lastro ≤ 0,9·V_pontoons   m³ 15,872.086       ≤ 46,621.869 30,749.783     65.956    SIM      
+                              bc ≤ bp    m     15.047       ≤     15.047      0.000      0.001    SIM ATIVA
+                    Air gap a ≥ a_mín    m     24.833       ≥      6.138     18.695    304.570    SIM      
+Imersão das colunas T−hp (geométrica)    m     25.167       ≥      1.000     24.167  2,416.703    SIM      
+  Critério de áreas min(A/B), 4 casos    -      1.304       ≥      1.300      0.004      0.344    SIM ATIVA
+        GZ>0 até φ2/φal: min(GZ/senφ)    m      4.000       >      0.000      4.000    400.020    SIM      
+   Restrições ativas (folga < 1%): ['Área de convés Lp²', 'GM_T máximo', 'bc ≤ bp', 'Critério de áreas min(A/B), 4 casos']
+   Variáveis no limite do domínio: ['hc = 50.00 (máx)', 'T = 40.00 (máx)']
+
+--- Tabela-resumo de restrições: 3. Intermediária (escolhida) ---
+                            Restrição Unid      Valor Sentido     Limite      Folga  Folga_pct Atende Ativa
+                   Área de convés Lp²   m² 13,971.076       ≥ 13,420.559    550.517      4.102    SIM      
+                          GM_T mínimo    m      4.000       ≥      1.000      3.000    299.990    SIM      
+                          GM_T máximo    m      4.000       ≤      4.000      0.000      0.003    SIM ATIVA
+          Período natural de heave Tn    s     22.153       >     20.000      2.153     10.767    SIM      
+              Peso de lastro positivo    t     11.000       >      0.000     11.000      0.110    SIM ATIVA
+            V_lastro ≤ 0,9·V_pontoons   m³     10.732       ≤ 34,227.837 34,217.105     99.969    SIM      
+                              bc ≤ bp    m     13.656       ≤     14.047      0.391      2.785    SIM      
+                    Air gap a ≥ a_mín    m     26.343       ≥      6.485     19.858    306.225    SIM      
+Imersão das colunas T−hp (geométrica)    m     15.612       ≥      1.000     14.612  1,461.193    SIM      
+  Critério de áreas min(A/B), 4 casos    -      1.303       ≥      1.300      0.003      0.236    SIM ATIVA
+        GZ>0 até φ2/φal: min(GZ/senφ)    m      4.000       >      0.000      4.000    400.029    SIM      
+   Restrições ativas (folga < 1%): ['GM_T máximo', 'Peso de lastro positivo', 'Critério de áreas min(A/B), 4 casos']
+   Variáveis no limite do domínio: nenhuma
+
+==========================================================================================
+SOLUÇÃO FINAL - DETALHAMENTO
+==========================================================================================
+Pesos e centros:
+                 Item    Peso_t  VCG_m   Momento_tm
+   Planta de produção 16,838.24  67.41 1,135,015.91
+  Estrutura do convés  5,893.38  57.41   338,321.75
+    Carga operacional  5,893.38  57.41   338,321.75
+             Pontoons 10,268.35   5.73    58,799.06
+              Colunas  8,449.95  32.43   274,029.86
+               Risers  2,036.74  53.41   108,776.51
+            Amarração  1,527.56  53.41    81,582.38
+Lastro (nos pontoons)     11.00   0.00         0.02
+          TOTAL (= Δ) 50,918.60  45.85 2,334,847.22
+KB = 8.899 m | KG = 45.855 m | GM_T = 4.000 m | GM_L = 4.306 m | Área de convés = 13,971.1 m²
+
+Forças, braços e momentos de vento por parcela (braço até o z_CLR de cada plano):
+  >> Transversal | Tempestade 51,5 m/s:  z_CLR = 8.97 m | HM0 = 331,871 kN·m | HMud = 1,106,740 kN·m | HA(0) = 0.6644 m
+                       Parcela   Area_m2  z_LA_m   Cs   Ch  Forca_kN  Braco_m  Momento_kNm
+       Colunas (4, sem sombra)  1,438.95   13.17 1.00 1.00  2,331.85    31.27    72,912.30
+                      Deck box    945.59   30.34 1.00 1.10  1,685.60    48.44    81,649.11
+            Módulos de topside  1,418.39   40.34 1.10 1.20  3,034.07    58.44   177,309.11
+Face inferior do convés (HMud) 13,971.08   26.34 1.00 1.10 24,904.52    44.44 1,106,740.44
+  >> Transversal | Operação 36 m/s:  z_CLR = 8.97 m | HM0 = 162,166 kN·m | HMud = 540,800 kN·m | HA(0) = 0.3246 m
+                       Parcela   Area_m2  z_LA_m   Cs   Ch  Forca_kN  Braco_m  Momento_kNm
+       Colunas (4, sem sombra)  1,438.95   13.17 1.00 1.00  1,139.44    31.27    35,627.99
+                      Deck box    945.59   30.34 1.00 1.10    823.65    48.44    39,897.16
+            Módulos de topside  1,418.39   40.34 1.10 1.20  1,482.57    58.44    86,640.63
+Face inferior do convés (HMud) 13,971.08   26.34 1.00 1.10 12,169.39    44.44   540,799.55
+  >> Longitudinal | Tempestade 51,5 m/s:  z_CLR = 13.44 m | HM0 = 300,343 kN·m | HMud = 995,393 kN·m | HA(0) = 0.6013 m
+                       Parcela   Area_m2  z_LA_m   Cs   Ch  Forca_kN  Braco_m  Momento_kNm
+       Colunas (4, sem sombra)  1,438.95   13.17 1.00 1.00  2,331.85    26.80    62,486.62
+                      Deck box    945.59   30.34 1.00 1.10  1,685.60    43.97    74,112.83
+            Módulos de topside  1,418.39   40.34 1.10 1.20  3,034.07    53.97   163,743.81
+Face inferior do convés (HMud) 13,971.08   26.34 1.00 1.10 24,904.52    39.97   995,392.60
+  >> Longitudinal | Operação 36 m/s:  z_CLR = 13.44 m | HM0 = 146,760 kN·m | HMud = 486,390 kN·m | HA(0) = 0.2938 m
+                       Parcela   Area_m2  z_LA_m   Cs   Ch  Forca_kN  Braco_m  Momento_kNm
+       Colunas (4, sem sombra)  1,438.95   13.17 1.00 1.00  1,139.44    26.80    30,533.57
+                      Deck box    945.59   30.34 1.00 1.10    823.65    43.97    36,214.62
+            Módulos de topside  1,418.39   40.34 1.10 1.20  1,482.57    53.97    80,012.06
+Face inferior do convés (HMud) 13,971.08   26.34 1.00 1.10 12,169.39    39.97   486,390.35
+
+Critério de áreas (DNV-OS-C301 / MODU 2009):
+       Plano               Vento  z_CLR [m]   HM0 [kN·m]    HMud [kN·m]  HA(0) [m]  φ1 [°]  φ2 [°]  φal [°]  A [m·rad]  B [m·rad]    A/B A ≥ 1,3B GZ>0 até φ2/φal
+ Transversal Tempestade 51,5 m/s     8.9677 331,870.5156 1,106,740.4377     0.6644 13.0051 30.5853  21.4430     0.5163     0.3962 1.3031      SIM             SIM
+ Transversal     Operação 36 m/s     8.9677 162,165.7793   540,799.5503     0.3246  5.9088 31.8806  21.4430     0.5163     0.1936 2.6667      SIM             SIM
+Longitudinal Tempestade 51,5 m/s    13.4387 300,343.2684   995,392.5981     0.6013 11.0002 30.6214  23.5114     0.5285     0.4053 1.3040      SIM             SIM
+Longitudinal     Operação 36 m/s    13.4387 146,760.2510   486,390.3505     0.2938  4.8259 31.8003  23.5114     0.5285     0.1980 2.6687      SIM             SIM
+
+Heave:
+  M = 50,919 t | CA = 1.466 | ld = 90.89 m | A33 = 42,326 t | C33 = 7,501 kN/m | B33 = 2,645 kN·s/m
+  ωn = 0.2836 rad/s | Tn = 22.15 s | ω de cancelamento = 0.313 rad/s
+  m0z = 0.11779 m² | H1/3,z = 1.3728 m (γ=3.3) | 1.3011 m (γ=1)
+  Em ωp do mar = 0.413 rad/s: cos(ω²dp/2g) = 0.615, F_col = 3,511, F_pont = -2,832, F_dif = -3,069, F3 = -2,390 kN/m | RAO = 0.280
+  Em ωn = 0.284 rad/s: cos(ω²dp/2g) = 0.911, F_col = 6,015, F_pont = -2,391, F_dif = -2,595, F3 = 1,029 kN/m | RAO = 1.373
+
+Verificação do air gap:
+  η_max = 5.208 m | z_min = -1.277 m | a_mín = 6.485 m | a = 26.343 m | folga = 19.858 m
+
+Arquivos salvos em ./resultados/sensibilidade_gas/  |  tempo total: 211 s

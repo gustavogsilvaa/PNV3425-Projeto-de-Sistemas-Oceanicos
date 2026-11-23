@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+# LaTeX intermediários
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.vrb
+*.fls
+*.fdb_latexmk
+*.synctex.gz
