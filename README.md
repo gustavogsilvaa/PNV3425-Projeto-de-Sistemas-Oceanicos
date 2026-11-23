@@ -25,7 +25,9 @@ gap mínimo, e otimiza o peso estrutural do casco e o Hs de heave (fronteira de 
 | `resultados/complementar/` | Saídas de `analises_complementares.py` |
 | `resultados/sensibilidade_*` | Reotimizações com hm = 15 m, gás no BOE e lastro mínimo de 10% |
 | `relatorio/` | Relatório em LaTeX (`relatorio.tex`) e PDF compilado |
-| `apresentacao/` | Apresentação em Beamer (`apresentacao.tex`) e PDF compilado |
+| `apresentacao/` | Apresentações em PPTX e PDF: versão completa (35 slides) e versão de 15 minutos (14 slides, com notas do apresentador e tempos) |
+| `apresentacao/figuras_apresentacao.py` | Figuras e equações das apresentações, no layout do grupo |
+| `apresentacao/gerar_apresentacoes.py` | Gera os dois PPTX (python-pptx) |
 
 ## Como rodar
 
@@ -53,15 +55,26 @@ Variáveis de ambiente opcionais:
 
 Exemplo de sensibilidade: `OUT_DIR=resultados/sensibilidade_hm15 HM=15 python codigo/pnv3425_grupo02.py`.
 
-## Compilar o relatório e a apresentação
+## Gerar as apresentações
 
-Os arquivos usam `fontspec` e devem ser compilados com XeLaTeX ou
-[Tectonic](https://tectonic-typesetting.github.io/), a partir das próprias pastas (as figuras são
-lidas de `../resultados/`):
+```bash
+pip install python-pptx
+python apresentacao/figuras_apresentacao.py
+python apresentacao/gerar_apresentacoes.py
+soffice --headless --convert-to pdf --outdir apresentacao apresentacao/*.pptx   # ou exportar pelo PowerPoint
+```
+
+## Compilar o relatório
+
+O relatório usa `fontspec` e deve ser compilado com XeLaTeX ou
+[Tectonic](https://tectonic-typesetting.github.io/), a partir da pasta `relatorio/` (as figuras
+são lidas de `../resultados/`):
 
 ```bash
 cd relatorio && tectonic relatorio.tex
-cd apresentacao && tectonic apresentacao.tex
 ```
 
 No Overleaf, envie o repositório inteiro e selecione o compilador XeLaTeX.
+
+Grupo 02: Felipe Perpétuo Simões (11263255), Gustavo Guilherme Silva (11820555) e
+João Marcos Magalhães Moura (12554693).
