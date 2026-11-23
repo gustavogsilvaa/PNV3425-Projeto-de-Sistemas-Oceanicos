@@ -191,8 +191,10 @@ Fator de pico do JONSWAP & $\gamma$ & 3,3 \\
 \end{tabular}
 \end{table}
 
-As alturas $h_d$ e $h_m$ devem ser estimadas por semelhantes. Os valores adotados são
-estimativas do grupo, ainda a confirmar com plataformas do pôster de semissubmersíveis [6]; como os módulos respondem por cerca de 54\% do momento
+As alturas $h_d$ e $h_m$ devem ser estimadas por semelhantes. No pôster de semissubmersíveis de
+2011~\cite{poster}, a Independence Hub tem convés de 140 × 220 × 36~pés, ou seja, 11~m de altura
+para dois níveis, e as unidades listadas têm de 1 a 3 níveis de convés. O valor $h_d = 8$~m fica
+abaixo dessa referência; $h_m$ não consta do pôster e continua uma estimativa do grupo. Como os módulos respondem por cerca de 54\% do momento
 de vento $HM_0$ na solução final, a Seção~\ref{sec:sensibilidade} quantifica o efeito de
 $h_d \in \{6, 8, 10\}$~m e $h_m \in \{10, 12, 15\}$~m e repete a otimização com
 $h_m = 15$~m, valor usado no Exercício 9.
@@ -529,6 +531,9 @@ aula, e esse valor foi mantido. A curva GZ e o braço de vento estão na Figura~
 \includegraphics[width=\textwidth]{00_validacao_gz.png}
 \caption{Validação: curvas GZ e HA da plataforma dos Exercícios 7 a 10.}\label{fig:valgz}
 \end{figure}
+
+A Seção~\ref{sec:reais} complementa esta validação com três semissubmersíveis reais do pôster de
+2011, para as quais o modelo reproduz o deslocamento com erro de até 10\%.
 
 Verificações internas de consistência complementam a comparação:
 \begin{itemize}
@@ -1149,6 +1154,91 @@ o mar do campo é brando. No contexto do Baixo Congo, uma semissubmersível só 
 frente ao FPSO se houvesse infraestrutura de exportação; caso contrário, o custo de um FSO ou de
 um oleoduto de 190~km deve entrar na comparação de conceitos.
 
+
+\subsection{Semissubmersíveis do pôster de 2011}
+
+O pôster \emph{2011 Worldwide Survey of Semi-FPSs and FPUs}~\cite{poster}, referência [6] do
+enunciado, lista 50 unidades com dimensões de \emph{pontoons} e colunas, calado, deslocamento e
+peso de \emph{topside}. A única unidade da região é a Moho/Bilondo, da Total, no Congo, em 2.034
+pés (620~m) de lâmina d'água; ela também tem casco de navio (618 × 112 pés), o que reforça que
+os flutuantes da região são de casco de navio. Os valores abaixo foram lidos da tabela do pôster
+e convertidos de pés para metros. Como a extração de texto desalinha algumas linhas, só entram as
+unidades cuja sequência de campos é inequívoca; os dados estão em
+\texttt{resultados/complementar/poster2011\_unidades.csv}.
+
+\paragraph{Validação do casco.} Três unidades do pôster têm a mesma topologia do enunciado, dois
+\emph{pontoons} e quatro colunas. O modelo paramétrico foi aplicado a elas com o comprimento do
+\emph{pontoon} como $L_p$, a largura e a altura do \emph{pontoon}, o lado da coluna e o calado
+máximo de operação (Tabela~\ref{tab:valposter}).
+
+\begin{table}[H]
+\centering
+\caption{Deslocamento calculado pelo modelo para semissubmersíveis reais de 2 \emph{pontoons} e
+4 colunas. Dimensões do pôster de 2011, em metros.}\label{tab:valposter}
+\small
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+Unidade & $L_p$ & $b_p$ & $h_p$ & $b_c$ & $T$ & $\Delta$ pôster [t] & $\Delta$ modelo [t] & Erro & $T_n$ [s] \\
+\midrule
+Veslefrikk B (Noruega) & 107,6 & 14,3 & 9,5 & 12,5 & 25,9 & 43.305 & 40.395 & $-6{,}7$\% & 22,3 \\
+Njord A (Noruega) & 100,0 & 17,7 & 9,1 & 15,9 & 23,2 & 45.077 & 47.571 & $+5{,}5$\% & 19,2 \\
+P-20 (Brasil) & 80,5 & 15,9 & 7,6 & 12,8 & 20,4 & 25.983 & 28.524 & $+9{,}8$\% & 18,7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O modelo de caixas retangulares reproduz o deslocamento real com erro de até 10\%, com sinais
+nos dois sentidos. As diferenças vêm de cantos arredondados, contraventamentos e do calado
+informado (máximo de operação). O período natural calculado fica entre 18,7 e 22,3~s, na mesma
+faixa do critério $T_n > 20$~s. Essa é a validação com plataformas reais que faltava na
+Seção~\ref{sec:validacao}, limitada à hidrostática e ao período natural, porque o pôster não traz
+dados de estabilidade nem de resposta.
+
+\paragraph{Solução final contra a frota.} A Tabela~\ref{tab:frota} e a Figura~\ref{fig:poster}
+comparam a solução escolhida com as unidades do pôster.
+
+\begin{table}[H]
+\centering
+\caption{Solução escolhida contra as semissubmersíveis do pôster de 2011 ($n$ = número de
+unidades com o dado).}\label{tab:frota}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Grandeza & $n$ & Mínimo & Mediana & Máximo & G02 \\
+\midrule
+Calado $T$ [m] & 10 & 20,4 & 25,9 & 32,0 & 24,0 \\
+Altura da coluna $h_c$ [m] & 7 & 33,2 & 39,9 & 43,9 & 39,6 \\
+Lado da coluna $b_c$ [m] & 11 & 12,2 & 15,8 & 19,8 & 12,6 \\
+Largura do \emph{pontoon} $b_p$ [m] & 11 & 9,1 & 15,8 & 19,8 & 13,4 \\
+Altura do \emph{pontoon} $h_p$ [m] & 11 & 6,1 & 8,5 & 10,1 & 10,2 \\
+\emph{Topside} por mil bopd [t] & 6 & 100 & 145 & 252 & 141 \\
+$\Delta$ por mil bopd [t] & 7 & 286 & 526 & 889 & 253 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{10_poster2011.png}
+\caption{Solução escolhida contra as semissubmersíveis do pôster de 2011: (a) dimensões do casco;
+(b) peso de \emph{topside} por mil bopd; (c) deslocamento por mil bopd.}\label{fig:poster}
+\end{figure}
+
+\begin{itemize}
+\item \textbf{Dimensões.} Calado, altura da coluna e largura do \emph{pontoon} ficam dentro da
+faixa da frota; a altura da coluna (39,6~m) coincide com a mediana (39,9~m). As colunas
+(12,6~m) estão no limite inferior da frota, coerente com o $GM_T$ ativo em 4~m: colunas maiores
+aumentariam o BM. O \emph{pontoon} é um pouco mais alto que o da frota (10,2 contra 10,1~m no
+máximo).
+\item \textbf{\emph{Topside}.} A correlação da aula (planta de 83~kg/boe, mais 35\% de convés e 35\%
+de carga operacional) dá 141~t por mil bopd, praticamente a mediana do pôster (145~t) e próxima
+de P-52 (134~t) e Atlantis (128~t). A estimativa de \emph{topside} do modelo está validada.
+\item \textbf{Deslocamento.} A solução escolhida desloca 253~t por mil bopd, abaixo da menor
+unidade do pôster (Troll C, 286~t). Com lastro mínimo de 10\%, o valor sobe para 285~t, o mesmo
+da Troll C. Isso confirma a conclusão anterior: o casco ótimo é leve porque não reserva
+deslocamento para lastro, e não por erro de hidrostática ou de peso de \emph{topside}.
+\end{itemize}
+
 % =============================================================================
 \section{Conclusões}
 
@@ -1159,9 +1249,13 @@ na plataforma de referência com erros de até 3,7\%.
 restrição mais seletiva.
 \item A fronteira de Pareto vai de 10.346~t ($\Hz = 2{,}37$~m) a 23.634~t ($\Hz = 1{,}04$~m)
 e tem duas famílias de projeto: rasa e larga, e compacta e profunda.
-\item Comparada a semissubmersíveis reais de porte semelhante, a solução escolhida desloca de 1,5
-a 3,6 vezes menos por mil bpd, sobretudo por não ter lastro; na região, o análogo real (CLOV) é
-um FPSO, escolhido pela falta de infraestrutura de exportação e pelo mar brando.
+\item Aplicado a três semissubmersíveis reais de 2 \emph{pontoons} e 4 colunas do pôster de
+2011, o modelo reproduz o deslocamento com erro de até 10\%. A solução escolhida tem calado,
+colunas e \emph{pontoons} dentro da faixa da frota, e o peso de \emph{topside} por mil bopd
+coincide com a mediana do pôster.
+\item A solução escolhida desloca menos por mil bpd que qualquer semissubmersível real
+comparada, sobretudo por não ter lastro; na região, os análogos reais (CLOV e Moho/Bilondo) têm
+casco de navio.
 \item Em todas as soluções ótimas, $GM_T = 4$~m e $A/B = 1{,}30$ estão ativos: o projeto é
 governado pela estabilidade, enquanto \emph{air gap} e $T_n$ têm folga.
 \item A solução escolhida pesa 14.998~t, tem $\Hz = 1{,}55$~m, $T_n = 21{,}85$~s e
@@ -1172,10 +1266,11 @@ mais peso.
 \paragraph{Recomendações.}
 \begin{itemize}
 \item confirmar com o professor se o gás deve entrar no BOE (impacto de +25\% no casco);
-\item fundamentar $h_d$ e $h_m$ com plataformas semelhantes do pôster de semissubmersíveis [6];
+\item fundamentar $h_m$, que o pôster de 2011 não informa ($h_d$ tem referência de 11~m para dois
+níveis na Independence Hub);
 \item adotar um lastro mínimo (+7\% no casco) para garantir ajuste de calado e de trim;
-\item validar o modelo de casco com dados detalhados (calado, seções, deslocamento) de uma
-semissubmersível real, pois o comparativo da Seção~\ref{sec:reais} usa só dados globais;
+\item estender a validação com plataformas reais à estabilidade e ao \emph{heave}, que o pôster
+de 2011 não cobre;
 \item incluir o custo do armazenamento ou do escoamento (FSO ou oleoduto de 190~km) na
 comparação entre semissubmersível e FPSO, solução usada na região;
 \item incluir roll e pitch e os efeitos não lineares no \emph{air gap} (DNVGL-OTG-13) e
@@ -1194,7 +1289,8 @@ Production System for the Gulf of Mexico}. TSNAME, 2012.
 Optimization Approach}. NTNU, 2013.
 \bibitem{dsouza} D'Souza, R. et al. \emph{The Semisubmersible Floating Production System: A
 25-Year Technical and Historic Retrospective}. SNAME Maritime Convention, 2019.
-\bibitem{poster} \emph{Semi-Sub Poster}. Offshore Magazine, 2011.
+\bibitem{poster} Supan, C. (Mustang Engineering). \emph{2011 Worldwide Survey of Semi-FPSs and
+FPUs}. Offshore Magazine, Poster 89, jan. 2011.
 \bibitem{c301} DNV. \emph{DNV-OS-C301 -- Stability and Watertight Integrity}, 2013.
 \bibitem{modu} IMO. \emph{Code for the Construction and Equipment of Mobile Offshore Drilling
 Units (2009 MODU Code)}, Res. A.1023(26), 2009.

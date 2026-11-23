@@ -532,6 +532,44 @@ def s_reais_semis(d, secao, notas=None, compacto=False):
     return s
 
 
+TAB_VPOSTER = [["Unidade (2 pontoons, 4 colunas)", "L_{p} · b_{p} · h_{p} [m]", "b_{c} · T [m]", "Δ pôster [t]", "Δ modelo [t]", "Erro", "T_{n} [s]"],
+               ["Veslefrikk B (Noruega)", "107,6 · 14,3 · 9,5", "12,5 · 25,9", "43.305", "40.395", "−6,7%", "22,3"],
+               ["Njord A (Noruega)", "100,0 · 17,7 · 9,1", "15,9 · 23,2", "45.077", "47.571", "+5,5%", "19,2"],
+               ["P-20 (Brasil)", "80,5 · 15,9 · 7,6", "12,8 · 20,4", "25.983", "28.524", "+9,8%", "18,7"]]
+
+
+def s_poster_validacao(d, secao, notas=None):
+    s = d.slide("Pôster de semis de 2011: validação do casco",
+                "Offshore Magazine / Mustang Engineering, jan. 2011 (referência [6] do enunciado) · 50 unidades",
+                secao, notas)
+    tabela(s, TAB_VPOSTER, 0.6, 1.75, 12.2, [0.24, 0.17, 0.12, 0.13, 0.13, 0.1, 0.11], rh=0.55, size=14)
+    kpi(s, 0.6, 4.25, 3.9, 1.2, "Erro de deslocamento (3 cascos reais)", "≤ 10%", NAVY, 28)
+    kpi(s, 4.75, 4.25, 3.9, 1.2, "T_{n} calculado nos cascos reais", "18,7 a 22,3 s", ORANGE, 28)
+    kpi(s, 8.9, 4.25, 3.9, 1.2, "Única unidade da região no pôster", "Moho/Bilondo", BLUE, 28)
+    bullets(s, 0.7, 5.65, 12.2, 1.3, [
+        "As caixas retangulares do modelo reproduzem o deslocamento real nos dois sentidos; as diferenças vêm de cantos arredondados e do calado máximo informado",
+        "Moho/Bilondo (Total, Congo, 620 m) também tem casco de navio: os flutuantes da região não são semis"], size=14)
+    return s
+
+
+def s_poster_frota(d, secao, notas=None, compacto=False):
+    s = d.slide("Solução final contra a frota real" if not compacto else "Comparativo com plataformas reais",
+                "Semissubmersíveis do pôster de 2011 (Offshore Magazine) · valores convertidos de pés para metros",
+                secao, notas)
+    imagem(s, "f_poster2011.png", 0.45, 1.6, 12.4, 4.0)
+    if compacto:
+        bullets(s, 0.7, 5.7, 12.2, 1.3, [
+            "Modelo aplicado a 3 semis reais de 2 pontoons do pôster: deslocamento com erro ≤ 10%; topside de 141 t por mil bopd = mediana da frota (145 t)",
+            "Na região, os análogos reais (**CLOV FPSO**, 160 mil bpd; Moho/Bilondo) têm casco de navio; nosso casco é leve por não ter lastro"],
+            size=14)
+    else:
+        bullets(s, 0.7, 5.7, 12.2, 1.3, [
+            "(a) Calado, h_{c} e b_{p} dentro da faixa; h_{c} = 39,6 m coincide com a mediana; colunas no limite inferior, coerente com GM_{T} = 4 m",
+            "(b) Topside de 141 t por mil bopd = mediana do pôster (145 t)  ·  (c) com lastro ≥ 10%, Δ por mil bopd iguala a Troll C (285 t)"],
+            size=14)
+    return s
+
+
 def s_sensibilidade(d, secao, notas=None):
     s = d.slide("Sensibilidade às hipóteses", "Otimização completa repetida para as hipóteses mais incertas",
                 secao, notas)
@@ -812,11 +850,13 @@ def completa():
     s_justificativa(d, "Solução final")
     s_reais_regiao(d, "Plataformas reais")
     s_reais_semis(d, "Plataformas reais")
+    s_poster_validacao(d, "Plataformas reais")
+    s_poster_frota(d, "Plataformas reais")
     s = d.slide("Plataformas reais: o que o comparativo mostra", "Leitura dos dados públicos à luz do modelo",
                 "Plataformas reais")
     tabela(s, TAB_SEMI, 0.6, 1.75, 7.0, [0.34, 0.17, 0.17, 0.18, 0.14], rh=0.5, size=14, destaque=(4,))
     bullets(s, 7.9, 1.8, 5.0, 5.0, [
-        "O modelo reproduz a ordem de grandeza e a configuração das semis reais",
+        "O modelo acerta o deslocamento de semis reais (erro ≤ 10%) e o topside por mil bopd (141 contra 145 t)",
         "Tende a cascos mais leves: não reserva lastro e o mar do campo é brando (as semis do Golfo são projetadas para furacões)",
         "Risers + amarração = 7% de Δ e γ_{e} sem margens também reduzem o deslocamento",
         "No Baixo Congo, a semi só compete com o FPSO se o custo de FSO ou oleoduto entrar na comparação"], size=15)
@@ -844,10 +884,10 @@ def completa():
     bullets(s, 6.9, 1.75, 6.0, 5.0, [
         "**Próximos passos**",
         (1, "Confirmar se o gás entra no BOE (+25% no casco)"),
-        (1, "Fundamentar h_{d} e h_{m} com o pôster de semissubmersíveis"),
+        (1, "Fundamentar h_{m}, que o pôster de 2011 não informa"),
         (1, "Adotar lastro mínimo para ajuste de calado e trim (+7%)"),
         (1, "Comparar com o FPSO (conceito da região) incluindo FSO ou oleoduto"),
-        (1, "Validar o casco com dados detalhados de uma semi real; verificar a inclinação de 14°"),
+        (1, "Validar estabilidade e heave com uma semi real; verificar a inclinação de 14°"),
         (1, "Air gap pela DNVGL-OTG-13")], size=17)
 
     d.fecho("Obrigado", ["Perguntas?", "Código, resultados e relatório: github.com/gustavogsilvaa/PNV3425-Projeto-de-Sistemas-Oceanicos"])
@@ -913,10 +953,11 @@ def focada():
         "[1:00] Por que este ponto: até ele, cada milímetro de heave custa 5,7 t; depois, 17 t. "
         "Além disso é a única solução no interior do domínio e tem φal de 21,6°."))
 
-    s_reais_semis(d, "Plataformas reais", compacto=True, notas=(
-        "[1:00] Na região, o análogo real é o FPSO do CLOV, no Bloco 17: 160 mil bpd em 1.291 m. Ele armazena "
-        "1,8 milhão de barris; uma semi precisaria de FSO ou oleoduto. Contra semis reais de porte parecido, "
-        "nosso casco desloca bem menos por mil bpd, principalmente porque a solução ótima não tem lastro e o mar é brando."))
+    s_poster_frota(d, "Plataformas reais", compacto=True, notas=(
+        "[1:00] Usamos o pôster de semis de 2011, a referência [6]. Aplicado a três semis reais de dois pontoons, "
+        "o modelo acerta o deslocamento com erro de até 10%. Calado, colunas e pontoons da solução ficam na faixa "
+        "da frota, e o topside por mil bopd bate com a mediana. O deslocamento é o menor da frota porque a solução "
+        "não tem lastro. Na região, CLOV e Moho/Bilondo têm casco de navio: uma semi exigiria FSO ou oleoduto."))
 
     s_sensibilidade(d, "Sensibilidade", notas=(
         "[0:45] A solução está ajustada às restrições ativas: com geometria fixa, mudar hd ou hm a torna inviável. "
@@ -930,7 +971,7 @@ def focada():
         "Modelo validado contra as aulas (erro ≤ 3,7%) cobrindo os 8 itens do enunciado",
         "Projeto governado pela estabilidade: GM_{T} = 4 m e A/B = 1,30 ativos em todos os ótimos",
         "Solução escolhida no joelho: depois dela, reduzir heave custa 3× mais peso",
-        "**Próximos passos:** confirmar o gás no BOE, fundamentar h_{d}/h_{m}, adotar lastro mínimo, "
+        "**Próximos passos:** confirmar o gás no BOE, fundamentar h_{m}, adotar lastro mínimo, "
         "comparar com FPSO incluindo armazenamento"], size=20, espaco=16)
     for i, (r, v, c) in enumerate([("Peso do casco", "14.998 t", ORANGE), ("H_{1/3,z} · T_{n}", "1,55 m · 21,8 s", NAVY),
                                    ("L_{p} · T", "111,8 · 24,0 m", BLUE), ("A/B · GM_{T}", "1,303 · 4,00 m", TEAL)]):

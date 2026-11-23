@@ -22,11 +22,12 @@ gap mínimo, e otimiza o peso estrutural do casco e o Hs de heave (fronteira de 
 | `codigo/pnv3425_grupo02.py` | Modelo paramétrico, validação e otimização (LHS + soma ponderada + ε-restrito) |
 | `codigo/analises_complementares.py` | Curva de produção, restrições ativas na fronteira, sensibilidade a hd/hm, ξ e γ |
 | `codigo/comparativo_plataformas_reais.py` | Comparativo com plataformas reais (CLOV FPSO, Scarabeo 5, Argos, King's Quay, Vito, Anchor, Shenandoah), com fontes no CSV |
+| `codigo/comparativo_poster_2011.py` | Validação do casco e comparação da solução final com as semis do pôster da Offshore Magazine de 2011 (referência [6]) |
 | `resultados/` | Figuras, tabelas CSV e log da rodada do caso-base |
 | `resultados/complementar/` | Saídas de `analises_complementares.py` |
 | `resultados/sensibilidade_*` | Reotimizações com hm = 15 m, gás no BOE e lastro mínimo de 10% |
 | `relatorio/` | Relatório em LaTeX (`relatorio.tex`) e PDF compilado |
-| `apresentacao/` | Apresentações em PPTX e PDF: versão completa (38 slides) e versão de 15 minutos (15 slides, com notas do apresentador e tempos) |
+| `apresentacao/` | Apresentações em PPTX e PDF: versão completa (40 slides) e versão de 15 minutos (15 slides, com notas do apresentador e tempos) |
 | `apresentacao/figuras_apresentacao.py` | Figuras e equações das apresentações, no layout do grupo |
 | `apresentacao/gerar_apresentacoes.py` | Gera os dois PPTX (python-pptx) |
 
@@ -39,6 +40,7 @@ pip install -r requirements.txt
 python codigo/pnv3425_grupo02.py          # ~4 min em 8 núcleos
 python codigo/analises_complementares.py
 python codigo/comparativo_plataformas_reais.py
+python codigo/comparativo_poster_2011.py
 ```
 
 Variáveis de ambiente opcionais:
