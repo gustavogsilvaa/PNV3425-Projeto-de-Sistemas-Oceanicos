@@ -1038,6 +1038,118 @@ O $\Hz$ varia 6,7\% entre $\gamma = 1$ e $\gamma = 3{,}3$ e 12\% entre $\xi = 0{
 $0{,}08$. O efeito no $a_{\text{mín}}$ é menor que 0,2~m, desprezível diante da folga de 19~m.
 
 % =============================================================================
+\section{Comparativo com plataformas reais}\label{sec:reais}
+
+\subsection{O que opera na região}
+
+As unidades de produção em águas profundas da bacia do Baixo Congo são predominantemente FPSOs
+com ancoragem distribuída. O análogo mais próximo do campo KZ-2026-B é o FPSO do projeto CLOV, da
+TotalEnergies, no Bloco 17 de Angola~\cite{clov}. A única semissubmersível de produção da região
+é a Scarabeo 5, uma sonda de 1990 convertida pela Saipem em unidade de tratamento de gás para o
+projeto Congo LNG da Eni, na República do Congo~\cite{scarabeo5}.
+
+\begin{table}[H]
+\centering
+\caption{Campo KZ-2026-B e plataformas reais da região. Dados públicos.}\label{tab:reaisregiao}
+\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{3.9cm}}
+\toprule
+ & KZ-2026-B (este projeto) & CLOV FPSO & Scarabeo 5 FPU \\
+\midrule
+Local & Baixo Congo, Angola & Bloco 17, Angola (Baixo Congo) & Congo LNG, Rep. do Congo \\
+Distância à costa & 190 km & 140 km de Luanda & próxima ao terminal de Djeno \\
+Lâmina d'água & 1.450 m & 1.291 m & 35 m \\
+Produção & 158.894 bpd (pico) & 160.000 bpd de óleo & gás (separação e compressão) \\
+Casco & semi, 2 \emph{pontoons} + 4 colunas & navio, 305 × 61 m, calado 24,4 m & semi, 2 \emph{pontoons} + 6 colunas, 111 × 73 m \\
+Armazenamento & nenhum & 1,8 milhão de bbl & nenhum \\
+Peso / deslocamento & $\Delta$ = 40.247 t & 110.000 t (peso informado) & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O CLOV é quase um gêmeo do campo do grupo em capacidade (160 contra 159 mil bpd) e em lâmina
+d'água (1.291 contra 1.450 m). Na interpretação do grupo, dois fatores ligados aos dados do campo
+favorecem o FPSO na região:
+\begin{itemize}
+\item \textbf{Escoamento.} O CLOV armazena 1,8 milhão de barris, cerca de 11 dias de produção,
+e exporta o óleo por uma boia de descarga a 1,8~km da unidade. A semissubmersível não tem armazenamento: exigiria um oleoduto de 190~km até a
+costa ou um FSO ao lado, custo que o modelo paramétrico não inclui.
+\item \textbf{Mar brando.} Com $H_s = 5{,}6$~m no mar de 100 anos, o movimento de um navio é
+aceitável. A vantagem da semissubmersível em \emph{heave} pesa mais em mares severos, como o
+do Golfo do México, onde as semissubmersíveis são a solução preferida~\cite{omsemis}.
+\end{itemize}
+A Scarabeo 5 confirma que a configuração de dois \emph{pontoons} adotada no enunciado opera na
+região, embora em outro contexto (gás, águas rasas, casco de sonda convertido). Seu comprimento
+de 111~m coincide com o $L_p = 111{,}8$~m da solução escolhida. Os dados do casco (calado,
+deslocamento, seções) não são públicos, por isso ela não foi usada numa comparação numérica.
+
+\subsection{Semissubmersíveis de produção de porte semelhante}
+
+Para comparar o casco, foram usadas semissubmersíveis de produção recentes com capacidade e lâmina
+d'água semelhantes, todas no Golfo do México~\cite{omsemis,omgom}. A mais próxima é a Argos, da bp,
+com 140 mil boe/d em 1.372~m de lâmina d'água.
+
+\begin{table}[H]
+\centering
+\caption{Semissubmersíveis de produção reais e soluções do grupo. Os pesos da Argos foram
+convertidos de toneladas curtas; o peso da King's Quay é o peso da unidade (casco + topside).}\label{tab:reaissemi}
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Unidade & Capacidade & $\Delta$ [t] & $\Delta$/capacidade & Peso [t] & Peso/$\Delta$ \\
+ & [mil bpd] & & [t por mil bpd] & & \\
+\midrule
+Argos (Mad Dog 2) & 140 & 101.000 & 721 & $\approx$ 54.400 & 0,54 \\
+King's Quay & 80 & 38.000 & 475 & 21.498 & 0,57 \\
+Vito & 100 & 38.000 & 380 & -- & -- \\
+Anchor & 75 & 69.000 & 920 & -- & -- \\
+\midrule
+G02 · cenário 2 (mín. \emph{heave}) & 159 & 68.962 & 434 & 46.054 & 0,67 \\
+G02 · cenário 3 (escolhida) & 159 & 40.247 & 253 & 37.418 & 0,93 \\
+G02 · escolhida com lastro $\ge$ 10\% & 159 & 45.223 & 285 & 38.446 & 0,85 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{09_comparativo_reais.png}
+\caption{Comparativo com plataformas reais: (a) deslocamento por mil bpd de capacidade;
+(b) área de convés contra a correlação da aula; (c) fração do deslocamento ocupada por casco e
+\emph{topside}.}\label{fig:reais}
+\end{figure}
+
+\paragraph{Deslocamento.} A solução escolhida desloca 253~t por mil bpd, de 1,5 a 3,6 vezes menos
+que as semissubmersíveis reais (380 a 920~t por mil bpd). O cenário 2 (434~t por mil bpd) fica na
+faixa das unidades enxutas recentes, Vito e King's Quay. Três fatores explicam a diferença:
+\begin{enumerate}
+\item \textbf{Lastro.} Casco e \emph{topside} ocupam 93\% do deslocamento da solução escolhida,
+contra 54\% a 57\% nas unidades reais, que reservam deslocamento para lastro, cargas variáveis,
+\emph{risers} e amarração. Com lastro mínimo de 10\% a fração cai para 85\%; a otimização sem
+lastro é a principal causa do casco enxuto.
+\item \textbf{Ambiente.} As unidades do Golfo são projetadas para furacões (a King's Quay, para a
+tempestade de 1.000 anos~\cite{omgom}), com mar muito mais severo que o de Angola. No mar do
+KZ-2026-B o \emph{air gap} tem folga de 19~m e o calado não é exigido pelo movimento.
+\item \textbf{Correlações de peso.} \emph{Risers} e amarração somam 7\% de $\Delta$, e o casco
+usa $\gamma_e = 0{,}270$~t/m$^3$ sobre o volume envolvido, sem margens de projeto.
+\end{enumerate}
+
+\paragraph{Área e dimensões.} A correlação da aula leva a 11.563~m$^2$ de convés para 159 mil
+bpd, equivalente a um único nível. A Argos tem convés em planta de cerca de 110 × 49~m
+($\approx$ 5.400~m$^2$, ``do tamanho de um campo de futebol americano''~\cite{omsemis}) e a
+Shenandoah, 91 × 91~m (8.281~m$^2$) para 100 mil bpd, ambas com vários níveis de convés. Por isso
+o $L_p$ do projeto (111,8~m) é maior que o lado das unidades reais. Como a face inferior do
+convés ($L_p^2$) gera a maior parcela do momento de vento, a correlação de um nível é
+conservadora para o critério de áreas. A altura total da solução escolhida, 69,8~m da quilha ao
+topo dos módulos, fica abaixo dos 90~m da Shenandoah.
+
+\paragraph{Conclusão do comparativo.} O modelo reproduz a ordem de grandeza e a configuração de
+semissubmersíveis reais, mas tende a produzir cascos mais leves porque não reserva lastro e porque
+o mar do campo é brando. No contexto do Baixo Congo, uma semissubmersível só seria competitiva
+frente ao FPSO se houvesse infraestrutura de exportação; caso contrário, o custo de um FSO ou de
+um oleoduto de 190~km deve entrar na comparação de conceitos.
+
+% =============================================================================
 \section{Conclusões}
 
 \begin{enumerate}
@@ -1047,6 +1159,9 @@ na plataforma de referência com erros de até 3,7\%.
 restrição mais seletiva.
 \item A fronteira de Pareto vai de 10.346~t ($\Hz = 2{,}37$~m) a 23.634~t ($\Hz = 1{,}04$~m)
 e tem duas famílias de projeto: rasa e larga, e compacta e profunda.
+\item Comparada a semissubmersíveis reais de porte semelhante, a solução escolhida desloca de 1,5
+a 3,6 vezes menos por mil bpd, sobretudo por não ter lastro; na região, o análogo real (CLOV) é
+um FPSO, escolhido pela falta de infraestrutura de exportação e pelo mar brando.
 \item Em todas as soluções ótimas, $GM_T = 4$~m e $A/B = 1{,}30$ estão ativos: o projeto é
 governado pela estabilidade, enquanto \emph{air gap} e $T_n$ têm folga.
 \item A solução escolhida pesa 14.998~t, tem $\Hz = 1{,}55$~m, $T_n = 21{,}85$~s e
@@ -1059,7 +1174,10 @@ mais peso.
 \item confirmar com o professor se o gás deve entrar no BOE (impacto de +25\% no casco);
 \item fundamentar $h_d$ e $h_m$ com plataformas semelhantes do pôster de semissubmersíveis [6];
 \item adotar um lastro mínimo (+7\% no casco) para garantir ajuste de calado e de trim;
-\item validar o modelo também com uma plataforma real;
+\item validar o modelo de casco com dados detalhados (calado, seções, deslocamento) de uma
+semissubmersível real, pois o comparativo da Seção~\ref{sec:reais} usa só dados globais;
+\item incluir o custo do armazenamento ou do escoamento (FSO ou oleoduto de 190~km) na
+comparação entre semissubmersível e FPSO, solução usada na região;
 \item incluir roll e pitch e os efeitos não lineares no \emph{air gap} (DNVGL-OTG-13) e
 verificar a inclinação de 14$^\circ$ sob vento de tempestade nas fases seguintes.
 \end{itemize}
@@ -1083,6 +1201,16 @@ Units (2009 MODU Code)}, Res. A.1023(26), 2009.
 \bibitem{otg13} DNV GL. \emph{DNVGL-OTG-13 -- Prediction of Air Gap for Column-Stabilised
 Units}, 2019.
 \bibitem{c205} DNV. \emph{DNV-RP-C205 -- Environmental Conditions and Environmental Loads}, 2010.
+\bibitem{clov} Offshore Technology. \emph{CLOV Development Project, Block 17, Offshore Angola}.
+\url{https://www.offshore-technology.com/projects/clov-development-project-angola/}; e TotalEnergies,
+\emph{CLOV start-up} (2014).
+\bibitem{scarabeo5} Saipem. \emph{Saipem completes conversion of Scarabeo 5 from drilling unit to
+floating production facility for Eni in Congo}, 26/08/2025. Dimensões de 111 × 73~m conforme
+registro AIS (VesselTracker, IMO 8754970).
+\bibitem{omsemis} Beaubouef, B. \emph{Semisubmersibles setting the standard in the Gulf of
+Mexico}. Offshore Magazine, dez. 2021.
+\bibitem{omgom} Beaubouef, B. \emph{Cost efficiency underpins new Gulf of Mexico platform
+designs}. Offshore Magazine, nov. 2019.
 \end{thebibliography}
 
 % =============================================================================

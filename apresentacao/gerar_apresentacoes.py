@@ -485,6 +485,53 @@ def s_justificativa(d, secao, notas=None):
     return s
 
 
+TAB_REG = [["", "KZ-2026-B (projeto)", "CLOV FPSO", "Scarabeo 5 FPU"],
+           ["Local", "Baixo Congo, Angola", "Bloco 17, Angola", "Congo LNG, Rep. do Congo"],
+           ["Lâmina d'água", "1.450 m", "1.291 m", "35 m"],
+           ["Produção", "158.894 bpd (pico)", "160.000 bpd de óleo", "gás (tratamento)"],
+           ["Casco", "semi, 2 pontoons + 4 colunas", "navio 305 × 61 m", "semi, 2 pontoons + 6 colunas"],
+           ["Dimensões", "L_{p} = 111,8 m", "calado 24,4 m", "111 × 73 m"],
+           ["Armazenamento", "nenhum", "1,8 milhão de bbl", "nenhum"]]
+
+TAB_SEMI = [["Unidade", "Capacidade", "Δ [t]", "t por mil bpd", "Peso/Δ"],
+            ["Argos (bp, 1.372 m)", "140 mil", "101.000", "721", "0,54"],
+            ["King's Quay", "80 mil", "38.000", "475", "0,57"],
+            ["Vito (1.220 m)", "100 mil", "38.000", "380", "–"],
+            ["**G02 · escolhida**", "**159 mil**", "**40.247**", "**253**", "**0,93**"],
+            ["G02 · lastro ≥ 10%", "159 mil", "45.223", "285", "0,85"],
+            ["G02 · mín. heave", "159 mil", "68.962", "434", "0,67"]]
+
+
+def s_reais_regiao(d, secao, notas=None):
+    s = d.slide("Plataformas reais na região", "Fontes: Offshore Technology (CLOV), Saipem e AIS (Scarabeo 5)",
+                secao, notas)
+    tabela(s, TAB_REG, 0.6, 1.75, 8.3, [0.2, 0.27, 0.25, 0.28], rh=0.52, size=13, destaque=(6,))
+    bullets(s, 9.2, 1.8, 3.7, 5.0, [
+        "O CLOV é quase um gêmeo do campo: 160 mil bpd em 1.291 m, na mesma bacia",
+        "Na região predominam FPSOs: armazenam a produção (≈ 11 dias no CLOV) e exportam por boia",
+        "Uma semi não armazena: exigiria FSO ou oleoduto de 190 km",
+        "A Scarabeo 5 confirma o casco de 2 pontoons na região, mas é de gás, em 35 m"], size=15)
+    return s
+
+
+def s_reais_semis(d, secao, notas=None, compacto=False):
+    s = d.slide("Comparativo com semissubmersíveis reais" if not compacto else "Comparativo com plataformas reais",
+                "Semis de produção de porte semelhante (Golfo do México) · Offshore Magazine, 2019 e 2021",
+                secao, notas)
+    imagem(s, "f_comparativo_reais.png", 0.45, 1.6, 12.4, 3.9)
+    if compacto:
+        bullets(s, 0.7, 5.55, 12.2, 1.4, [
+            "Na região o análogo real é o **CLOV FPSO** (160 mil bpd, 1.291 m): armazena 1,8 milhão de bbl; uma semi exigiria FSO ou oleoduto",
+            "Contra semis reais (Argos, King's Quay, Vito), o casco escolhido desloca 1,5 a 3,6× menos por mil bpd: sem lastro e mar brando"],
+            size=15)
+    else:
+        bullets(s, 0.7, 5.55, 12.2, 1.4, [
+            "(a) A escolhida desloca 253 t por mil bpd, contra 380–920 t nas semis reais; o cenário 2 (434) cai na faixa de Vito e King's Quay",
+            "(b) A correlação de área é de um nível só; Argos e Shenandoah usam vários níveis, por isso o L_{p} real é menor",
+            "(c) Casco + topside ocupam 93% de Δ, contra 54–57%: a falta de lastro é a principal diferença"], size=14)
+    return s
+
+
 def s_sensibilidade(d, secao, notas=None):
     s = d.slide("Sensibilidade às hipóteses", "Otimização completa repetida para as hipóteses mais incertas",
                 secao, notas)
@@ -763,6 +810,16 @@ def completa():
 
     sec = "Sensibilidade"
     s_justificativa(d, "Solução final")
+    s_reais_regiao(d, "Plataformas reais")
+    s_reais_semis(d, "Plataformas reais")
+    s = d.slide("Plataformas reais: o que o comparativo mostra", "Leitura dos dados públicos à luz do modelo",
+                "Plataformas reais")
+    tabela(s, TAB_SEMI, 0.6, 1.75, 7.0, [0.34, 0.17, 0.17, 0.18, 0.14], rh=0.5, size=14, destaque=(4,))
+    bullets(s, 7.9, 1.8, 5.0, 5.0, [
+        "O modelo reproduz a ordem de grandeza e a configuração das semis reais",
+        "Tende a cascos mais leves: não reserva lastro e o mar do campo é brando (as semis do Golfo são projetadas para furacões)",
+        "Risers + amarração = 7% de Δ e γ_{e} sem margens também reduzem o deslocamento",
+        "No Baixo Congo, a semi só compete com o FPSO se o custo de FSO ou oleoduto entrar na comparação"], size=15)
     s_sensibilidade(d, sec)
 
     sec = "Conclusões"
@@ -789,7 +846,8 @@ def completa():
         (1, "Confirmar se o gás entra no BOE (+25% no casco)"),
         (1, "Fundamentar h_{d} e h_{m} com o pôster de semissubmersíveis"),
         (1, "Adotar lastro mínimo para ajuste de calado e trim (+7%)"),
-        (1, "Validar com uma plataforma real e verificar a inclinação de 14° sob tempestade"),
+        (1, "Comparar com o FPSO (conceito da região) incluindo FSO ou oleoduto"),
+        (1, "Validar o casco com dados detalhados de uma semi real; verificar a inclinação de 14°"),
         (1, "Air gap pela DNVGL-OTG-13")], size=17)
 
     d.fecho("Obrigado", ["Perguntas?", "Código, resultados e relatório: github.com/gustavogsilvaa/PNV3425-Projeto-de-Sistemas-Oceanicos"])
@@ -829,11 +887,11 @@ def focada():
         "ε-restrito para preencher os vazios. O filtro de não dominância deixa 25 pontos."))
 
     s_pareto(d, "Otimização", extra=True, notas=(
-        "[1:30] A fronteira vai de 10.346 t a 23.634 t. Ponto principal: em todos os 25 ótimos o GM está no "
+        "[1:15] A fronteira vai de 10.346 t a 23.634 t. Ponto principal: em todos os 25 ótimos o GM está no "
         "máximo de 4 m e o A/B no mínimo de 1,30. O projeto é governado pela estabilidade; air gap e Tn têm folga."))
 
     s_ficha(d, "Cenários", notas=(
-        "[1:30] Cenário 1: semi rasa, mais leve, mas com heave de 42% do Hs e ângulo de alagamento de só 9°. "
+        "[1:15] Cenário 1: semi rasa, mais leve, mas com heave de 42% do Hs e ângulo de alagamento de só 9°. "
         "Cenário 2: calado de 40 m, heave de 19% do Hs, porém 2,3 vezes mais pesado. "
         "Os dois extremos encostam nos limites do domínio; a solução 3 é a única no interior."))
 
@@ -855,20 +913,25 @@ def focada():
         "[1:00] Por que este ponto: até ele, cada milímetro de heave custa 5,7 t; depois, 17 t. "
         "Além disso é a única solução no interior do domínio e tem φal de 21,6°."))
 
+    s_reais_semis(d, "Plataformas reais", compacto=True, notas=(
+        "[1:00] Na região, o análogo real é o FPSO do CLOV, no Bloco 17: 160 mil bpd em 1.291 m. Ele armazena "
+        "1,8 milhão de barris; uma semi precisaria de FSO ou oleoduto. Contra semis reais de porte parecido, "
+        "nosso casco desloca bem menos por mil bpd, principalmente porque a solução ótima não tem lastro e o mar é brando."))
+
     s_sensibilidade(d, "Sensibilidade", notas=(
-        "[1:00] A solução está ajustada às restrições ativas: com geometria fixa, mudar hd ou hm a torna inviável. "
+        "[0:45] A solução está ajustada às restrições ativas: com geometria fixa, mudar hd ou hm a torna inviável. "
         "Reotimizando, hm = 15 m custa 5% e lastro mínimo de 10% custa 7%. "
         "A hipótese de maior impacto é incluir o gás: +25% no casco."))
 
     s = d.slide("Conclusões e próximos passos", "Síntese do projeto do KZ-2026-B", "Conclusões", notas=(
-        "[0:45] Fechar com a solução escolhida e os próximos passos: confirmar o gás, fundamentar hd e hm, "
-        "adotar lastro mínimo e validar com uma plataforma real."))
+        "[0:30] Fechar com a solução escolhida e os próximos passos: confirmar o gás, fundamentar hd e hm, "
+        "adotar lastro mínimo e incluir o custo de armazenamento na comparação com o FPSO."))
     bullets(s, 0.7, 1.75, 7.6, 5.0, [
         "Modelo validado contra as aulas (erro ≤ 3,7%) cobrindo os 8 itens do enunciado",
         "Projeto governado pela estabilidade: GM_{T} = 4 m e A/B = 1,30 ativos em todos os ótimos",
         "Solução escolhida no joelho: depois dela, reduzir heave custa 3× mais peso",
         "**Próximos passos:** confirmar o gás no BOE, fundamentar h_{d}/h_{m}, adotar lastro mínimo, "
-        "validar com plataforma real"], size=20, espaco=16)
+        "comparar com FPSO incluindo armazenamento"], size=20, espaco=16)
     for i, (r, v, c) in enumerate([("Peso do casco", "14.998 t", ORANGE), ("H_{1/3,z} · T_{n}", "1,55 m · 21,8 s", NAVY),
                                    ("L_{p} · T", "111,8 · 24,0 m", BLUE), ("A/B · GM_{T}", "1,303 · 4,00 m", TEAL)]):
         kpi(s, 8.7, 1.75 + i * 1.25, 4.15, 1.12, r, v, c, 24)
