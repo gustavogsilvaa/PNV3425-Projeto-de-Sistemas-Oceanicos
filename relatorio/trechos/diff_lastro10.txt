@@ -1,0 +1,43 @@
+--- caso_base/codigo/pnv3425_grupo02.py
++++ condicao_10pct_lastro/codigo/pnv3425_grupo02_condicao_10pct_lastro.py
+@@ -39,2 +39,7 @@
+   [REV 6] Rótulos com quebra de linha; γ lido em tempo de execução.
++
++CENÁRIO DESTE ARQUIVO  [LASTRO 10%]
++  Lastro mínimo obrigatório: V_lastro ≥ 0,10·V_pontoons (10% do volume
++  interno dos pontoons), além de todas as restrições do enunciado. Os
++  objetivos não mudam: mínimo peso estrutural do casco e mínimo H1/3 de heave.
+ """
+@@ -56,3 +61,3 @@
+ # (variáveis de ambiente opcionais permitem rodadas rápidas de teste)
+-OUT_DIR = os.environ.get("OUT_DIR", "resultados")           # figuras e tabelas
++OUT_DIR = os.environ.get("OUT_DIR", "resultados_lastro10")  # [LASTRO 10%] figuras e tabelas
+ MOSTRAR_GRAFICOS = os.environ.get("MOSTRAR_GRAFICOS", "1") == "1"  # plt.show()
+@@ -113,5 +118,6 @@
+ IMERSAO_MIN_COL = 1.0  # T - hp >= 1 m: linha d'água nas colunas (consistência)
+-# [REV 4] Lastro mínimo como fração do volume dos pontoons. 0 = só "lastro
+-# positivo" (enunciado). Ex.: 0.10 reserva lastro para ajuste de calado/trim.
+-LASTRO_MIN_FRAC = float(os.environ.get("LASTRO_MIN_FRAC", 0.0))
++# [LASTRO 10%] Lastro mínimo OBRIGATÓRIO: V_lastro ≥ 10% do volume dos
++# pontoons. Reserva capacidade de ajuste de calado/trim e de compensação de
++# crescimento de peso. (0 = só "lastro positivo", como no enunciado.)
++LASTRO_MIN_FRAC = float(os.environ.get("LASTRO_MIN_FRAC", 0.10))
+ MARGEM_OTIM = 1e-4     # [REV 3] margem em todas as restrições no SLSQP
+@@ -575,3 +581,3 @@
+     if LASTRO_MIN_FRAC > 0:                                         # [REV 4]
+-        L.append((f"V_lastro ≥ {LASTRO_MIN_FRAC:g}·V_pontoons", "m³", pes["V_lastro"], "≥",
++        L.append((f"V_lastro ≥ {100 * LASTRO_MIN_FRAC:g}%·V_pontoons (obrigatório)", "m³", pes["V_lastro"], "≥",
+                   LASTRO_MIN_FRAC * pes["V_pont"], 1e4))
+@@ -933,3 +939,4 @@
+     ax.set_ylabel("Altura significativa de heave H1/3,z [m]", fontweight="bold")
+-    ax.set_title("Grupo 02 - Conjunto viável e fronteira de Pareto (Peso × Hs heave)", fontweight="bold")
++    ax.set_title(f"Grupo 02 - Conjunto viável e fronteira de Pareto (Peso × Hs heave) - "
++                 f"lastro ≥ {100 * LASTRO_MIN_FRAC:g}% V_pontoons", fontweight="bold")   # [LASTRO 10%]
+     ax.grid(ls="--", alpha=0.6)
+@@ -1040,4 +1047,4 @@
+     print(f"Área mínima de convés: {cen.area_req:,.1f} m² -> Lp ≥ {np.sqrt(cen.area_req):.2f} m")
+-    print(f"Crista máxima η_max = 1,86·Hs/2 = {cen.eta_max:.3f} m | lastro mínimo = "
+-          f"{LASTRO_MIN_FRAC:g}·V_pontoons")
++    print(f"Crista máxima η_max = 1,86·Hs/2 = {cen.eta_max:.3f} m | lastro mínimo obrigatório = "
++          f"{100 * LASTRO_MIN_FRAC:g}% de V_pontoons")   # [LASTRO 10%]
+ 

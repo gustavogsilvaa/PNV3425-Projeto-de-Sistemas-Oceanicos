@@ -19,7 +19,7 @@ João Marcos Magalhães Moura (12554693).
 | Restrição de lastro | lastro positivo (enunciado) | lastro positivo **e** `V_lastro ≥ 0,10·V_pontoons` |
 | Código | `codigo/pnv3425_grupo02.py` | `codigo/pnv3425_grupo02_condicao_10pct_lastro.py` |
 | Resultados | `resultados/` | `resultados_lastro10/` |
-| Relatório | `relatorio/relatorio.pdf` | `relatorio/relatorio_condicao_10pct_lastro.pdf` |
+| Relatório | [`relatorio/relatorio.pdf`](relatorio/relatorio.pdf) (Seções 2 a 11) | [`relatorio/relatorio.pdf`](relatorio/relatorio.pdf) (Seção 12) |
 | Fronteira de Pareto | 25 pontos, 10.346 t a 23.634 t | 23 pontos, 11.892 t a 23.634 t |
 | Solução escolhida | Lp = 111,8 m · T = 24,0 m | Lp = 107,5 m · T = 25,9 m |
 | Peso do casco | 14.998 t | 16.026 t (+6,9%) |
@@ -43,14 +43,16 @@ caso_base/
   codigo/comparativo_poster_2011.py      validação do casco e comparação com o pôster de 2011
   codigo/figuras_apresentacao.py         figuras no padrão visual da apresentação
   resultados/                            figuras, tabelas CSV, logs e sensibilidades (hm = 15 m, gás)
-  relatorio/relatorio.tex · .pdf         relatório do caso-base
 condicao_10pct_lastro/
   codigo/pnv3425_grupo02_condicao_10pct_lastro.py   modelo e otimização com lastro ≥ 10%
   codigo/analises_condicao_10pct_lastro.py           comparação com o caso-base e com o pôster;
-                                                     gera as tabelas do relatório
+                                                     gera relatorio/tabelas_lastro10/
   resultados_lastro10/                   figuras, tabelas CSV e log
-  relatorio/relatorio_condicao_10pct_lastro.tex · .pdf
-apresentacao/                            apresentação final (única)
+relatorio/                               relatório único (caso-base + condição de 10% de lastro)
+  relatorio.tex · relatorio.pdf          teoria, aplicação e resultados; código no Apêndice A
+  tabelas_lastro10/                      tabelas geradas pelo script de análise da condição de 10%
+  gerar_trechos.py · trechos/            trechos do código real citados no Apêndice A
+apresentacao/                            apresentação final (PNV3425_Apresentação_Final_G2_V2.pdf e .pptx)
 ```
 
 ## Como rodar
@@ -73,15 +75,24 @@ Variáveis de ambiente opcionais dos dois modelos: `OUT_DIR`, `HD`, `HM`, `INCLU
 `LASTRO_MIN_FRAC`, `PASSO_W`, `N_AMOSTRAS`, `N_EPSILON`, `N_PROCESSOS`, `REAPROVEITAR` e
 `MOSTRAR_GRAFICOS` (descritas no cabeçalho de cada código).
 
-## Compilar os relatórios
+## Relatório
 
-Os relatórios usam `fontspec` e devem ser compilados com XeLaTeX ou
-[Tectonic](https://tectonic-typesetting.github.io/), a partir da pasta `relatorio/` de cada
-versão (as figuras são lidas das pastas de resultados):
+Um único relatório cobre as duas versões, na sequência da apresentação final: dados do campo,
+modelo paramétrico (teoria e equações de cada etapa), validação, procedimento de otimização,
+fronteira de Pareto, escolha da solução, três cenários, plataformas reais, solução final,
+sensibilidade, condição de 10% de lastro, discussão das hipóteses e conclusões. O Apêndice A traz
+a implementação: funções × equações, desempenho, trechos do código real com a numeração de
+linhas original e o *diff* entre as duas versões. O Apêndice B traz as duas fronteiras de Pareto
+completas.
+
+O relatório usa `fontspec` e deve ser compilado com XeLaTeX ou
+[Tectonic](https://tectonic-typesetting.github.io/), dentro da pasta `relatorio/` (as figuras são
+lidas das pastas de resultados das duas versões):
 
 ```bash
-cd caso_base/relatorio && tectonic relatorio.tex
-cd condicao_10pct_lastro/relatorio && tectonic relatorio_condicao_10pct_lastro.tex
+cd condicao_10pct_lastro && python codigo/analises_condicao_10pct_lastro.py   # tabelas da Seção 12
+cd ../relatorio && python gerar_trechos.py                                    # trechos do Apêndice A
+tectonic relatorio.tex
 ```
 
 No Overleaf, envie o repositório inteiro e selecione o compilador XeLaTeX.

@@ -11,7 +11,8 @@ e da versão caso-base (lê ../caso_base/resultados/). Gera:
     13_poster2011.png ................... solução escolhida x frota do pôster
     restricoes_ativas_fronteira.csv, comparacao_base_x_lastro10.csv,
     custo_marginal.csv, poster2011_resumo.csv
-  relatorio/tabelas/*.tex ............... tabelas do relatório desta versão
+  ../relatorio/tabelas_lastro10/*.tex ... tabelas do capítulo de 10% de lastro
+                                          do relatório único (raiz do repositório)
 
 Uso (na pasta condicao_10pct_lastro/):
     python codigo/analises_condicao_10pct_lastro.py
@@ -34,7 +35,7 @@ sys.path.insert(0, os.path.join(RAIZ, "codigo"))
 import pnv3425_grupo02_condicao_10pct_lastro as m  # noqa: E402
 
 OUT = os.path.join(RES, "complementar")
-TEX = os.path.join(RAIZ, "relatorio", "tabelas")
+TEX = os.path.join(RAIZ, "..", "relatorio", "tabelas_lastro10")   # relatório único
 os.makedirs(OUT, exist_ok=True)
 os.makedirs(TEX, exist_ok=True)
 DIM = ["Lp [m]", "bp [m]", "hp [m]", "bc [m]", "hc [m]", "T [m]"]
