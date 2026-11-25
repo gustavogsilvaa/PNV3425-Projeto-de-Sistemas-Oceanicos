@@ -11,12 +11,28 @@
 % =============================================================================
 \documentclass[11pt,a4paper]{article}
 
+% ---- Fontes: Pagella (texto), Heros (títulos), DejaVu Sans Mono (código) -----
+\usepackage{amsmath}
+\usepackage{newpxmath}
 \usepackage{fontspec}
+\setmainfont{texgyrepagella}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,
+  ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+\setsansfont{texgyreheros}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,
+  ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
 \setmonofont{DejaVuSansMono.ttf}[Scale=MatchLowercase,BoldFont=DejaVuSansMono-Bold.ttf]
 \usepackage[brazil]{babel}
-\usepackage[a4paper,margin=2.3cm]{geometry}
-\usepackage{amsmath,amssymb}
+\usepackage{microtype}
 \usepackage{icomma}
+
+% ---- Página --------------------------------------------------------------------
+\usepackage[a4paper,top=2.8cm,bottom=2.6cm,left=2.8cm,right=2.4cm,headheight=14pt]{geometry}
+\linespread{1.08}
+\setlength{\parindent}{1.2em}
+\setlength{\parskip}{0.35em}
+\setlength{\emergencystretch}{2em}
+\clubpenalty=10000 \widowpenalty=10000 \displaywidowpenalty=10000
+
+% ---- Pacotes gerais --------------------------------------------------------------
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
@@ -30,15 +46,68 @@
 \usepackage{enumitem}
 \usepackage{needspace}
 \usepackage{fvextra}
-\usepackage[hidelinks]{hyperref}
+\usepackage{etoolbox}
+\usepackage{placeins}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[most]{tcolorbox}
 
-\captionsetup{font=small,labelfont=bf}
-% Caminhos de arquivo com quebra de linha em / e _
+% ---- Cores da apresentação ---------------------------------------------------
+\definecolor{azul}{HTML}{0B2E40}
+\definecolor{azulmedio}{HTML}{2E75B6}
+\definecolor{laranja}{HTML}{E36C1E}
+\definecolor{cinza}{HTML}{5A6B78}
+
+\usepackage[colorlinks=true,linkcolor=azul,citecolor=laranja!80!black,urlcolor=azulmedio,
+  bookmarksnumbered=true]{hyperref}
+
+% ---- Títulos: cada seção começa em página nova -------------------------------
+\titleformat{\section}{\sffamily\LARGE\bfseries\color{azul}}{\thesection}{0.7em}{}
+  [{\vspace{2pt}\color{laranja}\titlerule[1.2pt]}]
+\titleformat{\subsection}{\sffamily\large\bfseries\color{azul}}{\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}{\sffamily\normalsize\bfseries\color{azul}}{\thesubsubsection}{0.7em}{}
+\titleformat{\paragraph}[runin]{\sffamily\normalsize\bfseries\color{azul}}{}{0pt}{}[.]
+\titlespacing*{\section}{0pt}{0pt}{1.4em}
+\titlespacing*{\subsection}{0pt}{1.6em}{0.6em}
+\titlespacing*{\subsubsection}{0pt}{1.2em}{0.4em}
+\titlespacing*{\paragraph}{0pt}{0.8em}{0.6em}
+\pretocmd{\section}{\clearpage}{}{}
+\pretocmd{\subsection}{\FloatBarrier}{}{}
+
+% ---- Cabeçalho e rodapé ----------------------------------------------------------
+\renewcommand{\sectionmark}[1]{\markboth{\thesection\quad #1}{}}
+\fancypagestyle{principal}{%
+  \fancyhf{}%
+  \fancyhead[L]{\small\sffamily\color{cinza}PNV3425 · Grupo 02}%
+  \fancyhead[R]{\small\sffamily\color{cinza}\nouppercase{\leftmark}}%
+  \fancyfoot[C]{\small\sffamily\color{cinza}\thepage}%
+  \renewcommand{\headrulewidth}{0.4pt}}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[C]{\small\sffamily\color{cinza}\thepage}%
+  \renewcommand{\headrulewidth}{0pt}}
+
+% ---- Legendas, listas e tabelas -------------------------------------------------
+\captionsetup{font=small,labelfont={bf,color=azul},labelsep=period,margin=0.5cm}
+\captionsetup[table]{skip=6pt}
+\setlist{itemsep=3pt,topsep=5pt,leftmargin=1.6em}
+\renewcommand{\arraystretch}{1.18}
+\setlength{\abovetopsep}{2pt}
 \urlstyle{tt}
 \makeatletter\g@addto@macro\UrlBreaks{\do\_}\makeatother
-\setlist{itemsep=2pt,topsep=4pt}
-\renewcommand{\arraystretch}{1.12}
-\setlength{\parskip}{3pt}
+
+% ---- Caixas ---------------------------------------------------------------------------
+% nota de implementação, no fim de cada etapa do modelo
+\newtcolorbox{nocodigo}{enhanced,breakable,frame hidden,colback=azul!4,
+  borderline west={2.5pt}{0pt}{laranja},arc=0pt,left=8pt,right=8pt,top=4pt,bottom=4pt,
+  before skip=10pt,after skip=10pt,fontupper=\small}
+\newcommand{\notacodigo}[1]{\begin{nocodigo}\textbf{\sffamily\color{azul}No código.} #1\end{nocodigo}}
+% síntese dos resultados de uma seção
+\newtcolorbox{sintese}[1][Em resumo]{enhanced,breakable,frame hidden,colback=azulmedio!7,
+  borderline west={2.5pt}{0pt}{azul},arc=0pt,left=8pt,right=8pt,top=5pt,bottom=5pt,
+  before skip=12pt,after skip=10pt,
+  title={#1},coltitle=azul,fonttitle=\sffamily\bfseries,attach title to upper={\quad}}
+\newcommand{\lst}[1]{Listagem~\ref{lst:#1}, p.~\pageref{lst:#1}}
 
 % ---- Pastas de figuras (os dois casos têm arquivos com os mesmos nomes) -----
 \newcommand{\RB}{../caso_base/resultados}                         % caso-base
@@ -58,25 +127,23 @@
 
 % ---- Listagens de código (trechos copiados do código real) ------------------
 \DeclareCaptionType{codigo}[Listagem][Lista de listagens]
-\captionsetup[codigo]{justification=raggedright,singlelinecheck=false}
+\captionsetup[codigo]{justification=raggedright,singlelinecheck=false,margin=0pt}
 \fvset{fontsize=\footnotesize,numbers=left,numbersep=6pt,breaklines=true,
-       frame=leftline,framerule=0.6pt,rulecolor=\color{gray!55},xleftmargin=2.2em,
-       tabsize=4}
+       frame=leftline,framerule=0.8pt,rulecolor=\color{laranja!70},xleftmargin=2.4em,
+       tabsize=4,numberblanklines=true}
+\renewcommand{\theFancyVerbLine}{\sffamily\tiny\color{cinza}\arabic{FancyVerbLine}}
 \newcommand{\trechodef}[4]{%
   \expandafter\def\csname trArq#1\endcsname{#2}%
   \expandafter\def\csname trIni#1\endcsname{#3}%
   \expandafter\def\csname trFim#1\endcsname{#4}}
 \input{trechos/trechos.tex}
-\newcommand{\listagem}[2]{\par\needspace{9\baselineskip}%
+\newcommand{\listagem}[2]{\par\needspace{10\baselineskip}\medskip
   \captionof{codigo}[#2]{#2. Arquivo \texttt{\csname trArq#1\endcsname}, linhas
     \csname trIni#1\endcsname\ a \csname trFim#1\endcsname.}\label{lst:#1}%
   \VerbatimInput[firstnumber=\csname trIni#1\endcsname]{trechos/#1.py}\par\medskip}
-% Referência ao código no fim de cada seção de teoria
-\newcommand{\cod}[2]{\par\smallskip\noindent{\small\textbf{Código:} #1
-  (Listagem~\ref{lst:#2}, Apêndice~\ref{ap:codigo}).}\par}
 
-\newcommand{\integrantes}{Felipe Perpétuo Simões -- 11263255\\[2pt]
-  Gustavo Guilherme Silva -- 11820555\\[2pt]
+\newcommand{\integrantes}{Felipe Perpétuo Simões -- 11263255\\[3pt]
+  Gustavo Guilherme Silva -- 11820555\\[3pt]
   João Marcos Magalhães Moura -- 12554693}
 
 \begin{document}
@@ -85,69 +152,86 @@
 \hypersetup{pageanchor=false}
 \begin{titlepage}
 \centering
-{\large ESCOLA POLITÉCNICA DA UNIVERSIDADE DE SÃO PAULO\par}
-{\large Departamento de Engenharia Naval e Oceânica\par}
-\vspace{2.5cm}
-{\Large PNV3425 -- Projeto de Sistemas Oceânicos\par}
-{\large Trabalho Final -- 2º semestre de 2026\par}
-\vspace{1.2cm}
-{\LARGE\bfseries Projeto Paramétrico de uma Plataforma\\[4pt] Semissubmersível de Produção\par}
-\vspace{0.8cm}
+{\sffamily\large\color{azul} ESCOLA POLITÉCNICA DA UNIVERSIDADE DE SÃO PAULO\par}
+{\sffamily\color{cinza} Departamento de Engenharia Naval e Oceânica\par}
+\vspace{3cm}
+{\sffamily\Large PNV3425 -- Projeto de Sistemas Oceânicos\par}
+{\sffamily\color{cinza} Trabalho Final -- 2º semestre de 2026\par}
+\vspace{1.4cm}
+{\color{laranja}\rule{0.55\textwidth}{1.2pt}\par}
+\vspace{0.6cm}
+{\sffamily\LARGE\bfseries\color{azul} Projeto Paramétrico de uma Plataforma\\[6pt]
+Semissubmersível de Produção\par}
+\vspace{0.6cm}
+{\color{laranja}\rule{0.55\textwidth}{1.2pt}\par}
+\vspace{0.9cm}
 {\Large Bloco KZ-2026-B -- Bacia do Baixo Congo (Angola)\par}
-\vspace{0.5cm}
+\vspace{0.4cm}
 {\large Otimização multiobjetivo: peso estrutural do casco $\times$ altura significativa de
 \emph{heave}\par}
 \vspace{0.3cm}
-{\normalsize Caso-base e condição de 10\% de lastro\par}
-\vspace{2.2cm}
-{\large Grupo 02\par}
-\vspace{0.4cm}
-{\normalsize \integrantes\par}
+{\color{cinza} Caso-base e condição de 10\% de lastro\par}
 \vfill
-{\large São Paulo, novembro de 2026\par}
+{\sffamily\large\bfseries\color{azul} Grupo 02\par}
+\vspace{0.4cm}
+{\integrantes\par}
+\vspace{2cm}
+{\sffamily\color{cinza} São Paulo, novembro de 2026\par}
 \end{titlepage}
 \hypersetup{pageanchor=true}
 \pagenumbering{roman}
+\pagestyle{plain}
 
 % =============================================================================
-\begin{abstract}
-Este relatório documenta o projeto paramétrico de uma plataforma semissubmersível de produção
-para o bloco KZ-2026-B, em 1.450~m de lâmina d'água na bacia do Baixo Congo. A plataforma tem
-dois \emph{pontoons} retangulares e quatro colunas quadradas em planta quadrada de lado $L_p$, e
-é dimensionada para o pico de produção de óleo do campo, 158.894,48~bpd. Para cada conjunto de
-variáveis $(L_p, b_p, h_p, b_c, h_c, T)$, um modelo em Python calcula a hidrostática, os pesos e
-centros, a curva GZ por projeções 2D, o critério de áreas para o momento de vento
-(DNV-OS-C301 / Código MODU 2009), a resposta em \emph{heave} no mar de 100 anos
-($H_s = 5{,}6$~m, $T_p = 15{,}2$~s) e o \emph{air gap} mínimo. O modelo reproduz os resultados das
-aulas na plataforma dos Exercícios 7 a 10 com erros de 0,0\% a 3,7\% e o deslocamento de três
-semissubmersíveis reais com erro de até 10\%. A variação sistemática combina 20.000 amostras de
-hipercubo latino, soma ponderada e método $\varepsilon$-restrito com SLSQP e um filtro de não
-dominância. No caso-base, a fronteira de Pareto tem 25 pontos entre 10.346~t
-($\Hz = 2{,}37$~m) e 23.634~t ($\Hz = 1{,}04$~m). A solução escolhida, no joelho da fronteira,
-tem $L_p = 111{,}8$~m, $T = 24{,}0$~m, casco de 14.998~t, $\Hz = 1{,}55$~m, $T_n = 21{,}8$~s e
-$A/B = 1{,}303$; a partir dela, cada milímetro de \emph{heave} custa três vezes mais aço. Em todas
-as soluções ótimas o projeto é governado pela estabilidade, com $GM_T = 4$~m e $A/B = 1{,}30$
-ativos. A otimização foi repetida com lastro mínimo obrigatório de 10\% do volume dos
-\emph{pontoons}: a solução escolhida passa a ter 16.026~t de casco (+6,9\%) e 3.611~t de lastro,
-o KG cai 4,44~m, o \emph{heave} e o período natural praticamente não mudam e o deslocamento
-específico (285~t por mil bopd) chega ao nível da Troll C, a semissubmersível mais enxuta do
-pôster de 2011. Cada capítulo apresenta a teoria, a aplicação ao campo e a referência ao trecho
-de código correspondente, reunido no Apêndice~\ref{ap:codigo}.
-\end{abstract}
+\section*{Resumo}
+\addcontentsline{toc}{section}{Resumo}
 
+Este relatório documenta o projeto paramétrico de uma plataforma semissubmersível de produção
+para o bloco KZ-2026-B, situado em 1.450~m de lâmina d'água na bacia do Baixo Congo, em Angola.
+A plataforma tem dois \emph{pontoons} retangulares e quatro colunas quadradas em planta quadrada
+de lado $L_p$, e sua planta de processo é dimensionada para o pico de produção de óleo do campo,
+de 158.894,48~bpd.
+
+Para cada combinação das seis variáveis de projeto $(L_p, b_p, h_p, b_c, h_c, T)$, um modelo em
+Python calcula a hidrostática, os pesos e centros, a curva GZ por projeções 2D, o critério de
+áreas para o momento de vento (DNV-OS-C301 e Código MODU 2009), a resposta em \emph{heave} no mar
+de 100 anos ($H_s = 5{,}6$~m, $T_p = 15{,}2$~s) e o \emph{air gap} mínimo. O modelo reproduz os
+resultados das aulas na plataforma dos Exercícios 7 a 10 com erros entre 0,0\% e 3,7\% e o
+deslocamento de três semissubmersíveis reais com erro de até 10\%. A busca pelas melhores
+soluções combina 20.000 amostras de hipercubo latino, soma ponderada e método
+$\varepsilon$-restrito, ambos resolvidos com SLSQP, e um filtro de não dominância.
+
+No caso-base, a fronteira de Pareto tem 25 pontos, de 10.346~t ($\Hz = 2{,}37$~m) a 23.634~t
+($\Hz = 1{,}04$~m). A solução escolhida fica no joelho da fronteira, ponto a partir do qual cada
+milímetro de \emph{heave} passa a custar três vezes mais aço: tem $L_p = 111{,}8$~m,
+$T = 24{,}0$~m, casco de 14.998~t, $\Hz = 1{,}55$~m, $T_n = 21{,}8$~s e $A/B = 1{,}303$. Em todas
+as soluções ótimas o projeto é governado pela estabilidade, com $GM_T = 4$~m e $A/B = 1{,}30$
+ativos.
+
+Repetida com lastro mínimo obrigatório de 10\% do volume dos \emph{pontoons}, a otimização leva
+a uma solução com 16.026~t de casco (+6,9\%) e 3.611~t de lastro. O KG cai 4,44~m, o
+\emph{heave} e o período natural praticamente não mudam, e o deslocamento específico, de 285~t
+por mil bopd, chega ao nível da Troll C, a semissubmersível mais enxuta do pôster de 2011.
+
+\vspace{0.8em}
+\noindent\textbf{\sffamily\color{azul}Palavras-chave:} semissubmersível; projeto paramétrico;
+otimização multiobjetivo; fronteira de Pareto; estabilidade intacta; \emph{heave}; lastro.
+
+\clearpage
 \tableofcontents
-\newpage
+\clearpage
 \listoffigures
+\clearpage
 \listoftables
+\clearpage
 \listofcodigos
-\newpage
 
 % =============================================================================
 \section*{Lista de símbolos}
 \addcontentsline{toc}{section}{Lista de símbolos}
 
 {\small
-\begin{longtable}{>{$}l<{$}p{11.5cm}}
+\begin{longtable}{>{$}l<{$}p{11.6cm}}
 \toprule
 \text{Símbolo} & Significado [unidade] \\
 \midrule
@@ -193,42 +277,41 @@ V_{lastro},\ V_{pontoons} & volume de lastro e volume interno dos \emph{pontoons
 \addtocounter{table}{-1}
 
 % =============================================================================
-\newpage
+\clearpage
 \pagenumbering{arabic}
+\pagestyle{principal}
 \section{Introdução}\label{sec:intro}
 
-A Kwanza Offshore Energy adquiriu por 22 anos o direito de exploração do bloco KZ-2026-B, em
-águas profundas da bacia do Baixo Congo, ao largo de Angola. O objetivo deste trabalho é
-dimensionar a plataforma semissubmersível de produção de óleo do campo pelo método paramétrico
-desenvolvido nos Exercícios 7 a 10 da disciplina e escolher, de forma justificada, uma solução
-final. O método segue as referências do enunciado~\cite{chakrabarti,goncalves,brotzman,gallala,dsouza,poster}.
+A Kwanza Offshore Energy adquiriu, por 22 anos, o direito de exploração do bloco KZ-2026-B, em
+águas profundas da bacia do Baixo Congo, ao largo de Angola. Este trabalho dimensiona a
+plataforma semissubmersível de produção de óleo do campo pelo método paramétrico desenvolvido
+nos Exercícios 7 a 10 da disciplina e escolhe, de forma justificada, uma solução final. O método
+segue as referências do enunciado~\cite{chakrabarti,goncalves,brotzman,gallala,dsouza,poster}.
 
-O projeto tem dois objetivos: o menor peso estrutural do casco e o menor movimento significativo
-de \emph{heave}. Eles são conflitantes. Para reduzir o \emph{heave} é preciso afundar os
-\emph{pontoons}, o que pede calado maior e colunas mais altas, e o casco fica mais pesado. Por
-isso o resultado é uma fronteira de Pareto no plano peso $\times$ $\Hz$, e a solução final é
-escolhida sobre ela.
+O projeto persegue dois objetivos ao mesmo tempo: o menor peso estrutural do casco e o menor
+movimento significativo de \emph{heave}. Os dois são conflitantes, porque reduzir o \emph{heave}
+exige afundar os \emph{pontoons}, o que pede calado maior e colunas mais altas e, portanto, um
+casco mais pesado. Não existe, assim, uma única plataforma ótima, e sim um conjunto de soluções
+de compromisso, a fronteira de Pareto no plano peso $\times$ $\Hz$. A solução final é escolhida
+sobre essa fronteira.
 
-\paragraph{Duas versões do projeto.} O repositório do grupo tem duas versões, e este relatório
-cobre as duas:
-\begin{itemize}
-\item \textbf{caso-base} (pasta \path{caso_base/}): segue a letra do enunciado, que exige
-apenas lastro positivo. É tratado nas Seções~\ref{sec:dados} a~\ref{sec:sensibilidade};
-\item \textbf{condição de 10\% de lastro} (pasta \path{condicao_10pct_lastro/}): repete o
-projeto inteiro com a restrição adicional obrigatória $V_{lastro} \ge 0{,}10\,V_{pontoons}$. É
-tratada na Seção~\ref{sec:lastro}.
-\end{itemize}
-O modelo, os dados, os limites e os objetivos são os mesmos nas duas versões. O código da
-condição de 10\% difere do caso-base só nas linhas marcadas com \texttt{[LASTRO 10\%]}
-(Listagem~\ref{lst:diff}).
+O repositório do grupo guarda duas versões do projeto, e este relatório trata das duas. O
+\textbf{caso-base} (pasta \path{caso_base/}) segue a letra do enunciado, que exige apenas lastro
+positivo, e ocupa as Seções~\ref{sec:dados} a~\ref{sec:sensibilidade}. A \textbf{condição de 10\%
+de lastro} (pasta \path{condicao_10pct_lastro/}) repete o projeto inteiro com a restrição
+adicional $V_{lastro} \ge 0{,}10\,V_{pontoons}$ e é apresentada na Seção~\ref{sec:lastro}. Como o
+modelo, os dados, os limites e os objetivos são os mesmos, o código da segunda versão difere do
+primeiro apenas nas linhas marcadas com \texttt{[LASTRO 10\%]} (\lst{diff}).
 
-\paragraph{Organização.} A sequência do relatório é a da apresentação final do grupo. Cada
-seção apresenta a teoria usada, a aplicação ao campo (procedimento e resultados) e, como
-complemento, a referência ao trecho de código que implementa o cálculo. Os trechos são cópias
-exatas do código do repositório, com a numeração de linhas original, e estão reunidos no
-Apêndice~\ref{ap:codigo}. A Tabela~\ref{tab:mapa} relaciona os slides da apresentação às seções.
+A ordem do relatório acompanha a da apresentação final do grupo, como mostra a
+Tabela~\ref{tab:mapa}. Em cada etapa, o texto parte da teoria, segue para a aplicação ao campo,
+com o procedimento e os resultados, e termina com uma nota que indica o trecho de código que faz
+o cálculo. Esses trechos são cópias exatas do código do repositório, com a numeração de linhas
+original, e estão reunidos no Apêndice~\ref{ap:codigo}. Por fim, a Seção~\ref{sec:discussao}
+discute as hipóteses de entrada que o enunciado não fixa (BOE com ou sem gás, peso da planta,
+limites das variáveis e alturas do convés) e as limitações do modelo.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Correspondência entre a apresentação final e o relatório.}\label{tab:mapa}
 \small
@@ -252,16 +335,22 @@ Slide & Tema & Seção \\
 \end{tabular}
 \end{table}
 
-A Seção~\ref{sec:discussao} reúne a discussão das hipóteses de entrada que não constam de forma
-explícita no enunciado (BOE com ou sem gás, peso da planta, limites das variáveis e alturas do
-convés) e as limitações do modelo.
-
 % =============================================================================
 \section{O campo KZ-2026-B e os dados de projeto}\label{sec:dados}
 
+Antes de dimensionar a plataforma, é preciso traduzir os dados do campo em requisitos de
+projeto: a capacidade da planta, o mar e o vento de projeto e as correlações que ligam a
+produção ao peso e à área do convés. Esta seção reúne esses dados e as hipóteses adotadas onde o
+enunciado não é explícito.
+
 \subsection{Campo e reservatório}
 
-\begin{table}[H]
+O bloco fica a 190~km da costa, em 1.450~m de lâmina d'água e solo argiloso
+(Tabela~\ref{tab:campo}). O reservatório tem 2,2 bilhões de barris de óleo original, dos quais
+660 milhões são recuperáveis com o fator de recuperação de 30\%, além de 30 bilhões de m$^3$ de
+gás recuperável.
+
+\begin{table}[!htb]
 \centering
 \caption{Características do bloco KZ-2026-B.}\label{tab:campo}
 \begin{tabular}{ll}
@@ -284,30 +373,34 @@ Reservatório & topo a 2.700 m abaixo do leito, coluna de 120 m \\
 \subsection{Curva de produção e capacidade da planta}
 
 A capacidade de uma unidade de produção é definida pelo pico da curva de produção, porque a
-planta de processo precisa tratar a maior vazão diária ao longo da vida do campo. A curva do
-KZ-2026-B (Figura~\ref{fig:producao}) tem pico de 158.894,48~bpd entre os anos 5 e 7. A integral
-da curva dá 659 milhões de barris, coerente com a reserva recuperável de 660 milhões, o que
-confirma a leitura da curva. A planta é dimensionada por esse pico:
+planta de processo precisa tratar a maior vazão diária ao longo da vida do campo. No KZ-2026-B,
+esse pico é de 158.894,48~bpd e ocorre entre os anos 5 e 7 (Figura~\ref{fig:producao}). A
+integral da curva dá 659 milhões de barris, coerente com a reserva recuperável de 660 milhões, o
+que confirma a leitura da curva. A planta é, portanto, dimensionada para
 \begin{equation}
 \text{BOE} = 158.894{,}48~\text{boe/dia}, \qquad Q = \frac{\text{BOE}}{1000} = 158{,}894~\text{mil boe/dia}.
 \end{equation}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.7\textwidth]{\RBA/f_producao.png}
-\caption{Curva de produção de óleo do campo KZ-2026-B, com o pico dos anos 5 a 7.}\label{fig:producao}
+\includegraphics[width=0.66\textwidth]{\RBA/f_producao.png}
+\caption[Curva de produção de óleo do campo]{Curva de produção de óleo do campo KZ-2026-B, com o
+pico dos anos 5 a 7.}\label{fig:producao}
 \end{figure}
 
-\paragraph{Óleo ou óleo equivalente.} O enunciado fala em plataforma de produção de óleo e dá a
-curva de produção de óleo; o caso-base usa apenas essa produção. Se o gás também fosse
-processado a bordo, os 30 bilhões de m$^3$ equivaleriam a cerca de 183 milhões de boe (com
-5,8 mil pés$^3$ por boe, ou 164,2~m$^3$/boe), um acréscimo de 27,7\% sobre o óleo recuperável.
-Admitindo o mesmo perfil de produção, o pico passaria a 202,9 mil boe/dia. Esse caso entra como
-sensibilidade (Seção~\ref{sec:sensibilidade}) e é discutido na Seção~\ref{sec:disc-boe}.
+O enunciado fala em plataforma de produção de óleo e fornece a curva de produção de óleo, e por
+isso o caso-base usa apenas essa produção. Se o gás também fosse processado a bordo, os 30
+bilhões de m$^3$ equivaleriam a cerca de 183 milhões de boe (com 5,8 mil pés$^3$ por boe, ou
+164,2~m$^3$/boe), 27,7\% a mais que o óleo recuperável, e o pico passaria a 202,9 mil boe/dia se o
+gás seguisse o mesmo perfil de produção. Esse caso é tratado como sensibilidade na
+Seção~\ref{sec:sensibilidade}, e a escolha é discutida na Seção~\ref{sec:disc-boe}.
 
 \subsection{Condições ambientais}
 
-\begin{table}[H]
+A Tabela~\ref{tab:ambiente} resume as condições extremas do local. O projeto usa o mar de 100
+anos, com $H_s = 5{,}6$~m e $T_p = 15{,}2$~s.
+
+\begin{table}[!htb]
 \centering
 \caption{Condições ambientais extremas omnidirecionais do campo.}\label{tab:ambiente}
 \begin{tabular}{lccc}
@@ -321,52 +414,47 @@ Período de retorno & $H_s$ [m] & $T_p$ [s] & Vento [m/s] \\
 \end{tabular}
 \end{table}
 
-\paragraph{Mar de projeto.} O mar de projeto é o de 100 anos, $H_s = 5{,}6$~m e $T_p = 15{,}2$~s.
-A DNV-RP-C205~\cite{c205} recomenda escolher o fator de pico do JONSWAP pela razão
-$T_p/\sqrt{H_s}$: $\gamma = 5$ até 3,6, $\gamma = \exp(5{,}75 - 1{,}15\,T_p/\sqrt{H_s})$ entre 3,6 e
-5 e $\gamma = 1$ (Pierson-Moskowitz) acima de 5. Para o campo, $T_p/\sqrt{H_s} = 6{,}42$, o que
-levaria a $\gamma = 1$. O projeto adota $\gamma = 3{,}3$, valor usado na disciplina, e reporta
-também o resultado com $\gamma = 1$. Na solução final, $\gamma = 3{,}3$ dá o maior $\Hz$
-(1,552 contra 1,454~m).
+Para descrever esse mar, a DNV-RP-C205~\cite{c205} recomenda escolher o fator de pico do espectro
+JONSWAP pela razão $T_p/\sqrt{H_s}$: $\gamma = 5$ até 3,6, $\gamma = \exp(5{,}75 - 1{,}15\,
+T_p/\sqrt{H_s})$ entre 3,6 e 5 e $\gamma = 1$ (Pierson-Moskowitz) acima de 5. Como no campo
+$T_p/\sqrt{H_s} = 6{,}42$, a recomendação levaria a $\gamma = 1$. O projeto adota o valor usado na
+disciplina, $\gamma = 3{,}3$, e informa também o resultado com $\gamma = 1$; na solução final, o
+primeiro dá o maior $\Hz$ (1,552 contra 1,454~m).
 
-\paragraph{Vento.} O critério de estabilidade usa as velocidades do Código MODU~\cite{modu}:
-51,5~m/s (tempestade severa, 100 nós) e 36~m/s (operação normal, 70 nós). Elas ficam muito acima
-do vento de 100 anos do local, 24~m/s. Como o momento de vento cresce com $V^2$, o vento de
-100 anos produziria só $(24/51{,}5)^2 = 22\%$ do momento de tempestade, e a verificação é
-conservadora para o campo.
-
-\paragraph{Corrente.} O perfil de corrente (0,95~m/s na superfície) não entra no projeto
-paramétrico, que não inclui a análise de ancoragem nem o \emph{offset} da plataforma.
+O vento entra no projeto apenas pelo critério de estabilidade, que usa as velocidades do Código
+MODU~\cite{modu}: 51,5~m/s para tempestade severa (100 nós) e 36~m/s para operação normal
+(70 nós). Ambas ficam bem acima do vento de 100 anos do local, de 24~m/s. Como o momento de vento
+cresce com $V^2$, o vento local produziria só $(24/51{,}5)^2 = 22\%$ do momento de tempestade, de
+modo que a verificação é conservadora para o campo. Já a corrente, de 0,95~m/s na superfície, não
+entra no projeto paramétrico, que não inclui a ancoragem nem o \emph{offset} da plataforma.
 
 \subsection{Dados fixos e correlações da disciplina}\label{sec:fixos}
 
-\paragraph{Área de convés.} A correlação da disciplina relaciona a área de convés necessária à
-produção:
+Três correlações ligam a produção às dimensões e aos pesos da plataforma. A primeira dá a área de
+convés necessária,
 \begin{equation}
 A_{conv,\text{mín}} = 42{,}246\,Q + 4850{,}1 = 11.562{,}8~\text{m}^2
-\quad\Rightarrow\quad L_p \ge \sqrt{11.562{,}8} = 107{,}53~\text{m}.
+\quad\Rightarrow\quad L_p \ge \sqrt{11.562{,}8} = 107{,}53~\text{m},
 \end{equation}
-Esse é o único limite do domínio que sai diretamente dos dados do campo (Seção~\ref{sec:dominio}).
+que é o único limite do domínio tirado diretamente dos dados do campo
+(Seção~\ref{sec:dominio}). A segunda dá o peso da planta de produção, 0,083~t por boe/dia de
+capacidade (83~kg/boe), ou seja, 13.188~t. A estrutura do convés e a carga operacional valem,
+cada uma, 35\% desse peso (4.616~t), e o \emph{topside} soma 22.420~t. O valor de 83~kg/boe vem
+do código original do grupo; a Seção~\ref{sec:disc-planta} mostra que ele reproduz o KG da
+plataforma de referência das aulas e a mediana de \emph{topside} das semissubmersíveis reais. A
+terceira correlação atribui aos \emph{risers} e à amarração 4\% e 3\% do deslocamento, aplicados
+no fundo do convés.
 
-\paragraph{\emph{Topside}.} A planta de produção pesa $0{,}083$~t por boe/dia de capacidade
-(83~kg/boe), ou seja, 13.188~t. A estrutura do convés e a carga operacional valem, cada uma,
-35\% do peso da planta (4.616~t), e o \emph{topside} soma 22.420~t. O valor de 83~kg/boe vem do
-código original do grupo; a Seção~\ref{sec:disc-planta} mostra que ele reproduz o KG da
-plataforma de referência das aulas e a mediana do peso de \emph{topside} das semissubmersíveis
-reais do pôster de 2011.
+Faltam ainda as alturas do \emph{deck box} ($h_d$) e dos módulos ($h_m$), que o enunciado não
+fornece e que foram estimadas por semelhantes. No pôster de 2011~\cite{poster}, a Independence Hub
+tem convés de 140 × 220 × 36~pés, isto é, 11~m de altura para dois níveis, e as unidades listadas
+têm de 1 a 3 níveis de convés. O valor adotado, $h_d = 8$~m, fica abaixo dessa referência; já
+$h_m = 12$~m não consta do pôster e é uma estimativa do grupo. Como os módulos respondem por cerca
+de 54\% do momento de vento das parcelas laterais na solução final, as duas alturas são objeto de
+análise de sensibilidade (Seção~\ref{sec:sens-hdhm}). A Tabela~\ref{tab:fixos} reúne todos os
+dados fixos.
 
-\paragraph{\emph{Risers} e amarração.} Valem 4\% e 3\% do deslocamento, aplicados no fundo do
-convés.
-
-\paragraph{Alturas do convés.} A altura do \emph{deck box} ($h_d$) e a altura média dos módulos
-($h_m$) não são dadas no enunciado e foram estimadas por semelhantes. No pôster de
-2011~\cite{poster}, a Independence Hub tem convés de 140 × 220 × 36~pés, ou seja, 11~m de altura
-para dois níveis, e as unidades listadas têm de 1 a 3 níveis de convés. O valor $h_d = 8$~m fica
-abaixo dessa referência; $h_m = 12$~m não consta do pôster e é uma estimativa do grupo. Como os
-módulos respondem por cerca de 54\% do momento $HM_0$ na solução final, as duas alturas são
-objeto da análise de sensibilidade (Seção~\ref{sec:sens-hdhm}).
-
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Dados fixos do projeto.}\label{tab:fixos}
 \begin{tabular}{llr}
@@ -390,43 +478,58 @@ Fator de pico do JONSWAP & $\gamma$ & 3,3 \\
 \end{tabular}
 \end{table}
 
-\cod{constantes do modelo, \texttt{Cenario} e \texttt{BOUNDS}}{dados}
+\notacodigo{os dados fixos, os coeficientes do Código MODU e as hipóteses parametrizadas estão na
+\lst{dados}; a classe \texttt{Cenario}, com a área mínima e a crista máxima, e o domínio
+\texttt{BOUNDS} estão na \lst{cenario}.}
 
 
 % =============================================================================
 \section{Modelo paramétrico}\label{sec:modelo}
 
+O modelo paramétrico transforma seis dimensões principais em todas as grandezas de que o projeto
+precisa para verificar as restrições e calcular os dois objetivos. Esta seção descreve a
+geometria, o domínio das variáveis e, em seguida, cada etapa do cálculo, na ordem em que o código
+as executa: hidrostática, pesos, estabilidade em grandes ângulos, vento, \emph{heave}, espectro de
+resposta e \emph{air gap}. Ao final, reúne as restrições, as correções feitas no modelo inicial do
+grupo e as hipóteses adotadas.
+
 \subsection{Geometria e variáveis de projeto}
 
 A plataforma tem dois \emph{pontoons} retangulares que correm na direção longitudinal $x$, com
 comprimento $L_p$, e quatro colunas quadradas nos cantos, centradas sobre os \emph{pontoons}. O
-convés é quadrado, de lado $L_p$. As seis variáveis de projeto são
+convés é quadrado, com o mesmo lado $L_p$. As seis variáveis de projeto,
 \begin{equation}
 x = (L_p,\ b_p,\ h_p,\ b_c,\ h_c,\ T),
 \end{equation}
-mostradas na Figura~\ref{fig:geometria}. Delas decorrem a distância entre os eixos dos
+aparecem na Figura~\ref{fig:geometria}. Delas decorrem a distância entre os eixos dos
 \emph{pontoons}, $d_p = L_p - b_p$, as coordenadas dos centros das colunas,
-$x_c = \pm(L_p - b_c)/2$ e $y_c = \pm(L_p - b_p)/2$, o calado nas colunas, $t_c = T - h_p$, e o
-\emph{air gap}, $a = h_p + h_c - T$. A geometria só é consistente se a linha d'água cortar as
-colunas, e por isso o modelo impõe $T - h_p \ge 1$~m (restrição geométrica adicional, que não
-fica ativa em nenhuma solução ótima).
+$x_c = \pm(L_p - b_c)/2$ e $y_c = \pm(L_p - b_p)/2$, o calado nas colunas, $t_c = T - h_p$, a área
+de convés, $L_p^2$, e o \emph{air gap}, $a = h_p + h_c - T$, que é a distância da linha d'água ao
+fundo do convés. A geometria só é consistente se a linha d'água cortar as colunas; por isso o
+modelo impõe também $T - h_p \ge 1$~m, restrição que não fica ativa em nenhuma solução ótima.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=0.85\textwidth]{\RBA/f_geometria_param.png}
-\caption{Geometria paramétrica: planta e vista lateral, com as seis variáveis de projeto, o
-\emph{air gap} $a$ e as alturas do \emph{deck box} e dos módulos. LA é a linha d'água de
-projeto.}\label{fig:geometria}
+\caption[Geometria paramétrica da plataforma]{Geometria paramétrica: planta e vista lateral, com
+as seis variáveis de projeto, o \emph{air gap} $a$ e as alturas do \emph{deck box} e dos módulos.
+LA é a linha d'água de projeto.}\label{fig:geometria}
 \end{figure}
 
 \subsection{Domínio das variáveis}\label{sec:dominio}
 
-A Tabela~\ref{tab:limites} mostra os limites adotados e, para comparação, a faixa das
-semissubmersíveis do pôster de 2011~\cite{poster} (Seção~\ref{sec:reais}).
+A Tabela~\ref{tab:limites} mostra os limites adotados ao lado da faixa das semissubmersíveis do
+pôster de 2011~\cite{poster}, apresentada na Seção~\ref{sec:reais}. O limite inferior de $L_p$ é
+a raiz quadrada da área mínima de convés. Os demais vêm do código original do grupo, já que o
+enunciado não fixa limites para as variáveis. Em todas as variáveis o domínio é mais amplo que a
+frota real e, portanto, não restringe a busca de forma artificial. O preço disso é que os
+extremos da fronteira de Pareto podem encostar nos limites e corresponder a cascos sem precedente
+na frota, efeito discutido na Seção~\ref{sec:disc-limites}.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Domínio das variáveis de projeto e faixa das semissubmersíveis do pôster de 2011.}\label{tab:limites}
+\caption[Domínio das variáveis de projeto]{Domínio das variáveis de projeto e faixa das
+semissubmersíveis do pôster de 2011.}\label{tab:limites}
 \begin{tabular}{lrr}
 \toprule
 Variável & Limite adotado & Faixa no pôster (mín.--máx.) \\
@@ -441,26 +544,20 @@ $T$ [m] & 12--40 & 20,4--32,0 \\
 \end{tabular}
 \end{table}
 
-O limite inferior de $L_p$ é a raiz quadrada da área mínima de convés. Os demais limites vêm do
-código original do grupo; o enunciado não fixa limites para as variáveis. O domínio adotado é
-mais amplo que a frota real em todas as variáveis, e portanto não restringe a busca de forma
-artificial. A consequência é que os extremos da fronteira de Pareto podem encostar nesses
-limites e corresponder a cascos sem precedente na frota. A Seção~\ref{sec:disc-limites} discute
-esse efeito.
-
 \subsection{Fluxo de cálculo}
 
-O modelo calcula, para cada $x$, as grandezas da Figura~\ref{fig:fluxo}; cada etapa usa as
-saídas da anterior. Uma avaliação completa leva cerca de 6~ms (0,7~ms sem a curva GZ e o
-critério de vento), o que permite a busca sistemática com dezenas de milhares de avaliações.
+Para cada $x$, o modelo percorre as etapas da Figura~\ref{fig:fluxo}, e cada uma usa as saídas da
+anterior. Uma avaliação completa leva cerca de 6~ms, dos quais só 0,7~ms correspondem às etapas
+que não dependem da curva GZ. Essa velocidade é o que torna viável a busca sistemática com dezenas
+de milhares de avaliações descrita na Seção~\ref{sec:procedimento}.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \begin{tikzpicture}[node distance=4mm and 6mm,
-  box/.style={draw,rounded corners,fill=blue!6,minimum width=5.4cm,minimum height=7mm,
+  box/.style={draw=azul!60,rounded corners,fill=azul!5,minimum width=5.4cm,minimum height=7mm,
               align=center,font=\small},
-  arr/.style={-Stealth,thick}]
-  \node[box,fill=orange!15] (x) {Variáveis $x = (L_p, b_p, h_p, b_c, h_c, T)$};
+  arr/.style={-Stealth,thick,azul!70}]
+  \node[box,fill=laranja!15] (x) {Variáveis $x = (L_p, b_p, h_p, b_c, h_c, T)$};
   \node[box,below=of x] (h) {1. Hidrostática: $\nabla$, $\Delta$, KB, BM, KM};
   \node[box,below=of h] (p) {2. Pesos e centros: $\Wc$, $W_{lastro}$, KG, GM};
   \node[box,below=of p] (c) {3. Convés e \emph{air gap}: $L_p^2$, $a$};
@@ -469,8 +566,8 @@ critério de vento), o que permite a busca sistemática com dezenas de milhares 
   \node[box,right=12mm of h] (f) {6. \emph{Heave}: $F_3$, $A_{33}$, $C_{33}$, $T_n$, RAO};
   \node[box,below=of f] (s) {7. Espectro: $S_z$, $m_{0z}$, $\Hz$};
   \node[box,below=of s] (ag) {8. \emph{Air gap} mínimo: $\eta_{max}$, $z_{min}$, $\amin$};
-  \node[box,below=of ag,fill=red!10] (r) {Restrições e objetivos\\$\Wc$, $\Hz$};
-  \node[box,below=of r,fill=green!12] (o) {Otimização: LHS + soma ponderada\\+ $\varepsilon$-restrito $\to$ Pareto};
+  \node[box,below=of ag,fill=red!8] (r) {Restrições e objetivos\\$\Wc$, $\Hz$};
+  \node[box,below=of r,fill=green!10] (o) {Otimização: LHS + soma ponderada\\+ $\varepsilon$-restrito $\to$ Pareto};
   \draw[arr] (x)--(h); \draw[arr] (h)--(p); \draw[arr] (p)--(c); \draw[arr] (c)--(g);
   \draw[arr] (g)--(v); \draw[arr] (h.east)--(f.west); \draw[arr] (f)--(s); \draw[arr] (s)--(ag);
   \draw[arr] (ag)--(r); \draw[arr] (v.east)--(r.west); \draw[arr] (r)--(o);
@@ -478,47 +575,45 @@ critério de vento), o que permite a busca sistemática com dezenas de milhares 
 \caption{Fluxo de cálculo do modelo paramétrico.}\label{fig:fluxo}
 \end{figure}
 
-\cod{\texttt{avaliar()} encadeia as etapas e \texttt{tabela\_restricoes()} monta as restrições}{avaliar}
+\notacodigo{a função \texttt{avaliar()} encadeia as etapas e \texttt{tabela\_restricoes()} monta as
+restrições (\lst{avaliar}).}
 
 % -----------------------------------------------------------------------------
 \subsection{Hidrostática (Exercício 7)}\label{sec:hidro}
 
-\paragraph{Teoria.} Pelo princípio de Arquimedes, a plataforma em equilíbrio desloca uma massa de
-água igual ao seu peso. O centro de carena B é o centroide do volume submerso. Para pequenas
-inclinações, B se desloca sobre um arco de raio $BM = I/\nabla$, em que $I$ é o momento de
-inércia da área de linha d'água em relação ao eixo de inclinação, e o metacentro M fica a
-$KM = KB + BM$ da quilha. A estabilidade inicial é medida pela altura metacêntrica
-$GM = KM - KG$.
+Pelo princípio de Arquimedes, a plataforma em equilíbrio desloca uma massa de água igual ao seu
+peso, e o centro de carena B é o centroide do volume submerso. Em pequenas inclinações, B se
+desloca sobre um arco de raio $BM = I/\nabla$, em que $I$ é o momento de inércia da área de linha
+d'água em relação ao eixo de inclinação. O metacentro M fica, então, a $KM = KB + BM$ da quilha, e
+a estabilidade inicial é medida pela altura metacêntrica $GM = KM - KG$.
 
-\paragraph{Aplicação.} Com $t_c = T - h_p$, o volume é a soma dos \emph{pontoons} inteiramente
-submersos e do trecho submerso das colunas:
+Na semissubmersível, os \emph{pontoons} ficam inteiramente submersos e as colunas, submersas até
+o calado $t_c = T - h_p$. O volume deslocado e a altura do centro de carena são
 \begin{gather}
 \nabla = 2 L_p b_p h_p + 4 b_c^2 t_c, \qquad \Delta = \rho \nabla, \\
 KB = \frac{2 L_p b_p h_p \, (h_p/2) + 4 b_c^2 t_c \, (h_p + t_c/2)}{\nabla} .
 \end{gather}
-A linha d'água corta só as quatro colunas, de modo que $A_{wp} = 4b_c^2$. Pelo teorema dos eixos
-paralelos,
+Como a linha d'água corta só as quatro colunas, $A_{wp} = 4b_c^2$, e o teorema dos eixos paralelos
+dá
 \begin{equation}
 I_T = 4\left(\frac{b_c^4}{12} + b_c^2 y_c^2\right), \quad
 I_L = 4\left(\frac{b_c^4}{12} + b_c^2 x_c^2\right), \quad
 BM_{T,L} = \frac{I_{T,L}}{\nabla}, \quad KM_{T,L} = KB + BM_{T,L} .
 \end{equation}
-O termo $b_c^2 y_c^2$ domina $I_T$: a estabilidade inicial de uma semissubmersível vem do
-afastamento entre as colunas, e não da área de cada uma. Na solução final, $I_T = 1{,}53\times
-10^6$~m$^4$ e $BM_T = 39{,}1$~m.
+Nessas expressões, o termo $b_c^2 y_c^2$ domina: a estabilidade inicial de uma semissubmersível
+vem do afastamento entre as colunas, e não da área de cada uma. Na solução final, por exemplo,
+$I_T = 1{,}53\times 10^6$~m$^4$ e $BM_T = 39{,}1$~m.
 
-\cod{\texttt{hidrostatica()}}{hidrostatica}
+\notacodigo{função \texttt{hidrostatica()} (\lst{hidrostatica}).}
 
 % -----------------------------------------------------------------------------
 \subsection{Pesos, centros e altura metacêntrica (Exercício 8)}\label{sec:pesos}
 
-\paragraph{Teoria.} O peso total da plataforma é a soma dos itens de peso, e o KG é a média das
+O peso total da plataforma é a soma dos itens da Tabela~\ref{tab:itenspeso}, e o KG é a média das
 alturas dos centros ponderada pelos pesos. O lastro fecha o balanço: é a parcela do deslocamento
 que não é ocupada por casco, \emph{topside}, \emph{risers} e amarração.
 
-\paragraph{Aplicação.} Os itens e seus centros estão na Tabela~\ref{tab:itenspeso}.
-
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Itens de peso e altura do centro (VCG, a partir da quilha).}\label{tab:itenspeso}
 \begin{tabular}{lll}
@@ -537,115 +632,106 @@ Lastro & $\Delta - \sum W$ & $n/2$ \\
 \end{tabular}
 \end{table}
 
-O peso estrutural dos \emph{pontoons} e das colunas é o peso específico estrutural aplicado ao
-volume envolvido. O primeiro objetivo do projeto é o peso estrutural do casco,
+O peso estrutural de \emph{pontoons} e colunas é o peso específico estrutural aplicado ao volume
+envolvido, e a soma das duas parcelas é o primeiro objetivo do projeto:
 \begin{equation}
 \Wc = W_{pontoons} + W_{colunas} = \gamma_e\left(2 L_p b_p h_p + 4 b_c^2 h_c\right).
 \end{equation}
-O lastro é água nos \emph{pontoons}, com nível de enchimento $n = V_{lastro}/(2 L_p b_p)$, e seu
-centro fica em $n/2$ e não em $h_p/2$. Pouco lastro fica muito perto da quilha, o que é
-relevante na condição de 10\% (Seção~\ref{sec:lastro}). Então
+O lastro é água nos \emph{pontoons}. Com nível de enchimento $n = V_{lastro}/(2 L_p b_p)$, seu
+centro fica em $n/2$, e não em $h_p/2$, de modo que pouco lastro fica muito perto da quilha. Esse
+detalhe pesa na condição de 10\% (Seção~\ref{sec:lastro}). Com todos os itens,
 \begin{equation}
 KG = \frac{\sum W_i z_i}{\Delta}, \qquad GM_{T,L} = KM_{T,L} - KG ,
 \end{equation}
-sem correção de superfície livre. O enunciado exige $1~\text{m} \le GM_T \le 4$~m. O limite
-inferior garante estabilidade inicial com margem; o superior evita uma plataforma rígida demais
+sem correção de superfície livre. O enunciado exige $1~\text{m} \le GM_T \le 4$~m: o limite
+inferior garante estabilidade inicial com margem, e o superior evita uma plataforma rígida demais
 em \emph{roll}, com período natural curto e acelerações altas no convés.
 
-\cod{\texttt{pesos()}}{pesos}
-
-\subsection{Convés e \emph{air gap} (Exercício 8)}
-
-A área de convés é $L_p^2$, que deve atender à área mínima da Seção~\ref{sec:fixos}. O
-\emph{air gap} é a distância da linha d'água ao fundo do convés, $a = h_p + h_c - T$, e é
-comparado ao \emph{air gap} mínimo da Seção~\ref{sec:airgap-teoria}.
+\notacodigo{função \texttt{pesos()} (\lst{pesos}).}
 
 % -----------------------------------------------------------------------------
 \subsection{Curva GZ pelo método de projeções 2D (Exercício 9)}\label{sec:gz-teoria}
 
-\paragraph{Teoria.} O GM só descreve a estabilidade em ângulos pequenos. Para ângulos maiores, a
-forma do volume submerso muda: na semissubmersível, o \emph{pontoon} do lado alto sai da água e o
-convés pode tocar a água no lado baixo. A estabilidade em grandes ângulos é descrita pelo braço
-de endireitamento $GZ(\varphi)$, a distância horizontal entre o centro de gravidade e o centro de
-carena na posição inclinada. A cada ângulo, o volume submerso deve continuar igual a $\nabla$, e
-a plataforma afunda ou sobe até que isso aconteça.
+O GM descreve a estabilidade apenas em ângulos pequenos. Em ângulos maiores, a forma do volume
+submerso muda: o \emph{pontoon} do lado alto sai da água, e o convés pode tocar a água do lado
+baixo. A estabilidade passa a ser descrita pelo braço de endireitamento $GZ(\varphi)$, a distância
+horizontal entre o centro de gravidade e o centro de carena na posição inclinada. Em cada ângulo,
+a plataforma afunda ou sobe até que o volume submerso volte a ser $\nabla$.
 
-\paragraph{Projeções 2D.} Em cada plano principal, a plataforma é representada por retângulos
-com espessura fora do plano:
-\begin{itemize}
-\item \textbf{plano transversal} (inclinação em torno de $x$): dois \emph{pontoons} de largura
-$b_p$ e espessura $L_p$, e duas colunas de largura $b_c$ e espessura $2b_c$ (as duas colunas de
-cada bordo, uma atrás da outra), centradas em $\pm y_c$;
-\item \textbf{plano longitudinal} (inclinação em torno de $y$): um retângulo $L_p \times h_p$ de
-espessura $2b_p$ (os dois \emph{pontoons} sobrepostos) e duas colunas de largura $b_c$ e
-espessura $2b_c$ nas extremidades.
-\end{itemize}
-Como todos os elementos são prismas na direção normal ao plano e a linha d'água inclinada não
-varia nessa direção, a projeção é exata para esta geometria de caixas. O volume do
-\emph{deck box} não é incluído.
+O Exercício 9 calcula essa curva projetando a plataforma em cada plano principal e representando-a
+por retângulos com espessura fora do plano. No plano transversal (inclinação em torno de $x$), há
+dois \emph{pontoons} de largura $b_p$ e espessura $L_p$ e duas colunas de largura $b_c$ e espessura
+$2b_c$, já que as duas colunas de cada bordo ficam uma atrás da outra, centradas em $\pm y_c$. No
+plano longitudinal (inclinação em torno de $y$), os dois \emph{pontoons} se sobrepõem em um único
+retângulo $L_p \times h_p$ de espessura $2b_p$, e as colunas, de largura $b_c$ e espessura $2b_c$,
+ficam nas extremidades. Como todos os elementos são prismas na direção normal ao plano e a linha
+d'água inclinada não varia nessa direção, a projeção é exata para esta geometria de caixas; o
+volume do \emph{deck box} não é incluído.
 
-\paragraph{Equilíbrio a volume constante.} No referencial do corpo, com $u$ a coordenada no plano
-e $z$ a altura sobre a quilha, a linha d'água inclinada é $z = \alpha + u\tan\varphi$. O
-parâmetro $\alpha$ é a raiz de
+No referencial do corpo, com $u$ a coordenada no plano e $z$ a altura sobre a quilha, a linha
+d'água inclinada é a reta $z = \alpha + u\tan\varphi$. Para cada ângulo, o parâmetro $\alpha$ é a
+raiz de
 \begin{equation}
 V(\alpha, \varphi) = \sum_i t_i\, A_i^{sub}(\alpha, \varphi) = \nabla ,
 \end{equation}
-em que $t_i$ é a espessura e $A_i^{sub}$ a área submersa do retângulo $i$. A área e os momentos de
-cada retângulo abaixo da reta são calculados de forma exata (trapézio mais retângulo). A raiz é
-obtida pelo método de Newton com a derivada exata
+em que $t_i$ é a espessura e $A_i^{sub}$ a área do retângulo $i$ abaixo da reta, calculada de forma
+exata, assim como os seus momentos. A raiz é obtida pelo método de Newton com a derivada exata
 \begin{equation}
 \frac{\partial V}{\partial \alpha} = \sum_i t_i\, \ell_i ,
 \end{equation}
 em que $\ell_i$ é o comprimento, na direção $u$, do trecho da linha d'água dentro do retângulo
-$i$: subir a reta de $d\alpha$ acrescenta uma faixa de área $\ell_i\,d\alpha$. Como $V(\alpha)$
-tem quinas quando a linha d'água passa por um canto, o Newton é protegido por um intervalo de
-bissecção (Seção~\ref{sec:cod-desempenho}). Com o centro de carena $(u_B, z_B)$ no referencial do
-corpo e G em $(0, KG)$:
+$i$: subir a reta de $d\alpha$ acrescenta uma faixa de área $\ell_i\,d\alpha$. Como $V(\alpha)$ tem
+quinas quando a linha d'água passa por um canto, o Newton é protegido por um intervalo de
+bissecção (Seção~\ref{sec:cod-desempenho}). Conhecido o centro de carena $(u_B, z_B)$ e com G em
+$(0, KG)$,
 \begin{equation}
 GZ(\varphi) = u_B \cos\varphi + (z_B - KG)\sin\varphi .
 \end{equation}
-Para $\varphi \to 0$, $dGZ/d\varphi \to GM$, o que é usado na validação
-(Seção~\ref{sec:validacao}).
+Quando $\varphi \to 0$, a inclinação $dGZ/d\varphi$ tende ao GM da hidrostática, propriedade usada
+na validação (Seção~\ref{sec:validacao}).
 
-\paragraph{Ângulo de alagamento.} O ângulo de alagamento $\phial$ é aquele em que o fundo do
-convés na borda da plataforma ($u = L_p/2$, $z = h_p + h_c$) toca a água:
+A curva vale até o ângulo de alagamento $\phial$, em que o fundo do convés na borda da plataforma
+($u = L_p/2$, $z = h_p + h_c$) toca a água:
 \begin{equation}
-h_p + h_c - \left(\alpha(\phial) + \tan\phial\,\frac{L_p}{2}\right) = 0 ,
+h_p + h_c - \left(\alpha(\phial) + \tan\phial\,\frac{L_p}{2}\right) = 0 .
 \end{equation}
-resolvido pelo método de Brent, com $\alpha(\varphi)$ recalculado a volume constante. Depois de
-$\phial$ a curva não tem significado físico, porque o modelo não inclui o volume do convés, e o
-critério de áreas só a usa até $\phial$.
+A equação é resolvida pelo método de Brent, com $\alpha(\varphi)$ recalculado a volume constante.
+Depois de $\phial$ a curva perde o significado físico, porque o modelo não inclui o volume do
+convés, e por isso o critério de áreas só a usa até esse ângulo.
 
-\cod{\texttt{caixas\_2d()} e \texttt{\_integrais\_submersas()}}{caixas}
-\cod{\texttt{equilibrio\_2d()} e \texttt{curva\_gz()}}{equilibrio}
-\cod{\texttt{angulo\_alagamento()}}{alagamento}
+\notacodigo{os retângulos da projeção e as integrais exatas estão em \texttt{caixas\_2d()} e
+\texttt{\_integrais\_submersas()} (\lst{caixas}); o equilíbrio a volume constante e a curva GZ,
+em \texttt{equilibrio\_2d()} e \texttt{curva\_gz()} (\lst{equilibrio}); o ângulo de alagamento, em
+\texttt{angulo\_alagamento()} (\lst{alagamento}).}
 
 % -----------------------------------------------------------------------------
 \subsection{Momento de vento e critério de áreas (Exercício 9)}\label{sec:vento-teoria}
 
-\paragraph{Teoria.} O vento empurra a parte emersa da plataforma, e a água reage sobre a parte
-submersa. As duas forças formam um binário cujo braço vai do centro de pressão do vento ao centro
-de resistência lateral, o centroide da silhueta submersa vista na direção do vento. O momento de
-emborcamento é comparado ao de endireitamento pelo critério de áreas da DNV-OS-C301~\cite{c301}
-e do Código MODU 2009~\cite{modu} para unidades estabilizadas por colunas: a área sob a curva de
-endireitamento até o segundo intercepto ou até o ângulo de alagamento, o que ocorrer antes, deve
-ser pelo menos 30\% maior que a área sob a curva do vento até o mesmo ângulo. Em termos de
-energia, o trabalho disponível para endireitar a plataforma deve superar com folga o trabalho do
-vento, o que dá reserva contra rajadas e contra o balanço da plataforma.
+O vento empurra a parte emersa da plataforma, e a água reage sobre a parte submersa. As duas
+forças formam um binário cujo braço vai do centro de pressão do vento ao centro de resistência
+lateral, o centroide da silhueta submersa vista na direção do vento. O critério de áreas da
+DNV-OS-C301~\cite{c301} e do Código MODU 2009~\cite{modu} para unidades estabilizadas por colunas
+compara os dois efeitos em termos de energia: a área sob a curva de endireitamento, até o segundo
+intercepto ou até o ângulo de alagamento, o que ocorrer antes, deve superar em pelo menos 30\% a
+área sob a curva do vento até o mesmo ângulo. A folga de 30\% cobre rajadas e o balanço da
+plataforma.
 
-\paragraph{Forças.} A pressão dinâmica é $q = \frac12 \rho_{ar} V^2$, e a força em cada parcela
-exposta é
+Para montar a curva do vento, o modelo calcula a pressão dinâmica $q = \frac12 \rho_{ar} V^2$ e a
+força em cada parcela exposta,
 \begin{equation}
-F_i = q\, C_s\, C_h\, A_i .
+F_i = q\, C_s\, C_h\, A_i ,
 \end{equation}
-Os coeficientes de forma são $C_s = 1{,}0$ para colunas, \emph{deck box} e face inferior do
-convés e $C_s = 1{,}1$ para os módulos agrupados; o coeficiente de altura $C_h$ vem da tabela do
-Código MODU 2009 em função da altura do centroide sobre a linha d'água (1,00 até 15,3~m; 1,10
-até 30,5~m; 1,20 até 46~m e assim por diante).
+com as parcelas da Tabela~\ref{tab:parcelas}. Os coeficientes de forma são $C_s = 1{,}0$ para
+colunas, \emph{deck box} e face inferior do convés e $C_s = 1{,}1$ para os módulos agrupados. O
+coeficiente de altura $C_h$ vem da tabela do Código MODU 2009 em função da altura do centroide
+sobre a linha d'água: 1,00 até 15,3~m, 1,10 até 30,5~m, 1,20 até 46~m e assim por diante. Seguindo
+o Exercício 9, as quatro colunas são consideradas expostas, sem efeito de sombra, e os módulos
+ocupam toda a largura $L_p$.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Parcelas de vento. As alturas $z_i$ são medidas a partir da linha d'água.}\label{tab:parcelas}
+\caption[Parcelas de vento]{Parcelas de vento. As alturas $z_i$ são medidas a partir da linha
+d'água.}\label{tab:parcelas}
 \begin{tabular}{llll}
 \toprule
 Parcela & Área exposta & $z_i$ & Momento \\
@@ -658,46 +744,45 @@ Face inferior do convés & $L_p^2$ & $a$ & $HM_{ud}$ \\
 \end{tabular}
 \end{table}
 
-Conforme o Exercício 9, as quatro colunas são consideradas expostas, sem efeito de sombra, e os
-módulos ocupam toda a largura $L_p$.
-
-\paragraph{Braços.} O centro de resistência lateral, medido a partir da quilha, depende do plano:
+O braço de cada parcela vai do seu centroide ao centro de resistência lateral, cuja altura sobre a
+quilha depende do plano:
 \begin{gather}
 z_{CLR,T} = \frac{L_p h_p \,(h_p/2) + 2 b_c t_c\,(h_p + t_c/2)}{L_p h_p + 2 b_c t_c}, \qquad
 z_{CLR,L} = \frac{2 b_p h_p \,(h_p/2) + 2 b_c t_c\,(h_p + t_c/2)}{2 b_p h_p + 2 b_c t_c}, \\
 b_i = z_i + (T - z_{CLR}), \qquad HM_0 = \sum_{\text{3 parcelas}} F_i b_i, \qquad HM_{ud} = F_{ud}\, b_{ud}.
 \end{gather}
 No plano transversal, a silhueta lateral dos \emph{pontoons} ($L_p h_p$) puxa o $z_{CLR}$ para
-baixo e alonga os braços; por isso esse plano tende a ser o crítico.
-
-\paragraph{Braço de emborcamento.} Ao inclinar, a área lateral projetada diminui com
-$\cos\varphi$ e a face inferior do convés passa a receber vento proporcionalmente a
-$\sin\varphi$:
+baixo e alonga os braços, e por isso esse plano tende a ser o crítico. Quando a plataforma inclina,
+a área lateral projetada diminui com $\cos\varphi$ e a face inferior do convés passa a receber
+vento proporcionalmente a $\sin\varphi$, o que dá o braço de emborcamento
 \begin{equation}
 HA(\varphi) = \frac{HM_0\cos\varphi + HM_{ud}\sin\varphi}{\Delta g} .
 \end{equation}
 
-\paragraph{Critério.} Com $\varphi$ em radianos e integração pela regra dos trapézios,
+O critério compara, então, as áreas sob as duas curvas, com $\varphi$ em radianos e integração
+pela regra dos trapézios:
 \begin{equation}
 A = \int_0^{\phial} GZ\, d\varphi, \qquad B = \int_0^{\phial} HA\, d\varphi, \qquad A \ge 1{,}3\,B .
 \end{equation}
-Os interceptos $\varphi_1$ (equilíbrio estático sob o vento) e $\varphi_2$ são as raízes de
-$GZ - HA$, por interpolação linear. A plataforma atende ao critério quando, nos quatro casos
-(2 planos $\times$ 2 velocidades), $A \ge 1{,}3B$ e $GZ > 0$ entre $0^\circ$ e $\varphi_2$, ou
-entre $0^\circ$ e $\phial$ se $\varphi_2$ não ocorre antes de $\phial$. A verificação de $GZ>0$ usa
-o indicador $\min(GZ/\sin\varphi)$, que não se anula artificialmente em $\varphi = 0$ e vale $GM$
-para ângulos pequenos. O código integra sempre até $\phial$. Em todas as soluções relatadas
-$\varphi_2 > \phial$, de modo que esse é o limite correto. Se $\varphi_2 < \phial$, o trecho a
-mais teria $GZ < HA$ e reduziria $A/B$, o que torna a escolha conservadora.
+Os interceptos $\varphi_1$, que é o equilíbrio estático sob o vento, e $\varphi_2$ são as raízes
+de $GZ - HA$, obtidas por interpolação linear. A plataforma atende ao critério quando, nos quatro
+casos (2 planos $\times$ 2 velocidades), vale $A \ge 1{,}3B$ e a GZ é positiva entre $0^\circ$ e
+$\varphi_2$, ou entre $0^\circ$ e $\phial$ se $\varphi_2$ não ocorre antes. Essa última
+verificação usa o indicador $\min(GZ/\sin\varphi)$, que não se anula artificialmente em
+$\varphi = 0$ e vale $GM$ para ângulos pequenos. O código integra sempre até $\phial$; como em
+todas as soluções relatadas $\varphi_2 > \phial$, esse é o limite correto, e, se fosse
+$\varphi_2 < \phial$, o trecho a mais teria $GZ < HA$ e reduziria $A/B$, o que torna a escolha
+conservadora.
 
-\cod{\texttt{z\_clr()} e \texttt{tabela\_vento()}}{vento}
-\cod{\texttt{criterio\_areas()} e \texttt{estabilidade()}}{criterio}
+\notacodigo{o centro de resistência lateral e as forças, braços e momentos por plano estão em
+\texttt{z\_clr()} e \texttt{tabela\_vento()} (\lst{vento}); o critério de áreas e o laço sobre os
+dois planos, em \texttt{criterio\_areas()} e \texttt{estabilidade()} (\lst{criterio}).}
 
 % -----------------------------------------------------------------------------
 \subsection{\emph{Heave} (Exercício 10)}\label{sec:heave-teoria}
 
-\paragraph{Equação do movimento.} Em ondas regulares de amplitude $\zeta_a$ e frequência $\omega$,
-o \emph{heave} $z(t)$ segue a equação linear de um grau de liberdade
+Em ondas regulares de amplitude $\zeta_a$ e frequência $\omega$, o \emph{heave} $z(t)$ segue a
+equação linear de um sistema de um grau de liberdade,
 \begin{equation}
 (\Delta + A_{33})\,\ddot z + B_{33}\,\dot z + C_{33}\,z = F_3\, e^{i\omega t} ,
 \end{equation}
@@ -706,42 +791,42 @@ $C_{33} = \rho g A_{wp}$. A frequência e o período naturais são
 \begin{equation}
 \omega_n = \sqrt{\frac{C_{33}}{\Delta + A_{33}}}, \qquad T_n = \frac{2\pi}{\omega_n} .
 \end{equation}
-Como $A_{wp}$ é pequena, $T_n$ é longo. O enunciado exige $T_n > 20$~s, acima do período de pico
-do mar ($T_p = 15{,}2$~s), para que a ressonância fique fora da faixa de maior energia.
+Como a área de linha d'água de uma semissubmersível é pequena, $T_n$ é longo. O enunciado exige
+$T_n > 20$~s, acima do período de pico do mar ($T_p = 15{,}2$~s), para manter a ressonância fora
+da faixa de maior energia das ondas.
 
-\paragraph{Massa adicional e amortecimento.} A massa adicional usa o coeficiente 2D de retângulo
-da DNV-RP-C205~\cite{c205}, $C_A(b_p/h_p)$, aplicado à seção circular de raio $b_p/2$ e ao
-comprimento livre dos \emph{pontoons} entre colunas, $l_d = L_p - 2b_c$:
+A massa adicional usa o coeficiente 2D de retângulo da DNV-RP-C205~\cite{c205}, $C_A(b_p/h_p)$,
+aplicado a uma seção circular de raio $b_p/2$ e ao comprimento livre dos \emph{pontoons} entre
+colunas, $l_d = L_p - 2b_c$. O amortecimento é uma fração $\xi = 0{,}05$ do crítico:
 \begin{equation}
 A_{33} = 2\, l_d\, C_A\, \rho\, \pi \left(\frac{b_p}{2}\right)^2, \qquad
-B_{33} = 2\xi\sqrt{C_{33}(\Delta + A_{33})}, \quad \xi = 0{,}05 .
+B_{33} = 2\xi\sqrt{C_{33}(\Delta + A_{33})} .
 \end{equation}
 
-\paragraph{Força de excitação.} Em águas profundas, a pressão dinâmica da onda não perturbada
-decai com a profundidade $d$ como $\rho g \zeta_a e^{-kd}$, com $k = \omega^2/g$. A força de
-Froude-Krylov é a integral dessa pressão nas superfícies horizontais molhadas: o fundo dos
-\emph{pontoons} (área $A_p = 2L_pb_p$, profundidade $T$, força para cima) e o topo dos
-\emph{pontoons} fora das colunas (área $A_p - A_{wp}$, profundidade $T - h_p$, força para baixo).
-Reagrupando, aparecem uma parcela ``das colunas'', $\rho g A_{wp} e^{-k(T-h_p)}$, positiva, e uma
-``dos \emph{pontoons}'', $-\rho g A_p (e^{-k(T-h_p)} - e^{-kT})$, negativa. A parcela de
-difração é a massa adicional multiplicada pela aceleração vertical da água no centro dos
-\emph{pontoons}, $-\omega^2\zeta_a e^{-k(T-h_p/2)}$ (aproximação de onda longa). Para ondas que
-se propagam na direção transversal $y$, os dois \emph{pontoons} e as colunas sobre eles estão em
-$y = \pm d_p/2$; as forças nos dois bordos ficam defasadas de $\pm k d_p/2$, e a soma ganha o
-fator $\cos(k d_p/2)$:
+A força de excitação tem duas origens. A primeira é a força de Froude-Krylov, a integral da
+pressão da onda não perturbada sobre as superfícies horizontais molhadas. Em águas profundas, essa
+pressão decai com a profundidade $d$ como $\rho g \zeta_a e^{-kd}$, com $k = \omega^2/g$. Ela atua
+para cima no fundo dos \emph{pontoons} (área $A_p = 2L_pb_p$, profundidade $T$) e para baixo no
+topo dos \emph{pontoons} fora das colunas (área $A_p - A_{wp}$, profundidade $T - h_p$).
+Reagrupando, surgem uma parcela ``das colunas'', $\rho g A_{wp} e^{-k(T-h_p)}$, positiva, e uma
+``dos \emph{pontoons}'', $-\rho g A_p (e^{-k(T-h_p)} - e^{-kT})$, negativa. A segunda origem é a
+difração, estimada pela massa adicional multiplicada pela aceleração vertical da água no centro
+dos \emph{pontoons}, $-\omega^2\zeta_a e^{-k(T-h_p/2)}$ (aproximação de onda longa). Para ondas
+que se propagam na direção transversal $y$, os dois bordos ficam em $y = \pm d_p/2$; suas forças
+se defasam de $\pm k d_p/2$, e a soma ganha o fator $\cos(k d_p/2)$:
 \begin{equation}
 \frac{F_3}{\zeta_a} = \cos\!\left(\frac{\omega^2 d_p}{2g}\right)\left[
 \rho g A_{wp} e^{-k(T-h_p)}
 - \rho g\, A_p \left(e^{-k(T-h_p)} - e^{-kT}\right)
 - A_{33}\,\omega^2 e^{-k(T-h_p/2)} \right].
 \end{equation}
-Para $\omega \to 0$, $F_3/\zeta_a \to \rho g A_{wp} = C_{33}$, e a plataforma acompanha a onda
-longa. Com $\omega$ crescente, a parcela das colunas decai devagar e as dos \emph{pontoons}
-crescem com $\omega^2$; em uma frequência de cancelamento $\omega_c$ elas se equilibram e
-$F_3 = 0$. Se $\omega_c$ fica perto de $\omega_n$, a ressonância é amortecida pela própria força
-de excitação. A Figura~\ref{fig:forcas} mostra as parcelas na solução final.
 
-\paragraph{RAO.} A resposta em regime permanente por amplitude de onda é
+Essa expressão explica o comportamento típico de uma semissubmersível. Para $\omega \to 0$,
+$F_3/\zeta_a \to \rho g A_{wp} = C_{33}$, e a plataforma acompanha a onda longa. À medida que
+$\omega$ cresce, a parcela das colunas decai devagar, enquanto as dos \emph{pontoons} crescem com
+$\omega^2$. Em uma frequência de cancelamento $\omega_c$, as parcelas se equilibram e $F_3 = 0$;
+se $\omega_c$ fica perto de $\omega_n$, a própria força de excitação amortece a ressonância. A
+resposta em regime permanente por amplitude de onda é, por fim,
 \begin{equation}
 RAO(\omega) = \frac{|F_3/\zeta_a|}{\left|C_{33} - (\Delta + A_{33})\omega^2 + i B_{33}\omega\right|} .
 \end{equation}
@@ -749,14 +834,14 @@ RAO(\omega) = \frac{|F_3/\zeta_a|}{\left|C_{33} - (\Delta + A_{33})\omega^2 + i 
 % -----------------------------------------------------------------------------
 \subsection{Espectro de resposta (Exercício 10)}\label{sec:espectro-teoria}
 
-\paragraph{Teoria.} O mar irregular é modelado como a soma de ondas regulares de fases aleatórias,
-descrita pelo espectro $S_\zeta(\omega)$. Como o sistema é linear, cada componente é
-multiplicada pelo RAO, e o espectro da resposta é $S_z = RAO^2 S_\zeta$. Para um processo de banda
-estreita, as amplitudes seguem a distribuição de Rayleigh e a altura significativa (média do
-terço maior) vale $4\sqrt{m_0}$.
+O mar irregular é modelado como uma soma de ondas regulares com fases aleatórias, descrita pelo
+espectro $S_\zeta(\omega)$. Como o sistema é linear, cada componente é multiplicada pelo RAO, e o
+espectro da resposta é $S_z = RAO^2 S_\zeta$. Para um processo de banda estreita, as amplitudes
+seguem a distribuição de Rayleigh, e a altura significativa, média do terço maior, vale
+$4\sqrt{m_0}$.
 
-\paragraph{Aplicação.} O espectro do mar é o JONSWAP da DNV-RP-C205~\cite{c205}, com
-$\omega_p = 2\pi/T_p$ e $\sigma = 0{,}07$ para $\omega \le \omega_p$ e 0,09 acima:
+No modelo, o espectro do mar é o JONSWAP da DNV-RP-C205~\cite{c205}, com $\omega_p = 2\pi/T_p$ e
+$\sigma = 0{,}07$ para $\omega \le \omega_p$ e 0,09 acima:
 \begin{equation}
 S_\zeta(\omega) = (1 - 0{,}287\ln\gamma)\,\frac{5}{16} H_s^2 \omega_p^4 \omega^{-5}
 \exp\!\left[-\frac54\left(\frac{\omega}{\omega_p}\right)^{-4}\right]
@@ -768,19 +853,20 @@ S_z(\omega) = RAO^2(\omega)\, S_\zeta(\omega), \qquad m_{0z} = \int_0^\infty S_z
 \end{equation}
 As integrais são feitas pela regra dos trapézios em 1.500 frequências entre 0,02 e 2,5~rad/s,
 malha fina o bastante para resolver o pico de ressonância. No pico do mar do campo,
-$\omega_p = 0{,}413$~rad/s, $k = 0{,}0174$~m$^{-1}$ e o comprimento de onda é de 361~m.
+$\omega_p = 0{,}413$~rad/s, $k = 0{,}0174$~m$^{-1}$ e o comprimento de onda é de 361~m, cerca de
+três vezes o lado da plataforma.
 
-\cod{\texttt{ca\_retangulo()}, \texttt{espectro\_mar()} e \texttt{heave()}}{heave}
+\notacodigo{o coeficiente de massa adicional, o espectro JONSWAP e o cálculo completo do \emph{heave}
+estão em \texttt{ca\_retangulo()}, \texttt{espectro\_mar()} e \texttt{heave()} (\lst{heave}).}
 
 % -----------------------------------------------------------------------------
 \subsection{\emph{Air gap} mínimo}\label{sec:airgap-teoria}
 
-\paragraph{Teoria.} Em um mar de 3 horas há cerca de 1.000 ondas. Para alturas com distribuição
-de Rayleigh, a maior altura mais provável em $N$ ondas é $H_{max} \approx H_s\sqrt{\ln N/2}$, o que
-dá $H_{max} \approx 1{,}86\,H_s$ para $N \approx 1.000$. Na teoria linear, a crista é metade da
-altura. O mesmo raciocínio vale para o \emph{heave}.
-
-\paragraph{Aplicação.}
+Um mar de 3 horas tem cerca de 1.000 ondas. Para alturas com distribuição de Rayleigh, a maior
+altura mais provável em $N$ ondas é $H_{max} \approx H_s\sqrt{\ln N/2}$, o que dá
+$H_{max} \approx 1{,}86\,H_s$ para $N \approx 1.000$, e, na teoria linear, a crista é metade da
+altura. O mesmo raciocínio vale para o \emph{heave}. O \emph{air gap} mínimo soma a crista máxima
+à descida máxima da plataforma:
 \begin{equation}
 \eta_{max} = \frac{1{,}86\, H_s}{2}, \qquad z_{min} = -\frac{1{,}86\,\Hz}{2}, \qquad
 \amin = \eta_{max} - z_{min}, \qquad a \ge \amin .
@@ -791,9 +877,12 @@ posição mais baixa da plataforma, o que ignora a fase dada pelo RAO e é conse
 % -----------------------------------------------------------------------------
 \subsection{Restrições}\label{sec:restricoes}
 
-\begin{table}[H]
+As grandezas das etapas anteriores alimentam as restrições da Tabela~\ref{tab:restricoes}, que
+definem o conjunto viável do problema de otimização.
+
+\begin{table}[!htb]
 \centering
-\caption{Restrições do problema de otimização (caso-base).}\label{tab:restricoes}
+\caption{Restrições do problema de otimização.}\label{tab:restricoes}
 \begin{tabular}{ll}
 \toprule
 Restrição & Expressão \\
@@ -807,28 +896,30 @@ Critério de áreas & $\min(A/B) \ge 1{,}3$ e $GZ > 0$, nos 4 casos \\
 \emph{Air gap} & $a \ge \amin$ \\
 Consistência geométrica (adicional) & $T - h_p \ge 1$ m \\
 \midrule
-Condição de 10\% de lastro (Seção~\ref{sec:lastro}) & $V_{lastro} \ge 0{,}10\, V_{pontoons}$ \\
+Só na condição de 10\% de lastro (Seção~\ref{sec:lastro}) & $V_{lastro} \ge 0{,}10\, V_{pontoons}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Cada restrição é escrita como $g_j(x) \ge 0$, normalizada por uma escala própria. Na otimização,
-todas recebem uma margem de $10^{-4}$, as estritas recebem mais $10^{-3}$ e o $A/B$ recebe mais
-0,005, porque a GZ é calculada com passo de $1^\circ$ durante a busca. A margem de lastro
-positivo faz o otimizador parar em 11~t de lastro, valor que aparece nas soluções sem lastro. Uma
-restrição é marcada como \emph{ativa} quando atende com folga menor que 1\% do limite.
+No código, cada restrição é escrita como $g_j(x) \ge 0$ e normalizada por uma escala própria.
+Durante a otimização, todas recebem uma margem de $10^{-4}$, as estritas recebem mais $10^{-3}$ e o
+$A/B$ recebe mais 0,005, porque a GZ é calculada com passo de $1^\circ$ durante a busca. A margem
+da restrição de lastro positivo faz o otimizador parar em 11~t de lastro, valor que aparece em
+todas as soluções sem lastro. Uma restrição é marcada como \emph{ativa} quando é atendida com folga
+menor que 1\% do limite.
 
 % -----------------------------------------------------------------------------
 \subsection{Revisão do modelo inicial do grupo}\label{sec:revisao}
 
-O código parte da versão inicial do grupo, que foi revisada antes da otimização. As mudanças estão
-marcadas no código com \texttt{[REV n]} (Tabela~\ref{tab:rev}).
+O código parte da versão inicial do grupo, revisada antes da otimização para alinhar o modelo aos
+Exercícios 9 e 10 e tornar a busca confiável. As mudanças estão marcadas no código com
+\texttt{[REV n]} e resumidas na Tabela~\ref{tab:rev}.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Itens da revisão do modelo inicial.}\label{tab:rev}
 \small
-\begin{tabular}{>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{7.4cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{7.4cm}}
 \toprule
 Item & Versão inicial & Versão final \\
 \midrule
@@ -855,42 +946,44 @@ Newton com salvaguarda, chute inicial no calado e tabelas só no relatório
 
 \subsection{Hipóteses e limitações do modelo}\label{sec:hipoteses}
 
-Além das hipóteses do enunciado, o modelo adota:
+Além das hipóteses do enunciado, o modelo adota as seguintes simplificações:
 \begin{enumerate}
-\item \textbf{Massa adicional:} $C_A$ de retângulo da DNV-RP-C205 em função de $b_p/h_p$ e
-comprimento livre $l_d = L_p - 2b_c$; a contribuição das colunas é desprezada.
-\item \textbf{Excitação em \emph{heave}:} ondas de través, com o fator $\cos(kd_p/2)$; Froude-Krylov
-com a pressão da onda não perturbada e difração pela aproximação de onda longa.
-\item \textbf{Espectro:} JONSWAP com $\gamma = 3{,}3$; o resultado com $\gamma = 1$ é reportado.
-\item \textbf{Vento:} quatro colunas sem sombra, braços até o $z_{CLR}$ de cada plano, módulos
-ocupando toda a largura $L_p$ e coeficientes $C_s$ e $C_h$ do Código MODU 2009.
-\item \textbf{Lastro:} no nível real de enchimento dos \emph{pontoons}, sem superfície livre.
-\item \textbf{GZ:} projeção 2D sem o volume do \emph{deck box}; sem acoplamento com o trim.
+\item a massa adicional usa o $C_A$ de retângulo da DNV-RP-C205, em função de $b_p/h_p$, e o
+comprimento livre $l_d = L_p - 2b_c$, desprezando a contribuição das colunas;
+\item a excitação em \emph{heave} considera ondas de través, com o fator $\cos(kd_p/2)$, a força de
+Froude-Krylov da onda não perturbada e a difração pela aproximação de onda longa;
+\item o espectro é o JONSWAP com $\gamma = 3{,}3$, e o resultado com $\gamma = 1$ é reportado;
+\item o vento atua sobre quatro colunas sem sombra, com braços até o $z_{CLR}$ de cada plano,
+módulos em toda a largura $L_p$ e coeficientes $C_s$ e $C_h$ do Código MODU 2009;
+\item o lastro fica no nível real de enchimento dos \emph{pontoons}, sem superfície livre;
+\item a GZ vem da projeção 2D, sem o volume do \emph{deck box} e sem acoplamento com o trim.
 \end{enumerate}
-Limitações do \emph{air gap}, conforme o enunciado: a coincidência entre crista máxima e posição
-mais baixa ignora a fase dada pelo RAO; \emph{roll} e \emph{pitch} são desprezados; efeitos não
-lineares (cristas mais altas que $H_{max}/2$, amplificação pelas colunas) não são considerados e
-seriam tratados pela DNVGL-OTG-13~\cite{otg13}. A Seção~\ref{sec:disc-limitacoes} discute o
-efeito dessas hipóteses nos resultados.
+O enunciado também limita o cálculo do \emph{air gap}: a coincidência entre crista máxima e posição
+mais baixa ignora a fase dada pelo RAO, \emph{roll} e \emph{pitch} são desprezados, e efeitos não
+lineares, como cristas acima de $H_{max}/2$ e a amplificação pelas colunas, ficam de fora; eles
+seriam tratados pela DNVGL-OTG-13~\cite{otg13}. A Seção~\ref{sec:disc-limitacoes} discute o efeito
+dessas simplificações nos resultados.
 
 
 % =============================================================================
 \section{Validação do modelo}\label{sec:validacao}
 
-A validação tem três partes: a comparação com os resultados das aulas na plataforma dos
-Exercícios 7 a 10, verificações internas de consistência e a aplicação do modelo a
+Antes de usar o modelo para otimizar, é preciso verificar se ele reproduz resultados conhecidos. A
+validação foi feita em três frentes: a comparação com os resultados das aulas na plataforma dos
+Exercícios 7 a 10, um conjunto de verificações internas de consistência e a aplicação do modelo a
 semissubmersíveis reais.
 
 \subsection{Plataforma dos Exercícios 7 a 10}
 
-O modelo foi aplicado à plataforma de referência ($L_p = 100$~m, $b_p = h_p = b_c = 15$~m,
-$h_c = 45$~m, $T = 30$~m), com BOE = 120.000, $H_s = 12{,}2$~m, $T_p = 14{,}6$~s e $h_m = 15$~m,
-valor do Exercício 9.
+A plataforma de referência tem $L_p = 100$~m, $b_p = h_p = b_c = 15$~m, $h_c = 45$~m e
+$T = 30$~m e foi avaliada com BOE = 120.000, $H_s = 12{,}2$~m, $T_p = 14{,}6$~s e $h_m = 15$~m,
+valor usado no Exercício 9. A Tabela~\ref{tab:valref} reúne os resultados do modelo, e a
+Tabela~\ref{tab:valaula} os compara com os valores obtidos em aula.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Resultados do modelo para a plataforma de referência.}\label{tab:valref}
-\begin{tabular}{lr@{\hspace{1.5cm}}lr}
+\begin{tabular}{lr@{\hspace{1.2cm}}lr}
 \toprule
 Grandeza & Modelo & Grandeza & Modelo \\
 \midrule
@@ -905,7 +998,7 @@ $W_{lastro}$ [t] & 15.748 & $a$ / $\amin$ [m] & 30,0 / 14,12 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Comparação com os resultados obtidos em aula.}\label{tab:valaula}
 \begin{tabular}{lrrr}
@@ -922,44 +1015,44 @@ $\eta_{max}$ [m] & 11,346 & 11,35 & 0,0\% \\
 \end{tabular}
 \end{table}
 
-Os erros vão de 0,0\% a 3,7\%. O pequeno desvio no KG vem de $h_d$: com $h_d = 7$~m o KG seria
-32,99~m, praticamente o da aula, mas o $A/B$ subiria para 2,42 e 2,39, afastando-se dos valores
-de aula. Com $h_d = 8$~m os dois resultados ficam dentro de 4\%, e esse valor foi mantido. As
-curvas GZ e HA estão na Figura~\ref{fig:valgz}.
+Os erros ficam entre 0,0\% e 3,7\%. O pequeno desvio no KG vem da altura do \emph{deck box}: com
+$h_d = 7$~m, o KG seria de 32,99~m, praticamente o da aula, mas o $A/B$ subiria para 2,42 e 2,39 e
+se afastaria dos valores de aula. Com $h_d = 8$~m os dois resultados ficam dentro de 4\%, e por
+isso esse valor foi mantido. As curvas GZ e HA da plataforma de referência estão na
+Figura~\ref{fig:valgz}.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RBA/f_gz_validacao.png}
-\caption{Validação: curvas GZ e HA da plataforma dos Exercícios 7 a 10 nos dois planos.}\label{fig:valgz}
+\caption[Validação: curvas GZ e HA da plataforma de referência]{Validação: curvas GZ e HA da
+plataforma dos Exercícios 7 a 10 nos dois planos.}\label{fig:valgz}
 \end{figure}
 
 \subsection{Verificações de consistência}
 
-\begin{itemize}
-\item a inclinação da curva GZ em $0^\circ$ é igual ao GM da hidrostática nos dois planos
-(5,825~m, erro nulo), o que confirma a coerência entre as projeções 2D e o Exercício 7;
-\item o RAO tende a 1,000 quando $\omega \to 0$: a plataforma acompanha a onda longa;
-\item o $H_s$ recuperado da integral do espectro é 12,21~m (erro de 0,1\%, devido à
-normalização aproximada $1 - 0{,}287\ln\gamma$);
-\item a soma dos pesos fecha com o deslocamento (erro nulo);
-\item a solução da linha d'água inclinada por Newton foi comparada à bissecção em 2.030
-geometrias, nos dois planos e de 0 a $85^\circ$: a diferença máxima em GZ foi de
-$1{,}2\times10^{-8}$~m.
-\end{itemize}
+Além da comparação com as aulas, cinco verificações internas confirmam que as etapas do modelo são
+coerentes entre si. A inclinação da curva GZ em $0^\circ$ é igual ao GM da hidrostática nos dois
+planos (5,825~m, erro nulo), o que mostra que as projeções 2D reproduzem o Exercício 7. O RAO tende
+a 1,000 quando $\omega \to 0$, como esperado para uma plataforma que acompanha a onda longa. O
+$H_s$ recuperado da integral do espectro é de 12,21~m, com erro de 0,1\% devido à normalização
+aproximada $1 - 0{,}287\ln\gamma$. A soma dos pesos fecha com o deslocamento, com erro nulo. Por
+fim, a linha d'água inclinada obtida por Newton foi comparada à de bissecção em 2.030 geometrias,
+nos dois planos e de 0 a $85^\circ$, com diferença máxima de $1{,}2\times10^{-8}$~m em GZ.
 
 \subsection{Semissubmersíveis reais do pôster de 2011}\label{sec:val-poster}
 
-O pôster \emph{2011 Worldwide Survey of Semi-FPSs and FPUs}~\cite{poster}, referência [6] do
-enunciado, traz dimensões de \emph{pontoons} e colunas, calado e deslocamento de unidades reais.
-Três delas têm a topologia do enunciado, dois \emph{pontoons} e quatro colunas. O modelo foi
-aplicado a elas com o comprimento do \emph{pontoon} como $L_p$, a largura e a altura do
-\emph{pontoon}, o lado da coluna e o calado máximo de operação, convertidos de pés para metros
-(Tabela~\ref{tab:valposter}).
+A terceira frente usa o pôster \emph{2011 Worldwide Survey of Semi-FPSs and FPUs}~\cite{poster},
+referência [6] do enunciado, que traz dimensões de \emph{pontoons} e colunas, calado e
+deslocamento de unidades reais. Três delas têm a topologia do enunciado, com dois \emph{pontoons}
+e quatro colunas. O modelo foi aplicado a elas usando o comprimento do \emph{pontoon} como $L_p$,
+a largura e a altura do \emph{pontoon}, o lado da coluna e o calado máximo de operação, convertidos
+de pés para metros (Tabela~\ref{tab:valposter}).
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Deslocamento calculado pelo modelo para semissubmersíveis reais de 2 \emph{pontoons} e
-4 colunas. Dimensões do pôster de 2011, em metros.}\label{tab:valposter}
+\caption[Validação do deslocamento com semissubmersíveis reais]{Deslocamento calculado pelo modelo
+para semissubmersíveis reais de 2 \emph{pontoons} e 4 colunas. Dimensões do pôster de 2011, em
+metros.}\label{tab:valposter}
 \small\setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{lrrrrrrrrr}
 \toprule
@@ -972,14 +1065,25 @@ P-20 (Brasil) & 80,5 & 15,9 & 7,6 & 12,8 & 20,4 & 25.983 & 28.524 & $+9{,}8$\% &
 \end{tabular}
 \end{table}
 
-O modelo de caixas retangulares reproduz o deslocamento real com erro de até 10\%, com sinais nos
-dois sentidos. As diferenças vêm de cantos arredondados, contraventamentos e do calado informado,
-que é o máximo de operação. O período natural calculado fica entre 18,7 e 22,3~s, na mesma faixa
-do critério $T_n > 20$~s. Essa validação se limita à hidrostática e ao período natural, porque o
+O modelo de caixas retangulares reproduz o deslocamento real com erro de até 10\%, com desvios
+nos dois sentidos, que vêm de cantos arredondados, contraventamentos e do calado informado, que é o
+máximo de operação. O período natural calculado fica entre 18,7 e 22,3~s, na mesma faixa do
+critério $T_n > 20$~s. Essa validação se limita à hidrostática e ao período natural, porque o
 pôster não traz dados de estabilidade nem de resposta.
+
+\begin{sintese}
+O modelo reproduz os resultados das aulas com erros de 0,0\% a 3,7\%, passa em todas as
+verificações internas e estima o deslocamento de semissubmersíveis reais com erro de até 10\%. Ele
+pode, portanto, ser usado com confiança na busca sistemática.
+\end{sintese}
 
 % =============================================================================
 \section{Procedimento de variação sistemática e otimização}\label{sec:procedimento}
+
+Com o modelo validado, o passo seguinte é explorar o domínio das variáveis e encontrar as
+soluções que melhor equilibram peso e \emph{heave}. Esta seção apresenta a formulação do problema
+e as quatro etapas do procedimento, sempre com a teoria do método seguida da forma como ele foi
+aplicado.
 
 \subsection{Formulação multiobjetivo}
 
@@ -988,20 +1092,24 @@ O problema é
 \min_{x}\ \big(\Wc(x),\ \Hz(x)\big) \quad \text{sujeito a} \quad g_j(x) \ge 0,\ j = 1,\ldots,m,
 \qquad x_{lo} \le x \le x_{hi} ,
 \end{equation}
-com as restrições da Tabela~\ref{tab:restricoes} e o domínio da Tabela~\ref{tab:limites}. Uma
-solução $x^a$ \emph{domina} $x^b$ se não é pior em nenhum objetivo e é melhor em pelo menos um:
-$\Wc^a \le \Wc^b$, $\Hz^a \le \Hz^b$, com uma das desigualdades estrita. As soluções viáveis que
-nenhuma outra domina formam a fronteira de Pareto. Sobre ela, reduzir um objetivo sempre piora o
-outro. O ponto utópico, com o menor peso e o menor $\Hz$ ao mesmo tempo, não é viável.
+com as restrições da Tabela~\ref{tab:restricoes} e o domínio da Tabela~\ref{tab:limites}. Diz-se
+que uma solução $x^a$ \emph{domina} outra, $x^b$, quando não é pior em nenhum objetivo e é melhor
+em pelo menos um, isto é, $\Wc^a \le \Wc^b$ e $\Hz^a \le \Hz^b$, com uma das desigualdades
+estrita. As soluções viáveis que nenhuma outra domina formam a fronteira de Pareto; sobre ela,
+reduzir um objetivo sempre piora o outro. O ponto utópico, com o menor peso e o menor $\Hz$ ao
+mesmo tempo, não é viável.
 
-O procedimento tem quatro etapas (Tabela~\ref{tab:etapas}): amostragem do domínio, soma
-ponderada, $\varepsilon$-restrito e filtro de não dominância.
+Para obter essa fronteira, o procedimento combina as quatro etapas da Tabela~\ref{tab:etapas}:
+uma amostragem ampla do domínio, que dá boas partidas; a soma ponderada e o
+$\varepsilon$-restrito, que levam essas partidas até a fronteira; e um filtro de não dominância,
+que separa os pontos ótimos.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Etapas da variação sistemática no caso-base. Tempos com 8 processos em paralelo.}\label{tab:etapas}
+\caption[Etapas da variação sistemática no caso-base]{Etapas da variação sistemática no
+caso-base. Tempos com 8 processos em paralelo.}\label{tab:etapas}
 \small
-\begin{tabular}{>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{3.6cm}r}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{6.1cm}>{\raggedright\arraybackslash}p{3.6cm}r}
 \toprule
 Etapa & O que faz & Resultado & Tempo \\
 \midrule
@@ -1021,141 +1129,148 @@ Rodada completa & validação, etapas 1 a 4, cenários e gráficos & & 241 s \\
 
 \subsection{Amostragem por hipercubo latino}
 
-\paragraph{Teoria.} No hipercubo latino (LHS, McKay \emph{et al.}~\cite{mckay}), o intervalo de cada variável é dividido em $n$
-faixas de mesma probabilidade, e cada faixa recebe exatamente uma amostra; as faixas das seis
-variáveis são combinadas por permutações aleatórias. Com o mesmo número de pontos, o LHS cobre as
-distribuições marginais melhor que a amostragem aleatória simples, porque não deixa faixas vazias
-nem concentra pontos.
+No hipercubo latino (LHS, McKay \emph{et al.}~\cite{mckay}), o intervalo de cada variável é
+dividido em $n$ faixas de mesma probabilidade, e cada faixa recebe exatamente uma amostra; as faixas
+das seis variáveis são combinadas por permutações aleatórias. Com o mesmo número de pontos, o LHS
+cobre as distribuições marginais melhor que a amostragem aleatória simples, porque não deixa faixas
+vazias nem concentra pontos.
 
-\paragraph{Aplicação.} Foram geradas 20.000 combinações (semente 2026). A avaliação é feita em
-dois estágios para economizar tempo: primeiro as restrições que não dependem da curva GZ (área,
-$GM_T$, $T_n$, lastro, $b_c \le b_p$, \emph{air gap} e imersão das colunas, 0,7~ms cada), e só as
-aprovadas passam pela curva GZ e pelo critério de áreas (6~ms). Das 20.000 amostras, 547 atendem
-ao primeiro estágio e só 227 (1,1\%) também ao critério de áreas. O critério de vento reprova
-sozinho 320 cascos e é a restrição mais seletiva. Os 227 cascos viáveis servem de pontos de
-partida para as etapas seguintes.
+Foram geradas 20.000 combinações, com semente 2026. Para economizar tempo, a avaliação é feita em
+dois estágios. Primeiro são verificadas as restrições que não dependem da curva GZ (área, $GM_T$,
+$T_n$, lastro, $b_c \le b_p$, \emph{air gap} e imersão das colunas), a 0,7~ms por amostra; só as
+aprovadas passam pela curva GZ e pelo critério de áreas, a 6~ms. Das 20.000 amostras, 547
+atendem ao primeiro estágio, mas só 227 (1,1\%) atendem também ao critério de áreas. O vento
+reprova sozinho 320 cascos e é, de longe, a restrição mais seletiva. Os 227 cascos viáveis servem
+de partida para as etapas seguintes.
 
-\cod{\texttt{variacao\_sistematica()} e \texttt{nao\_dominados()}}{lhs}
+\notacodigo{\texttt{variacao\_sistematica()} e \texttt{nao\_dominados()} (\lst{lhs}).}
 
 \subsection{Otimizador SLSQP}
 
-\paragraph{Teoria.} O SLSQP (\emph{Sequential Least Squares Programming}, Kraft~\cite{kraft})
-é um método de programação quadrática sequencial. A cada iteração, ele resolve um subproblema
-quadrático com uma aproximação quadrática do lagrangiano, cuja hessiana é atualizada pelo método
-BFGS, e com as restrições linearizadas; o passo é ajustado por busca linear em uma função de
-mérito. O método converge para um ponto que satisfaz as condições de Karush-Kuhn-Tucker, ou seja,
-para um ótimo local.
+As duas etapas de otimização usam o SLSQP (\emph{Sequential Least Squares Programming},
+Kraft~\cite{kraft}), um método de programação quadrática sequencial. A cada iteração, ele resolve um
+subproblema quadrático que aproxima o lagrangiano, com hessiana atualizada pelo método BFGS e
+restrições linearizadas, e ajusta o passo por busca linear em uma função de mérito. O método
+converge para um ponto que satisfaz as condições de Karush-Kuhn-Tucker, ou seja, para um ótimo
+local.
 
-\paragraph{Aplicação.} Foi usada a implementação do SciPy~\cite{scipy}, com até 200 iterações,
-$\texttt{ftol} = 10^{-8}$ e gradientes por diferenças finitas com passo $10^{-5}$. Como o método é
-local, cada problema parte de vários pontos (\emph{multi-start}) e o resultado de um peso serve de
-partida para o seguinte (continuação). Objetivo e restrições compartilham as avaliações por meio
-de um \emph{cache}. Durante a busca a GZ usa passo de $1^\circ$; ao final, todo ótimo é reavaliado
-com passo de $0{,}25^\circ$ e só é aceito se for viável. Um resultado com \texttt{success = False}
-(limite de iterações ou busca linear sem progresso) é aceito se for viável, porque o que importa
-para a fronteira é a viabilidade e o valor dos objetivos.
+Foi usada a implementação do SciPy~\cite{scipy}, com até 200 iterações, $\texttt{ftol} = 10^{-8}$
+e gradientes por diferenças finitas com passo de $10^{-5}$. Por ser um método local, cada problema
+parte de vários pontos (\emph{multi-start}), e o resultado de um peso serve de partida para o
+seguinte (continuação). Objetivo e restrições compartilham as avaliações por meio de um
+\emph{cache}. Durante a busca, a GZ usa passo de $1^\circ$; ao final, todo ótimo é reavaliado com
+passo de $0{,}25^\circ$ e só é aceito se continuar viável. Um resultado com
+\texttt{success = False}, que indica limite de iterações ou busca linear sem progresso, é aceito
+se for viável, porque o que importa para a fronteira é a viabilidade e o valor dos objetivos.
 
-\cod{\texttt{Problema} e \texttt{\_tarefa\_slsqp()}}{problema}
+\notacodigo{\emph{cache} do problema e partida do SLSQP em \texttt{Problema} e
+\texttt{\_tarefa\_slsqp()} (\lst{problema}).}
 
 \subsection{Soma ponderada}
 
-\paragraph{Teoria.} A soma ponderada transforma os dois objetivos em um só,
+A soma ponderada transforma os dois objetivos em um só,
 \begin{equation}
-F = w_1\, \Hz + w_2\, \frac{\Wc}{10.000~\text{t}}, \qquad w_1 + w_2 = 1 .
+F = w_1\, \Hz + w_2\, \frac{\Wc}{10.000~\text{t}}, \qquad w_1 + w_2 = 1 ,
 \end{equation}
-A divisão por 10.000~t deixa os dois termos na mesma ordem de grandeza (1 a 2,4). Variar $w_1$ de
-0 a 1 percorre a fronteira, mas só nos trechos convexos: o mínimo de $F$ é sempre um ponto do
-fecho convexo da fronteira, e um trecho côncavo não é atingido por nenhum peso. Os extremos
-$w_1 = 0$ e $w_1 = 1$ dão as soluções de mínimo peso e de mínimo \emph{heave}.
+em que a divisão por 10.000~t coloca os dois termos na mesma ordem de grandeza (1 a 2,4). Ao variar
+$w_1$ de 0 a 1, o mínimo de $F$ percorre a fronteira, mas apenas nos trechos convexos: esse mínimo é
+sempre um ponto do fecho convexo da fronteira, e um trecho côncavo não é atingido por nenhum peso.
+Os extremos $w_1 = 0$ e $w_1 = 1$ dão as soluções de mínimo peso e de mínimo \emph{heave}.
 
-\paragraph{Aplicação.} Para cada um dos 21 valores de $w_1$ (passo 0,05), o SLSQP parte das 5
-amostras do LHS com menor $F$ e do ótimo do $w_1$ anterior. As partidas rodam em paralelo. O
-mínimo peso obtido ($w_1 = 0$, 10.346~t) é 14,9\% mais leve que a melhor amostra viável do LHS.
-Sete dos 21 ótimos ($w_1$ = 0,05; 0,15; 0,25; 0,40; 0,50; 0,55 e 0,60) ficaram dominados por
-outros: a fronteira não é convexa e, nesses trechos, o SLSQP para em ótimos locais, vários com
-\texttt{success = False}.
+Para cada um dos 21 valores de $w_1$ (passo 0,05), o SLSQP partiu das 5 amostras do LHS com menor
+$F$ e do ótimo do $w_1$ anterior, com as partidas rodando em paralelo. O mínimo peso obtido, de
+10.346~t com $w_1 = 0$, é 14,9\% mais leve que a melhor amostra viável do LHS. Por outro lado,
+sete dos 21 ótimos ($w_1$ = 0,05; 0,15; 0,25; 0,40; 0,50; 0,55 e 0,60) ficaram dominados por
+outros. Isso mostra que a fronteira não é convexa: nesses trechos, o SLSQP para em ótimos locais,
+vários deles com \texttt{success = False}.
 
-\cod{\texttt{soma\_ponderada()}}{somapond}
+\notacodigo{\texttt{soma\_ponderada()} (\lst{somapond}).}
 
 \subsection{Método $\varepsilon$-restrito}
 
-\paragraph{Teoria.} O método $\varepsilon$-restrito (Haimes \emph{et al.}~\cite{haimes})
-minimiza um objetivo e transforma o outro em restrição:
+Para alcançar os trechos que a soma ponderada não atinge, o método $\varepsilon$-restrito (Haimes
+\emph{et al.}~\cite{haimes}) minimiza um objetivo e transforma o outro em restrição:
 \begin{equation}
 \min_x \Wc(x) \quad \text{sujeito a} \quad \Hz(x) \le \varepsilon \quad \text{e} \quad g_j(x) \ge 0 .
 \end{equation}
 Variando $\varepsilon$, qualquer ponto da fronteira pode ser obtido, inclusive nos trechos não
-convexos que a soma ponderada não alcança~\cite{miettinen}.
+convexos~\cite{miettinen}.
 
-\paragraph{Aplicação.} Foram usados 12 níveis de $\varepsilon$ igualmente espaçados entre o menor
-e o maior $\Hz$ da soma ponderada (1,0435 e 2,3664~m), excluídos os extremos; o passo é de
-0,102~m. Cada nível parte da solução conhecida mais leve com $\Hz \le \varepsilon$ e do ótimo da
-soma ponderada logo abaixo de $\varepsilon$. Os 12 níveis terminaram em pontos viáveis, com a
-restrição $\Hz \le \varepsilon$ ativa.
+Foram usados 12 níveis de $\varepsilon$ igualmente espaçados entre o menor e o maior $\Hz$ da soma
+ponderada (1,0435 e 2,3664~m), excluídos os extremos, com passo de 0,102~m. Cada nível partiu da
+solução conhecida mais leve com $\Hz \le \varepsilon$ e do ótimo da soma ponderada logo abaixo de
+$\varepsilon$. Os 12 níveis terminaram em pontos viáveis, todos com a restrição
+$\Hz \le \varepsilon$ ativa.
 
-\cod{\texttt{epsilon\_restrito()} e \texttt{ponto\_joelho()}}{epsilon}
+\notacodigo{\texttt{epsilon\_restrito()} e \texttt{ponto\_joelho()} (\lst{epsilon}).}
 
 \subsection{Filtro de não dominância}
 
 As 260 soluções viáveis (227 do LHS, 21 da soma ponderada e 12 do $\varepsilon$-restrito) são
 ordenadas por peso crescente, e cada uma é mantida se o seu $\Hz$ for menor que o menor $\Hz$ das
-anteriores (com tolerância relativa de $10^{-5}$). O algoritmo é $O(n\log n)$. Os candidatos do
-LHS que entram na fronteira são reavaliados com GZ a cada $0{,}25^\circ$; os que falham são
-descartados e o filtro é repetido. A fronteira final tem 25 pontos, 13 da soma ponderada e 12 do
-$\varepsilon$-restrito. Nenhuma amostra do LHS sobrevive, o que mostra o ganho da etapa de
-otimização.
+anteriores, com tolerância relativa de $10^{-5}$; o algoritmo é $O(n\log n)$. Os candidatos do LHS
+que entram na fronteira são reavaliados com GZ a cada $0{,}25^\circ$, e os que falham são
+descartados antes de repetir o filtro. A fronteira final tem 25 pontos, 13 da soma ponderada e 12
+do $\varepsilon$-restrito. Nenhuma amostra do LHS sobrevive, o que mostra o ganho da etapa de
+otimização sobre a amostragem.
 
-\cod{montagem da fronteira no bloco principal}{fronteira}
+\notacodigo{montagem da fronteira no bloco principal (\lst{fronteira}).}
 
 \subsection{Escolha do ponto de compromisso}\label{sec:joelho}
 
-Os dois objetivos são normalizados entre 0 e 1 ao longo da fronteira,
+Resta escolher uma solução sobre a fronteira. Para isso, os dois objetivos são normalizados entre
+0 e 1 ao longo da fronteira,
 \begin{equation}
 \hat W = \frac{\Wc - \Wc^{\text{mín}}}{\Wc^{\text{máx}} - \Wc^{\text{mín}}}, \qquad
 \hat H = \frac{\Hz - \Hz^{\text{mín}}}{\Hz^{\text{máx}} - \Hz^{\text{mín}}},
 \end{equation}
 e a solução intermediária é o ponto da fronteira mais próximo do ponto utópico $(0, 0)$, o
-\emph{joelho} da curva. A Seção~\ref{sec:escolha} justifica essa escolha pelo custo marginal de
-reduzir o \emph{heave}.
+\emph{joelho} da curva. A Seção~\ref{sec:escolha} mostra que essa escolha coincide com a mudança
+de patamar do custo marginal de reduzir o \emph{heave}.
 
 
 % =============================================================================
 \section{Conjunto viável e fronteira de Pareto}\label{sec:pareto}
 
+O procedimento da seção anterior produz dois resultados: o mapa do conjunto viável, que mostra
+onde estão as plataformas possíveis, e a fronteira de Pareto, que contém as melhores entre elas.
+Esta seção apresenta os dois e explica por que a fronteira tem a forma que tem.
+
 \subsection{Conjunto viável}
 
 A Figura~\ref{fig:pareto} mostra as 20.000 amostras no plano peso $\times$ $\Hz$, separadas em
-inviáveis, reprovadas só no critério de vento e viáveis, junto com os ótimos da soma ponderada e
-do $\varepsilon$-restrito e a fronteira de Pareto.
+inviáveis, reprovadas só no critério de vento e viáveis, junto com os ótimos da soma ponderada e do
+$\varepsilon$-restrito e a fronteira de Pareto.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=0.9\textwidth]{\RBA/f_pareto.png}
-\caption{Conjunto viável e fronteira de Pareto no plano peso estrutural $\times$ $\Hz$
-(caso-base).}\label{fig:pareto}
+\caption[Conjunto viável e fronteira de Pareto (caso-base)]{Conjunto viável e fronteira de Pareto
+no plano peso estrutural $\times$ $\Hz$ (caso-base).}\label{fig:pareto}
 \end{figure}
 
-Dois resultados aparecem na figura:
-\begin{itemize}
-\item \textbf{Gargalo do vento.} O critério de áreas reprova sozinho 320 dos 547 cascos que
-atendem às demais restrições. As amostras reprovadas só no vento (em laranja) ocupam a região de
-baixo peso, onde estaria a fronteira se não houvesse o critério.
-\item \textbf{Ganho do otimizador.} Nenhuma amostra do LHS sobrevive ao filtro de não dominância,
-e o SLSQP reduz o peso mínimo em 14,9\% em relação à melhor amostra viável. A amostragem serve
+A figura deixa claro que o vento é o gargalo do projeto. O critério de áreas reprova sozinho 320 dos
+547 cascos que atendem às demais restrições, e essas amostras, em laranja, ocupam justamente a
+região de baixo peso onde a fronteira estaria se não houvesse o critério. A figura também mostra o
+ganho do otimizador: nenhuma amostra do LHS sobrevive ao filtro de não dominância, e o SLSQP
+reduz o peso mínimo em 14,9\% em relação à melhor amostra viável. A amostragem serve, portanto,
 para dar boas partidas, mas não substitui a otimização.
-\end{itemize}
 
 \subsection{Fronteira de Pareto}
 
-A fronteira tem 25 pontos, de 10.346~t ($\Hz = 2{,}37$~m) a 23.634~t ($\Hz = 1{,}04$~m); a lista
-completa está no Apêndice~\ref{ap:fronteira}. Ela é não convexa: 7 dos 21 pontos da soma
-ponderada ficam dominados, e o $\varepsilon$-restrito preenche os vazios. Entre os dois
-extremos, cortar o \emph{heave} em 56\% custa +128\% de peso. A solução escolhida captura 62\% do
-ganho de movimento com 35\% do acréscimo de massa.
+A fronteira tem 25 pontos, de 10.346~t ($\Hz = 2{,}37$~m) a 23.634~t ($\Hz = 1{,}04$~m), listados no
+Apêndice~\ref{ap:fronteira}. Ela é não convexa, já que 7 dos 21 pontos da soma ponderada ficam
+dominados e o $\varepsilon$-restrito precisa preencher os vazios. Entre os dois extremos, cortar o
+\emph{heave} em 56\% custa 128\% a mais de peso. A solução escolhida, discutida na
+Seção~\ref{sec:escolha}, captura 62\% do ganho de movimento com apenas 35\% do acréscimo de massa.
 
-\subsection{Restrições ativas: projeto governado pela estabilidade}
+\subsection{Restrições ativas: um projeto governado pela estabilidade}
 
-\begin{table}[H]
+A Tabela~\ref{tab:ativasbase} conta, ao longo dos 25 pontos da fronteira, quantas vezes cada
+restrição fica ativa. O $GM_T$ no máximo de 4~m e o $A/B$ no mínimo de 1,30 aparecem em todos os
+pontos.
+
+\begin{table}[!htb]
 \centering
 \caption{Restrições ativas ao longo dos 25 pontos da fronteira (caso-base).}\label{tab:ativasbase}
 \begin{tabular}{lr}
@@ -1172,59 +1287,58 @@ $b_c = b_p$ & 9 / 25 \\
 \end{tabular}
 \end{table}
 
-Em todos os pontos da fronteira, o $GM_T$ está no máximo de 4~m e o $A/B$ no mínimo de 1,30
-(Tabela~\ref{tab:ativasbase}). O mecanismo é o seguinte. O \emph{topside} de 22.420~t fica a cerca
-de 60~m da quilha e eleva o KG. Para atender ao critério de áreas com o menor casco possível, o
+O mecanismo por trás desse resultado é o seguinte. O \emph{topside} de 22.420~t fica a cerca de
+60~m da quilha e eleva o KG. Para atender ao critério de áreas com o menor casco possível, o
 otimizador leva o GM ao máximo permitido, porque isso aumenta a GZ em todos os ângulos. Com o GM
-travado em 4~m, a área $A$ só pode crescer adiando o alagamento, com colunas mais altas, o que
-aumenta o peso e também a área exposta ao vento. O \emph{air gap} e o $T_n$ nunca ficam ativos: o
-mar do campo é brando, e a altura das colunas é definida pelo ângulo de alagamento, e não pela
+travado em 4~m, a área $A$ só pode crescer adiando o alagamento, o que pede colunas mais altas e,
+com elas, mais peso e mais área exposta ao vento. Já o \emph{air gap} e o $T_n$ nunca ficam ativos:
+o mar do campo é brando, e a altura das colunas é definida pelo ângulo de alagamento, e não pela
 crista da onda.
 
 \subsection{Duas famílias de projeto}
 
-A Figura~\ref{fig:variaveis} mostra as variáveis ao longo da fronteira, normalizadas pelos
-limites. Há duas famílias, separadas por um salto entre 13.657~t e 14.241~t:
-\begin{itemize}
-\item \textbf{rasa e larga} (até cerca de 13.700~t): $T \approx 12$--19~m, $b_c$ pequeno e $L_p$
-crescendo até 150~m. A área de linha d'água pequena mantém $T_n$ entre 29 e 40~s, e o
-\emph{heave} cai pelo aumento de $h_c$ e $L_p$;
-\item \textbf{compacta e profunda} (acima de cerca de 14.200~t): $L_p$ perto do mínimo, colunas
-maiores e $T$ de 23 a 40~m. O \emph{heave} cai porque os \emph{pontoons} ficam mais fundos e a
-excitação se atenua, com $T_n$ entre 21,6 e 23~s.
-\end{itemize}
+A Figura~\ref{fig:variaveis} mostra as variáveis ao longo da fronteira, normalizadas pelos limites
+do domínio. Um salto entre 13.657~t e 14.241~t separa duas famílias de projeto. Até cerca de
+13.700~t, a fronteira é formada por cascos rasos e largos, com $T \approx 12$--19~m, $b_c$ pequeno e
+$L_p$ crescendo até 150~m; a área de linha d'água pequena mantém $T_n$ entre 29 e 40~s, e o
+\emph{heave} cai com o aumento de $h_c$ e $L_p$. Acima de cerca de 14.200~t, os cascos passam a ser
+compactos e profundos, com $L_p$ perto do mínimo, colunas maiores e $T$ de 23 a 40~m; aqui o
+\emph{heave} cai porque os \emph{pontoons} ficam mais fundos e a excitação se atenua, com $T_n$
+entre 21,6 e 23~s.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=0.85\textwidth]{\RBA/f_variaveis_fronteira.png}
-\caption{Variáveis de projeto normalizadas pelos limites ao longo da fronteira
-(0 = mínimo, 1 = máximo).}\label{fig:variaveis}
+\caption[Variáveis de projeto ao longo da fronteira (caso-base)]{Variáveis de projeto normalizadas
+pelos limites ao longo da fronteira (0 = mínimo, 1 = máximo).}\label{fig:variaveis}
 \end{figure}
 
 \subsection{Vista lateral das três soluções}
 
-A Figura~\ref{fig:geo3} mostra as três soluções em escala, com a linha d'água de projeto e a
-crista máxima. A de mínimo peso é rasa e larga, a de mínimo \emph{heave} tem calado e colunas
-máximos, e a escolhida fica entre as duas, com o $L_p$ da família compacta.
+A Figura~\ref{fig:geo3} desenha em escala os dois extremos da fronteira e a solução escolhida, com
+a linha d'água de projeto e a crista máxima. A de mínimo peso é rasa e larga; a de mínimo
+\emph{heave} tem calado e colunas máximos; e a escolhida fica entre as duas, já na família
+compacta.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RB/05_geometria_3_cenarios.png}
-\caption{Vista lateral dos três cenários (caso-base), com a linha d'água de projeto e a crista
-máxima; convés e módulos em cinza.}\label{fig:geo3}
+\caption[Vista lateral dos três cenários (caso-base)]{Vista lateral dos três cenários (caso-base),
+com a linha d'água de projeto e a crista máxima; convés e módulos em cinza.}\label{fig:geo3}
 \end{figure}
 
 % =============================================================================
 \section{Escolha da solução intermediária}\label{sec:escolha}
 
-A solução intermediária é o joelho da fronteira (Seção~\ref{sec:joelho}). Ela foi obtida pelo
-$\varepsilon$-restrito com $\varepsilon = 1{,}552$~m. Quatro argumentos sustentam a escolha.
+A solução intermediária é o joelho da fronteira (Seção~\ref{sec:joelho}), obtido pelo
+$\varepsilon$-restrito com $\varepsilon = 1{,}552$~m. Mais do que uma regra geométrica, essa escolha
+se apoia em quatro argumentos de projeto.
 
-\paragraph{Ponto de inflexão.} O custo marginal de reduzir o \emph{heave} muda de patamar no
-joelho (Tabela~\ref{tab:custo} e Figura~\ref{fig:custo}). Depois dele, cada milímetro reduzido
-custa três vezes mais peso estrutural.
+O primeiro é o custo marginal de reduzir o \emph{heave}, que muda de patamar no joelho
+(Tabela~\ref{tab:custo} e Figura~\ref{fig:custo}). Até a solução escolhida, cada milímetro de
+$\Hz$ custa 5,7~t de aço; depois dela, custa 17,0~t, três vezes mais.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Custo marginal de redução do \emph{heave} ao longo da fronteira (caso-base).}\label{tab:custo}
 \begin{tabular}{lrrr}
@@ -1237,35 +1351,34 @@ Cenário 3 $\to$ 2 & 8.635 & 0,51 & 17,0 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.75\textwidth]{\RBA/f_custo_marginal.png}
-\caption{Custo marginal de reduzir o \emph{heave}: 5,7~t por mm até a solução escolhida e
-17,0~t por mm depois dela.}\label{fig:custo}
+\includegraphics[width=0.72\textwidth]{\RBA/f_custo_marginal.png}
+\caption[Custo marginal de reduzir o \emph{heave}]{Custo marginal de reduzir o \emph{heave}:
+5,7~t por mm até a solução escolhida e 17,0~t por mm depois dela.}\label{fig:custo}
 \end{figure}
 
-\paragraph{Equilíbrio relativo.} Em relação ao cenário 1, a solução escolhida corta 34,4\% do
-$\Hz$ com 45,0\% a mais de massa de casco. Em relação ao cenário 2, economiza 36,5\% do aço, com
-$\Hz$ 48,8\% maior.
+O segundo argumento é o equilíbrio entre os extremos. Em relação ao cenário de mínimo peso, a
+solução escolhida corta 34,4\% do $\Hz$ com 45,0\% a mais de casco; em relação ao de mínimo
+\emph{heave}, economiza 36,5\% do aço, com um $\Hz$ 48,8\% maior. O terceiro é a folga geométrica:
+das três soluções, é a única com todas as variáveis no interior do domínio, enquanto os extremos
+encostam nos limites ($b_c$, $h_c$ e $T$ mínimos no cenário 1; $h_c$ e $T$ máximos no cenário 2) e
+dependem, portanto, de escolhas de domínio que não vêm do enunciado. O quarto é a reserva de
+estabilidade: o ângulo de alagamento é de 21,6$^\circ$, mais que o dobro dos 9,0$^\circ$ do casco
+de mínimo peso.
 
-\paragraph{Folga geométrica.} É a única das três soluções com todas as variáveis no interior do
-domínio. Os dois extremos encostam nos limites ($b_c$, $h_c$ e $T$ mínimos no cenário 1; $h_c$ e
-$T$ máximos no cenário 2) e, portanto, dependem de escolhas de domínio que não vêm do enunciado.
-
-\paragraph{Reserva de estabilidade.} O ângulo de alagamento é de 21,6$^\circ$, mais que o dobro
-dos 9,0$^\circ$ do casco de mínimo peso. A solução pertence à família compacta e profunda, que
-concentra o ganho de \emph{heave} com pouco peso adicional.
-
-O ponto fraco é a ausência de lastro (11~t, margem numérica), tratada na Seção~\ref{sec:lastro}.
+O ponto fraco da solução escolhida é a ausência de lastro, com apenas 11~t de margem numérica. Essa
+questão é tratada na Seção~\ref{sec:lastro}, que repete o projeto com lastro mínimo obrigatório.
 
 % =============================================================================
 \section{Ficha técnica comparativa dos três cenários}\label{sec:cenarios}
 
-Os três cenários pedidos são os dois extremos da fronteira ($w_1 = 0$ e $w_1 = 1$) e a solução
-escolhida no joelho (Tabela~\ref{tab:ficha}).
+O enunciado pede a comparação de três cenários: os dois extremos da fronteira ($w_1 = 0$ e
+$w_1 = 1$) e a solução escolhida no joelho. A Tabela~\ref{tab:ficha} reúne suas características,
+e a Figura~\ref{fig:heave3} compara a resposta em \emph{heave} dos três.
 
-\needspace{0.45\textheight}
-{\small
+\needspace{0.75\textheight}
+{\small\renewcommand{\arraystretch}{1.04}
 \begin{longtable}{lrrr}
 \caption{Ficha técnica comparativa dos três cenários (caso-base).}\label{tab:ficha}\\
 \toprule
@@ -1319,27 +1432,29 @@ Variáveis no limite & $b_c$, $h_c$, $T$ mín. & $h_c$, $T$ máx. & nenhuma \\
 \bottomrule
 \end{longtable}}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.72\textwidth]{\RBA/f_heave_3cenarios.png}
-\caption{RAO e espectro de resposta em \emph{heave} dos três cenários (caso-base); em azul claro,
-o espectro do mar.}\label{fig:heave3}
+\includegraphics[width=0.7\textwidth]{\RBA/f_heave_3cenarios.png}
+\caption[RAO e espectro de resposta dos três cenários (caso-base)]{RAO e espectro de resposta em
+\emph{heave} dos três cenários (caso-base); em azul claro, o espectro do mar.}\label{fig:heave3}
 \end{figure}
 
 \subsection{Cenário 1: mínimo peso estrutural}
 
-É uma semissubmersível rasa: $T$, $h_c$ e $b_c$ estão no limite mínimo, e os \emph{pontoons}
-levam 87\% do peso do casco. Com colunas de $8\times8$~m, o GM só é obtido pelo afastamento entre
-elas, e por isso $L_p = 137{,}5$~m, com 63\% de folga na área de convés. A área de linha d'água de
-256~m$^2$ dá $T_n = 40$~s, longe da ressonância, mas o \emph{heave} é o maior dos três
-($\Hz/H_s = 42\%$): o topo dos \emph{pontoons} está a só 4,6~m de profundidade, e o fator de
-atenuação $e^{-k(T-h_p)}$ vale 0,92 no pico do mar, de modo que a força de Froude-Krylov quase não
-se atenua (Figura~\ref{fig:heave3}). O ângulo de alagamento é de 9,0$^\circ$, e a GZ fica negativa
-a partir de 17,8$^\circ$ (Figura~\ref{fig:gz1}). O vento de tempestade já inclina a plataforma
-4,9$^\circ$ em equilíbrio, mais da metade do caminho até o alagamento. O critério é atendido, mas a
-reserva de estabilidade é pequena demais para um projeto real.
+O cenário de mínimo peso é uma semissubmersível rasa: $T$, $h_c$ e $b_c$ estão no limite mínimo, e
+os \emph{pontoons} levam 87\% do peso do casco. Com colunas de $8\times8$~m, o GM só é obtido pelo
+afastamento entre elas, o que leva a $L_p = 137{,}5$~m e a 63\% de folga na área de convés. A área
+de linha d'água de 256~m$^2$ dá $T_n = 40$~s, longe da ressonância, e ainda assim o \emph{heave} é
+o maior dos três ($\Hz/H_s = 42\%$). A razão está na profundidade dos \emph{pontoons}: o topo fica a
+só 4,6~m da superfície, e o fator de atenuação $e^{-k(T-h_p)}$ vale 0,92 no pico do mar, de modo que
+a força de Froude-Krylov quase não se atenua (Figura~\ref{fig:heave3}).
 
-\begin{figure}[H]
+A estabilidade também é frágil. O ângulo de alagamento é de 9,0$^\circ$, a GZ fica negativa a partir
+de 17,8$^\circ$ (Figura~\ref{fig:gz1}), e o vento de tempestade já inclina a plataforma 4,9$^\circ$
+em equilíbrio, mais da metade do caminho até o alagamento. O critério é atendido, mas a reserva de
+estabilidade é pequena demais para um projeto real.
+
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RBA/f_gz_cen1.png}
 \caption{Cenário 1 (mínimo peso): curvas GZ e HA.}\label{fig:gz1}
@@ -1347,16 +1462,17 @@ reserva de estabilidade é pequena demais para um projeto real.
 
 \subsection{Cenário 2: mínimo \emph{heave}}
 
-É uma semissubmersível de calado profundo: $T = 40$~m e $h_c = 50$~m estão no máximo, e
-$b_c = b_p = 14{,}2$~m. Com o topo dos \emph{pontoons} a 25~m de profundidade, o fator de atenuação
-vale 0,65 no pico do mar, e $\Hz/H_s = 19\%$. É o único cenário com lastro de fato (18.081~t,
-37,5\% do volume dos \emph{pontoons}), o que dá margem operacional. Com $b_c = b_p$ e planta
-quadrada, $GM_L = GM_T$ e $\phial = 24{,}4^\circ$ nos dois planos, mas o $A/B$ é 1,30 no plano
-transversal e 1,49 no longitudinal, por causa da diferença de $z_{CLR}$ (13,5 e 20,0~m). O casco
-pesa 2,3 vezes o do cenário 1, com 46\% do peso nas colunas. O final da fronteira é quase plano:
-de 23.327~t para 23.634~t o $\Hz$ cai só de 1,046 para 1,043~m.
+No extremo oposto, o cenário de mínimo \emph{heave} é uma semissubmersível de calado profundo, com
+$T = 40$~m e $h_c = 50$~m no máximo e $b_c = b_p = 14{,}2$~m. Com o topo dos \emph{pontoons} a 25~m
+de profundidade, o fator de atenuação cai para 0,65 no pico do mar, e $\Hz/H_s$ fica em 19\%. É o
+único cenário com lastro de fato, 18.081~t ou 37,5\% do volume dos \emph{pontoons}, o que dá margem
+operacional. Por ter $b_c = b_p$ e planta quadrada, tem $GM_L = GM_T$ e $\phial = 24{,}4^\circ$
+nos dois planos; ainda assim, o $A/B$ é de 1,30 no plano transversal e de 1,49 no longitudinal,
+por causa da diferença de $z_{CLR}$ (13,5 e 20,0~m). O preço é um casco 2,3 vezes mais pesado que o
+do cenário 1, com 46\% do peso nas colunas, e o final da fronteira é quase plano: de 23.327~t para
+23.634~t, o $\Hz$ cai só de 1,046 para 1,043~m (Figura~\ref{fig:gz2}).
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RBA/f_gz_cen2.png}
 \caption{Cenário 2 (mínimo \emph{heave}): curvas GZ e HA.}\label{fig:gz2}
@@ -1364,27 +1480,32 @@ de 23.327~t para 23.634~t o $\Hz$ cai só de 1,046 para 1,043~m.
 
 \subsection{Cenário 3: solução escolhida}
 
-É detalhada na Seção~\ref{sec:final}. Em relação aos extremos, tem calado intermediário (24~m),
-colunas de 12,6~m e \emph{pontoons} com topo a 13,8~m de profundidade (fator de atenuação 0,79 no
-pico do mar), o que dá $\Hz/H_s = 28\%$ com $T_n = 21{,}85$~s.
-
+A solução escolhida combina características dos dois extremos: calado intermediário (24~m),
+colunas de 12,6~m e \emph{pontoons} com topo a 13,8~m de profundidade, onde o fator de atenuação
+vale 0,79 no pico do mar. O resultado é $\Hz/H_s = 28\%$ com $T_n = 21{,}85$~s. A
+Seção~\ref{sec:final} detalha essa solução.
 
 % =============================================================================
 \section{Comparativo com plataformas reais}\label{sec:reais}
 
+O modelo paramétrico usa correlações simples de peso e área, e por isso vale perguntar se as
+soluções que ele produz se parecem com plataformas que existem. Esta seção compara a solução
+escolhida com a frota de semissubmersíveis do pôster de 2011, com as unidades que operam no Baixo
+Congo e com semissubmersíveis de produção recentes de porte semelhante.
+
 \subsection{Semissubmersíveis do pôster de 2011}
 
-O pôster de 2011~\cite{poster} lista 50 unidades. Os valores usados foram lidos da tabela do
-pôster e convertidos de pés para metros. Como a extração de texto desalinha algumas linhas, só
-entram as unidades cuja sequência de campos é inequívoca; os dados estão em
-\path{caso_base/resultados/complementar/poster2011_unidades.csv}. A validação do casco com
-três dessas unidades está na Seção~\ref{sec:val-poster}. A Tabela~\ref{tab:frota} e a
+O pôster de 2011~\cite{poster} lista 50 unidades. Os valores usados foram lidos da tabela do pôster e
+convertidos de pés para metros; como a extração de texto desalinha algumas linhas, só entram as
+unidades cuja sequência de campos é inequívoca, registradas em
+\path{caso_base/resultados/complementar/poster2011_unidades.csv}. A validação do casco com três
+dessas unidades foi apresentada na Seção~\ref{sec:val-poster}. Aqui, a Tabela~\ref{tab:frota} e a
 Figura~\ref{fig:poster} comparam a solução escolhida com a frota.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Solução escolhida contra as semissubmersíveis do pôster de 2011 ($n$ = número de
-unidades com o dado).}\label{tab:frota}
+\caption[Solução escolhida contra a frota do pôster de 2011]{Solução escolhida contra as
+semissubmersíveis do pôster de 2011 ($n$ = número de unidades com o dado).}\label{tab:frota}
 \small
 \begin{tabular}{lrrrrrr}
 \toprule
@@ -1401,50 +1522,48 @@ $\Delta$ por mil bopd [t] & 7 & 286 & 526 & 889 & 253 & 285 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RBA/f_poster2011.png}
-\caption{Solução escolhida contra as semissubmersíveis do pôster de 2011: (a) dimensões do casco;
-(b) peso de \emph{topside} por mil bopd; (c) deslocamento por mil bopd.}\label{fig:poster}
+\caption[Solução escolhida contra o pôster de 2011]{Solução escolhida contra as
+semissubmersíveis do pôster de 2011: (a) dimensões do casco; (b) peso de \emph{topside} por mil
+bopd; (c) deslocamento por mil bopd.}\label{fig:poster}
 \end{figure}
 
-\begin{itemize}
-\item \textbf{Dimensões.} Calado, altura e lado da coluna e largura do \emph{pontoon} ficam dentro
-da faixa da frota, e a altura da coluna (39,6~m) coincide com a mediana (39,9~m). As colunas
-(12,6~m) estão no limite inferior da frota, o que é coerente com o $GM_T$ ativo em 4~m: colunas
-maiores aumentariam o BM. A única dimensão fora da faixa é a altura do \emph{pontoon}, um pouco
-acima do máximo do pôster (10,2 contra 10,1~m).
-\item \textbf{\emph{Topside}.} A correlação da disciplina (planta de 83~kg/boe, mais 35\% de convés
-e 35\% de carga operacional) dá 141~t por mil bopd, praticamente a mediana do pôster (145~t) e
-próxima de P-52 (134~t) e Atlantis (128~t).
-\item \textbf{Deslocamento.} A solução escolhida desloca 253~t por mil bopd, abaixo da unidade
-mais enxuta do pôster (Troll C, 286~t). Com lastro mínimo de 10\%, o valor sobe para 285~t, o
-nível da Troll C. O casco do caso-base é leve porque não reserva deslocamento para lastro, e não
-por erro de hidrostática ou de \emph{topside}.
-\end{itemize}
+Nas dimensões, a solução se encaixa bem na frota. Calado, altura e lado da coluna e largura do
+\emph{pontoon} ficam dentro da faixa, e a altura da coluna (39,6~m) praticamente coincide com a
+mediana (39,9~m). As colunas, de 12,6~m, estão no limite inferior da frota, o que é coerente com o
+$GM_T$ ativo em 4~m, já que colunas maiores aumentariam o BM. A única dimensão fora da faixa é a
+altura do \emph{pontoon}, um pouco acima do máximo do pôster (10,2 contra 10,1~m).
+
+O \emph{topside} também confere. A correlação da disciplina, com planta de 83~kg/boe mais 35\% de
+convés e 35\% de carga operacional, dá 141~t por mil bopd, praticamente a mediana do pôster
+(145~t) e próxima de P-52 (134~t) e Atlantis (128~t). O deslocamento é onde aparece a diferença: a
+solução escolhida desloca 253~t por mil bopd, abaixo da unidade mais enxuta do pôster, a Troll C,
+com 286~t. Com lastro mínimo de 10\%, o valor sobe para 285~t, o nível da Troll C. O casco do
+caso-base é leve, portanto, porque não reserva deslocamento para lastro, e não por erro de
+hidrostática ou de \emph{topside}.
 
 \subsection{O que opera no Baixo Congo}
 
-As unidades de produção em águas profundas da bacia do Baixo Congo são predominantemente FPSOs com
-ancoragem distribuída (Tabela~\ref{tab:reaisregiao}).
-\begin{itemize}
-\item \textbf{CLOV FPSO}~\cite{clov} (TotalEnergies, Bloco 17 de Angola): é o análogo mais
-próximo do campo, quase um gêmeo em capacidade (160 contra 159 mil bpd) e em lâmina d'água
-(1.291 contra 1.450~m). Adotou casco de navio e armazena 1,8 milhão de barris.
-\item \textbf{Moho/Bilondo} (Total, República do Congo, 620~m de lâmina d'água): é a única unidade
-da região no pôster de 2011, listada como FPU, com casco de navio (618 × 112~pés).
-\item \textbf{Scarabeo 5}~\cite{scarabeo5}: sonda semissubmersível de 1990 convertida pela Saipem
-em unidade de tratamento de gás para o projeto Congo LNG da Eni, em 35~m de lâmina d'água. É a
-única semissubmersível de produção da região. Seu comprimento de 111~m coincide com o
-$L_p = 111{,}8$~m da solução escolhida, mas os dados do casco não são públicos, e ela não foi
-usada numa comparação numérica.
-\end{itemize}
+As unidades de produção em águas profundas da bacia do Baixo Congo são, em sua maioria, FPSOs com
+ancoragem distribuída (Tabela~\ref{tab:reaisregiao}). O análogo mais próximo do campo é o FPSO do
+projeto CLOV~\cite{clov}, da TotalEnergies, no Bloco 17 de Angola, quase um gêmeo do KZ-2026-B em
+capacidade (160 contra 159 mil bpd) e em lâmina d'água (1.291 contra 1.450~m), com casco de navio e
+armazenamento de 1,8 milhão de barris. A Moho/Bilondo, da Total, em 620~m de lâmina d'água na
+República do Congo, é a única unidade da região no pôster de 2011; aparece como FPU, mas também tem
+casco de navio (618 × 112~pés). A única semissubmersível de produção da região é a
+Scarabeo~5~\cite{scarabeo5}, uma sonda de 1990 convertida pela Saipem em unidade de tratamento de
+gás para o projeto Congo LNG da Eni, em 35~m de lâmina d'água. Seu comprimento de 111~m coincide
+com o $L_p = 111{,}8$~m da solução escolhida, mas os dados do casco não são públicos, e ela não
+entrou na comparação numérica.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Campo KZ-2026-B e plataformas reais da região. Dados públicos.}\label{tab:reaisregiao}
+\caption[Campo KZ-2026-B e plataformas reais da região]{Campo KZ-2026-B e plataformas reais da
+região. Dados públicos.}\label{tab:reaisregiao}
 \small
-\begin{tabular}{>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{3.9cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
 \toprule
  & KZ-2026-B (este projeto) & CLOV FPSO & Scarabeo 5 FPU \\
 \midrule
@@ -1459,28 +1578,26 @@ Peso / deslocamento & $\Delta$ = 40.247 t & 110.000 t (peso informado) & -- \\
 \end{tabular}
 \end{table}
 
-Na interpretação do grupo, dois fatores ligados aos dados do campo favorecem o FPSO na região:
-\begin{itemize}
-\item \textbf{escoamento:} o CLOV armazena cerca de 11 dias de produção e exporta o óleo por uma
-boia de descarga a 1,8~km da unidade. A semissubmersível não tem armazenamento e exigiria um
-oleoduto de 190~km até a costa ou um FSO ao lado, custo que o modelo paramétrico não inclui;
-\item \textbf{mar brando:} com $H_s = 5{,}6$~m no mar de 100 anos, o movimento de um navio é
-aceitável. A vantagem da semissubmersível em \emph{heave} pesa mais em mares severos, como o do
+Na interpretação do grupo, dois dados do campo explicam a preferência pelo FPSO na região. O
+primeiro é o escoamento: o CLOV armazena cerca de 11 dias de produção e exporta o óleo por uma boia
+de descarga a 1,8~km da unidade, enquanto a semissubmersível não tem armazenamento e exigiria um
+oleoduto de 190~km até a costa ou um FSO ao lado, custo que o modelo paramétrico não inclui. O
+segundo é o mar brando: com $H_s = 5{,}6$~m no mar de 100 anos, o movimento de um navio é
+aceitável, e a vantagem da semissubmersível em \emph{heave} pesa mais em mares severos, como o do
 Golfo do México, onde ela é a solução preferida~\cite{omsemis}.
-\end{itemize}
 
 \subsection{Semissubmersíveis de produção de porte semelhante}
 
-Para comparar o casco com unidades de produção recentes de capacidade e lâmina d'água semelhantes,
-foram usadas semissubmersíveis do Golfo do México~\cite{omsemis,omgom}. A mais próxima é a Argos,
+Para comparar o casco com unidades recentes de capacidade e lâmina d'água semelhantes, foram usadas
+semissubmersíveis de produção do Golfo do México~\cite{omsemis,omgom}. A mais próxima é a Argos,
 da bp, com 140 mil boe/d em 1.372~m de lâmina d'água (Tabela~\ref{tab:reaissemi} e
 Figura~\ref{fig:reais}).
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Semissubmersíveis de produção reais e soluções do grupo. Os pesos da Argos foram
-convertidos de toneladas curtas; o peso da King's Quay é o peso da unidade (casco +
-\emph{topside}).}\label{tab:reaissemi}
+\caption[Semissubmersíveis de produção reais e soluções do grupo]{Semissubmersíveis de produção
+reais e soluções do grupo. Os pesos da Argos foram convertidos de toneladas curtas; o peso da King's
+Quay é o peso da unidade (casco + \emph{topside}).}\label{tab:reaissemi}
 \small
 \begin{tabular}{lrrrrr}
 \toprule
@@ -1499,56 +1616,59 @@ G02 · escolhida com lastro $\ge$ 10\% & 159 & 45.223 & 285 & 38.446 & 0,85 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RBA/f_comparativo_reais.png}
-\caption{Comparativo com semissubmersíveis de produção reais: (a) deslocamento por mil bpd de
-capacidade; (b) área de convés contra a correlação da disciplina; (c) fração do deslocamento
-ocupada por casco e \emph{topside}.}\label{fig:reais}
+\caption[Comparativo com semissubmersíveis de produção reais]{Comparativo com semissubmersíveis de
+produção reais: (a) deslocamento por mil bpd de capacidade; (b) área de convés contra a correlação
+da disciplina; (c) fração do deslocamento ocupada por casco e \emph{topside}.}\label{fig:reais}
 \end{figure}
 
-\paragraph{Deslocamento.} A solução escolhida desloca 253~t por mil bpd, de 1,5 a 3,6 vezes menos
-que as semissubmersíveis reais (380 a 920~t por mil bpd). O cenário 2 (434~t por mil bpd) fica na
-faixa das unidades enxutas recentes, Vito e King's Quay. Três fatores explicam a diferença:
-\begin{enumerate}
-\item \textbf{lastro:} casco e \emph{topside} ocupam 93\% do deslocamento da solução escolhida,
-contra 54\% a 57\% nas unidades reais, que reservam deslocamento para lastro, cargas variáveis,
-\emph{risers} e amarração. Com lastro mínimo de 10\%, a fração cai para 85\%;
-\item \textbf{ambiente:} as unidades do Golfo são projetadas para furacões (a King's Quay, para a
-tempestade de 1.000 anos~\cite{omgom}), com mar muito mais severo que o de Angola. No mar do
-KZ-2026-B o \emph{air gap} tem folga de 19~m e o calado não é exigido pelo movimento;
-\item \textbf{correlações de peso:} \emph{risers} e amarração somam 7\% de $\Delta$, e o casco usa
-$\gamma_e = 0{,}270$~t/m$^3$ sobre o volume envolvido, sem margens de projeto.
-\end{enumerate}
+A solução escolhida desloca 253~t por mil bpd, de 1,5 a 3,6 vezes menos que as semissubmersíveis
+reais (380 a 920~t por mil bpd), enquanto o cenário 2, com 434~t por mil bpd, fica na faixa das
+unidades enxutas recentes, Vito e King's Quay. Três fatores explicam a diferença. O principal é o
+lastro: casco e \emph{topside} ocupam 93\% do deslocamento da solução escolhida, contra 54\% a 57\%
+nas unidades reais, que reservam deslocamento para lastro, cargas variáveis, \emph{risers} e
+amarração; com lastro mínimo de 10\%, a fração cai para 85\%. O segundo é o ambiente, já que as
+unidades do Golfo são projetadas para furacões (a King's Quay, para a tempestade de 1.000
+anos~\cite{omgom}), com mar muito mais severo que o de Angola, onde o \emph{air gap} tem folga de
+19~m e o calado não é exigido pelo movimento. O terceiro são as próprias correlações de peso, que
+somam \emph{risers} e amarração em 7\% de $\Delta$ e aplicam $\gamma_e = 0{,}270$~t/m$^3$ ao
+volume envolvido, sem margens de projeto.
 
-\paragraph{Área e dimensões.} A correlação da disciplina leva a 11.563~m$^2$ de convés para 159 mil
-bpd, o equivalente a um único nível. A Argos tem convés em planta de cerca de 110 × 49~m
+A área de convés mostra o efeito oposto. A correlação da disciplina leva a 11.563~m$^2$ para 159 mil
+bpd, o equivalente a um único nível, enquanto a Argos tem convés em planta de cerca de 110 × 49~m
 ($\approx$ 5.400~m$^2$) e a Shenandoah, 91 × 91~m (8.281~m$^2$) para 100 mil bpd, ambas com vários
-níveis de convés. Por isso o $L_p$ do projeto é maior que o lado das unidades reais. Como a face
-inferior do convés ($L_p^2$) gera a maior parcela do momento de vento, a correlação de um nível é
-conservadora para o critério de áreas. A altura total da solução escolhida, 69,8~m da quilha ao
+níveis. Por isso o $L_p$ do projeto é maior que o lado das unidades reais. Como a face inferior do
+convés ($L_p^2$) gera a maior parcela do momento de vento, a correlação de um nível é conservadora
+para o critério de áreas. Ainda assim, a altura total da solução escolhida, de 69,8~m da quilha ao
 topo dos módulos, fica abaixo dos 90~m da Shenandoah.
 
-\subsection{Síntese do comparativo}
-
+\begin{sintese}
 O modelo reproduz a ordem de grandeza e a configuração de semissubmersíveis reais e estima bem o
 \emph{topside}, mas produz cascos mais leves porque não reserva lastro e porque o mar do campo é
-brando. Com lastro mínimo de 10\%, o deslocamento específico chega ao da unidade mais enxuta do
-pôster. No Baixo Congo, os análogos reais (CLOV e Moho/Bilondo) têm casco de navio; uma
-semissubmersível só seria competitiva frente ao FPSO se houvesse infraestrutura de exportação, e
-o custo de um FSO ou de um oleoduto de 190~km deve entrar na comparação de conceitos.
+brando; com lastro mínimo de 10\%, o deslocamento específico chega ao da unidade mais enxuta do
+pôster. No Baixo Congo, os análogos reais têm casco de navio, e uma semissubmersível só seria
+competitiva se houvesse infraestrutura de exportação; o custo de um FSO ou de um oleoduto de
+190~km deve entrar na comparação de conceitos.
+\end{sintese}
 
 
 % =============================================================================
 \section{Solução final}\label{sec:final}
 
+Esta seção detalha a solução escolhida (cenário 3) na mesma sequência do modelo: dimensões e pesos,
+estabilidade e critério de vento, \emph{heave}, \emph{air gap} e, por fim, o quadro completo das
+restrições.
+
 \subsection{Dimensões, pesos e centros}
 
-A solução escolhida (cenário 3) tem $L_p = 111{,}80$~m, $b_p = 13{,}40$~m, $h_p = 10{,}21$~m,
-$b_c = 12{,}55$~m, $h_c = 39{,}61$~m e $T = 23{,}98$~m, com \emph{air gap} de 25,84~m. A área de
-convés é de 12.499~m$^2$, 8,1\% acima da mínima, e todas as variáveis estão no interior do domínio.
+A solução escolhida tem $L_p = 111{,}80$~m, $b_p = 13{,}40$~m, $h_p = 10{,}21$~m, $b_c = 12{,}55$~m,
+$h_c = 39{,}61$~m e $T = 23{,}98$~m, com \emph{air gap} de 25,84~m. A área de convés é de
+12.499~m$^2$, 8,1\% acima da mínima, e todas as variáveis estão no interior do domínio. A
+Tabela~\ref{tab:pesosfinal} mostra a composição do peso.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Pesos e centros da solução final (caso-base).}\label{tab:pesosfinal}
 \begin{tabular}{lrrr}
@@ -1569,24 +1689,31 @@ Lastro & 11,0 & 0,00 & 0 \\
 \end{tabular}
 \end{table}
 
-O peso do casco é de 14.998~t e o do \emph{topside}, de 22.420~t, com centro a 59,7~m da quilha.
-Com KB = 7,75~m e $KM_T = 46{,}82$~m, resulta $GM_T = 4{,}00$~m e $GM_L = 4{,}67$~m. O KG alto
-vem do \emph{topside}, e o GM de 4~m sai do BM de 39~m, isto é, do afastamento entre as colunas.
+O casco pesa 14.998~t, e o \emph{topside}, 22.420~t, com centro a 59,7~m da quilha. É esse
+\emph{topside} alto que eleva o KG a 42,82~m. Com KB = 7,75~m e $KM_T = 46{,}82$~m, resultam
+$GM_T = 4{,}00$~m e $GM_L = 4{,}67$~m: o GM de 4~m vem do BM de 39~m, isto é, do afastamento entre
+as colunas.
 
 \subsection{Estabilidade intacta e critério de vento}
 
-\begin{figure}[H]
+A Figura~\ref{fig:gzfinal} mostra as curvas GZ e HA nos dois planos. As forças e os braços de cada
+parcela de vento estão na Tabela~\ref{tab:ventofinal}, os momentos na Tabela~\ref{tab:momentos} e
+o resultado do critério de áreas nos quatro casos na Tabela~\ref{tab:criterio}.
+
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RBA/f_gz_final.png}
-\caption{Solução final: curvas GZ e HA nos planos transversal e longitudinal, com $\phial$ e os
-interceptos ($\bullet$ $\varphi_1$, $\blacksquare$ $\varphi_2$).}\label{fig:gzfinal}
+\caption[Solução final: curvas GZ e HA]{Solução final: curvas GZ e HA nos planos transversal e
+longitudinal, com $\phial$ e os interceptos ($\bullet$ $\varphi_1$, $\blacksquare$
+$\varphi_2$).}\label{fig:gzfinal}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Forças e braços de vento por parcela na solução final. As forças são iguais nos dois
-planos (planta quadrada); os braços dependem do $z_{CLR}$ de cada plano.}\label{tab:ventofinal}
-\small
+\caption[Forças e braços de vento na solução final]{Forças e braços de vento por parcela na solução
+final. As forças são iguais nos dois planos (planta quadrada); os braços dependem do $z_{CLR}$ de
+cada plano.}\label{tab:ventofinal}
+\small\setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{lrrrrrrrr}
 \toprule
  & & & & & \multicolumn{2}{c}{Força [kN]} & \multicolumn{2}{c}{Braço [m]} \\
@@ -1601,7 +1728,7 @@ Face inferior & 12.499,2 & 25,84 & 1,0 & 1,10 & 22.280,8 & 10.887,3 & 41,93 & 38
 \end{tabular}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Momentos de vento por parcela na solução final [kN$\cdot$m].}\label{tab:momentos}
 \small
@@ -1621,7 +1748,7 @@ $HM_{ud}$ (face inferior) & 934.163 & 456.471 & 847.134 & 413.945 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Critério de áreas da solução final nos quatro casos.}\label{tab:criterio}
 \small\setlength{\tabcolsep}{4pt}
@@ -1638,43 +1765,50 @@ Long. & 36 m/s & 11,80 & 0,333 & 5,04 & 33,03 & 23,86 & 0,598 & 0,224 & 2,669 \\
 \end{tabular}
 \end{table}
 
-\begin{itemize}
-\item \textbf{Atendimento.} Nos quatro casos $\varphi_2 > \phial$ e a GZ é positiva de $0^\circ$ a
-$\phial$, de modo que o critério é atendido. O caso crítico é a tempestade no plano transversal
-($A/B = 1{,}303$), mas o longitudinal fica praticamente no mesmo valor (1,304).
-\item \textbf{Face inferior do convés.} $HM_{ud}$ é 3,2 vezes $HM_0$. Como essa área é $L_p^2$,
-aumentar o convés aumenta o emborcamento, o que mantém $L_p$ perto do mínimo. Os módulos
-respondem por 54\% de $HM_0$.
-\item \textbf{Plano transversal.} É o crítico porque a silhueta lateral dos \emph{pontoons}
+Nos quatro casos, $\varphi_2 > \phial$ e a GZ é positiva de $0^\circ$ a $\phial$, e o critério é
+atendido. O caso crítico é a tempestade no plano transversal, com $A/B = 1{,}303$, mas o
+longitudinal fica praticamente no mesmo valor (1,304), sinal de que a otimização equilibrou os dois
+planos. O plano transversal é o mais exigido porque a silhueta lateral dos \emph{pontoons}
 ($L_p h_p$) baixa o $z_{CLR}$ (7,89 contra 11,80~m) e alonga os braços.
-\item \textbf{Forma da GZ.} O aumento rápido da GZ depois de cerca de 15$^\circ$ ocorre quando o
-\emph{pontoon} do lado alto sai da água: o centro de carena passa a correr com o \emph{pontoon}
-imerso. Depois de $\phial$ a curva não tem significado físico.
-\item \textbf{Inclinação sob vento.} Sob tempestade, a plataforma inclina 14,1$^\circ$ em equilíbrio
-no plano transversal, valor elevado que merece atenção nas fases seguintes; em operação, 6,7$^\circ$.
-\end{itemize}
+
+As tabelas também mostram de onde vem o momento de vento. A face inferior do convés gera um momento
+3,2 vezes maior que o das parcelas laterais, e como essa área é $L_p^2$, aumentar o convés aumenta o
+emborcamento; é isso que mantém $L_p$ perto do mínimo. Entre as parcelas laterais, os módulos
+respondem por 54\% de $HM_0$, o que explica a sensibilidade a $h_m$ (Seção~\ref{sec:sens-hdhm}).
+
+A forma da curva GZ completa o quadro. O aumento rápido depois de cerca de 15$^\circ$ ocorre quando
+o \emph{pontoon} do lado alto sai da água, e o centro de carena passa a acompanhar o \emph{pontoon}
+imerso; depois de $\phial$ a curva não tem significado físico. Sob vento de tempestade, a plataforma
+inclina 14,1$^\circ$ em equilíbrio no plano transversal, e 6,7$^\circ$ sob vento de operação. O
+primeiro valor é elevado e merece atenção nas fases seguintes do projeto.
 
 \subsection{\emph{Heave}}
 
-\begin{figure}[H]
+A Figura~\ref{fig:forcas} decompõe a força de excitação da solução final nas três parcelas da
+Seção~\ref{sec:heave-teoria}, e a Figura~\ref{fig:heave} mostra o RAO e o espectro de resposta. Os
+valores principais estão na Tabela~\ref{tab:heave}.
+
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.72\textwidth]{\RBA/f_forcas_heave.png}
-\caption{Solução final: parcelas da força de excitação em \emph{heave} por amplitude de onda,
-já multiplicadas pelo fator de defasagem.}\label{fig:forcas}
+\includegraphics[width=0.7\textwidth]{\RBA/f_forcas_heave.png}
+\caption[Solução final: parcelas da força de excitação em \emph{heave}]{Solução final: parcelas da
+força de excitação em \emph{heave} por amplitude de onda, já multiplicadas pelo fator de
+defasagem.}\label{fig:forcas}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=0.49\textwidth]{\RBA/f_rao.png}\hfill
 \includegraphics[width=0.49\textwidth]{\RBA/f_espectros.png}
-\caption{Solução final: RAO de \emph{heave} (esquerda) e espectro de resposta com o espectro do
-mar de 100 anos (direita).}\label{fig:heave}
+\caption[Solução final: RAO e espectro de resposta em \emph{heave}]{Solução final: RAO de
+\emph{heave} (esquerda) e espectro de resposta com o espectro do mar de 100 anos
+(direita).}\label{fig:heave}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Resultados de \emph{heave} da solução final (caso-base).}\label{tab:heave}
-\begin{tabular}{lr@{\hspace{1.5cm}}lr}
+\begin{tabular}{lr@{\hspace{1.2cm}}lr}
 \toprule
 Grandeza & Valor & Grandeza & Valor \\
 \midrule
@@ -1689,18 +1823,23 @@ $B_{33}$ [kN$\cdot$s/m] & 2.204 & $m_{0z}$ [m$^2$] & 0,1506 \\
 \end{tabular}
 \end{table}
 
-O período natural de 21,85~s fica 9\% acima do limite de 20~s. O RAO tem pico de 1,47 em
-$\omega_n = 0{,}288$~rad/s, mas a frequência de cancelamento da força de excitação
-($\omega_c = 0{,}314$~rad/s), em que a parcela das colunas equilibra as dos \emph{pontoons}, fica
-logo acima de $\omega_n$ e limita a ressonância. No pico do mar ($\omega_p = 0{,}413$~rad/s) o
-fator de defasagem vale 0,654, as parcelas valem $F_{col} = 3.257$, $F_{pont} = -2.526$ e
-$F_{dif} = -2.928$~kN/m, e o RAO é 0,32. Por isso o espectro de resposta tem um pico pequeno em
-$\omega_n$ e o pico principal em $\omega_p$. A massa adicional (36.378~t, 90\% do deslocamento)
-quase dobra a massa efetiva e alonga o período natural em 38\% em relação ao valor sem ela.
+O período natural de 21,85~s fica 9\% acima do limite de 20~s. A massa adicional, de 36.378~t ou
+90\% do deslocamento, quase dobra a massa efetiva e alonga o período natural em 38\% em relação ao
+valor sem ela. O RAO tem pico de 1,47 em $\omega_n = 0{,}288$~rad/s, mas a frequência de
+cancelamento, $\omega_c = 0{,}314$~rad/s, em que a parcela das colunas equilibra as dos
+\emph{pontoons}, fica logo acima de $\omega_n$ e limita a ressonância. No pico do mar
+($\omega_p = 0{,}413$~rad/s), o fator de defasagem vale 0,654, as parcelas valem
+$F_{col} = 3.257$, $F_{pont} = -2.526$ e $F_{dif} = -2.928$~kN/m, e o RAO é de 0,32. Por isso o
+espectro de resposta tem um pico pequeno em $\omega_n$ e o pico principal em $\omega_p$, e o
+$\Hz$ resulta em 1,552~m, 28\% de $H_s$.
 
 \subsection{\emph{Air gap}}
 
-\begin{table}[H]
+A Tabela~\ref{tab:airgap} aplica as expressões da Seção~\ref{sec:airgap-teoria}. A folga de 19,2~m é
+grande porque o mar do campo é brando: a altura das colunas é definida pelo ângulo de alagamento
+exigido pelo critério de vento, e não pela crista da onda.
+
+\begin{table}[!htb]
 \centering
 \caption{Verificação do \emph{air gap} da solução final (caso-base).}\label{tab:airgap}
 \begin{tabular}{lr}
@@ -1716,14 +1855,17 @@ Folga $a - \amin$ & 19,186 \\
 \end{tabular}
 \end{table}
 
-A folga de 19,2~m é grande porque o mar do campo é brando. A altura das colunas é definida pelo
-ângulo de alagamento exigido pelo critério de vento, e não pela crista da onda.
+\subsection{Quadro das restrições}
 
-\subsection{Tabela-resumo das restrições}
+A Tabela~\ref{tab:resumo} reúne o valor de cada restrição na solução final e a folga em relação ao
+limite. Ficam ativas exatamente as restrições que governam toda a fronteira, o $GM_T$ máximo e o
+critério de áreas, além do lastro positivo. As tabelas equivalentes dos cenários 1 e 2 estão em
+\path{caso_base/resultados/restricoes_1.csv} e \path{restricoes_2.csv}.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Valor de cada restrição na solução final e folga em relação ao limite (caso-base).}\label{tab:resumo}
+\caption[Restrições da solução final e folgas (caso-base)]{Valor de cada restrição na solução final
+e folga em relação ao limite (caso-base).}\label{tab:resumo}
 \small
 \begin{tabular}{llrcrrrl}
 \toprule
@@ -1744,34 +1886,37 @@ $GZ > 0$: $\min(GZ/\sin\varphi)$ & m & 4,000 & $>$ & 0 & 4,000 & -- & \\
 \end{tabular}
 \end{table}
 
-As tabelas equivalentes dos cenários 1 e 2 estão em \path{caso_base/resultados/restricoes_1.csv}
-e \path{restricoes_2.csv}; as restrições ativas e as variáveis no limite estão na
-Tabela~\ref{tab:ficha}.
-
+\begin{sintese}
+A solução final tem casco de 14.998~t, $\Hz = 1{,}552$~m, $T_n = 21{,}85$~s, $GM_T = 4{,}00$~m e
+$A/B = 1{,}303$, com folga de \emph{air gap} de 19,2~m. Ela atende a todas as restrições, e as ativas
+são as de estabilidade, o que confirma que o projeto é governado pelo critério de vento e pelo
+limite de GM.
+\end{sintese}
 
 % =============================================================================
 \section{Sensibilidade às hipóteses}\label{sec:sensibilidade}
 
-As hipóteses mais incertas são as alturas do convés ($h_d$, $h_m$), a inclusão do gás no BOE, a
-falta de lastro e os parâmetros hidrodinâmicos ($\gamma$, $\xi$). As duas primeiras foram
-testadas com a geometria fixa e com a otimização completa repetida; as demais, conforme o caso.
+Algumas entradas do modelo são estimativas: as alturas do convés ($h_d$, $h_m$), a inclusão do gás
+no BOE, a falta de lastro e os parâmetros hidrodinâmicos ($\gamma$, $\xi$). Esta seção mede quanto
+cada uma muda o resultado, primeiro com a geometria da solução final fixa e depois repetindo a
+otimização completa.
 
 \subsection{Alturas do \emph{deck box} e dos módulos com geometria fixa}\label{sec:sens-hdhm}
 
-Mantida a geometria da solução final, $h_d$ e $h_m$ foram variados em
-$h_d \in \{6, 8, 10\}$~m e $h_m \in \{10, 12, 15\}$~m (Figura~\ref{fig:sensdh} e
-Tabela~\ref{tab:sensdh}).
+Mantida a geometria da solução final, $h_d$ e $h_m$ foram variados em $h_d \in \{6, 8, 10\}$~m e
+$h_m \in \{10, 12, 15\}$~m (Figura~\ref{fig:sensdh} e Tabela~\ref{tab:sensdh}).
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=0.9\textwidth]{\RBA/f_sens_hdhm.png}
-\caption{$\min A/B$ e $GM_T$ da solução final com $h_d$ e $h_m$ alterados (geometria fixa). A
-estrela marca os valores adotados.}\label{fig:sensdh}
+\caption[Sensibilidade de $A/B$ e $GM_T$ a $h_d$ e $h_m$]{$\min A/B$ e $GM_T$ da solução final com
+$h_d$ e $h_m$ alterados (geometria fixa). A estrela marca os valores adotados.}\label{fig:sensdh}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{KG, $GM_T$ e $\min A/B$ da solução final para outras alturas de convés (geometria fixa).}\label{tab:sensdh}
+\caption[KG, $GM_T$ e $A/B$ para outras alturas de convés]{KG, $GM_T$ e $\min A/B$ da solução final
+para outras alturas de convés (geometria fixa).}\label{tab:sensdh}
 \small
 \begin{tabular}{rrrrrl}
 \toprule
@@ -1790,19 +1935,19 @@ $h_d$ [m] & $h_m$ [m] & KG [m] & $GM_T$ [m] & $\min A/B$ & Viável? \\
 \end{tabular}
 \end{table}
 
-Só a combinação adotada ($h_d = 8$~m, $h_m = 12$~m) é viável sem redimensionar. Convés mais baixo
-reduz o KG e leva o $GM_T$ acima de 4~m; convés mais alto aumenta o KG e a área exposta e derruba o
-$A/B$. Isso é consequência direta das duas restrições ativas: a solução está ajustada a elas, e
-qualquer mudança nas alturas exige reotimizar.
+Só a combinação adotada ($h_d = 8$~m, $h_m = 12$~m) é viável sem redimensionar. Um convés mais
+baixo reduz o KG e leva o $GM_T$ acima de 4~m; um convés mais alto aumenta o KG e a área exposta e
+derruba o $A/B$. Esse comportamento é consequência direta das duas restrições ativas: a solução
+está ajustada a elas, e qualquer mudança nas alturas exige reotimizar.
 
 \subsection{Reotimizações}
 
-A otimização completa foi repetida para três hipóteses alternativas
+Por isso, a otimização completa foi repetida para três hipóteses alternativas
 (Tabela~\ref{tab:sensopt}), mudando uma variável de ambiente do código e a pasta de saída:
-$h_m = 15$~m (valor do Exercício 9), gás incluído no BOE e lastro mínimo de 10\% do volume dos
+$h_m = 15$~m, valor do Exercício 9; gás incluído no BOE; e lastro mínimo de 10\% do volume dos
 \emph{pontoons}.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Solução intermediária (joelho) de cada reotimização.}\label{tab:sensopt}
 \small
@@ -1822,20 +1967,19 @@ Mínimo peso da fronteira [t] & 10.346 & 10.429 & 12.971 & 11.892 \\
 \end{tabular}
 \end{table}
 
-\begin{itemize}
-\item \textbf{$h_m = 15$~m:} o casco da solução escolhida fica 5,3\% mais pesado, com o mesmo
-$\Hz$. As conclusões qualitativas não mudam.
-\item \textbf{Gás no BOE:} com pico de 202,9 mil boe/dia, a planta passa a 16.838~t e a área mínima
-a 13.421~m$^2$ ($L_p \ge 115{,}85$~m). O casco da solução escolhida fica 24,8\% mais pesado
-(18.718~t); o $\Hz$ cai porque a solução é maior e mais funda ($T = 27{,}1$~m). É a hipótese de
-maior impacto (Seção~\ref{sec:disc-boe}).
-\item \textbf{Lastro mínimo de 10\%:} exigir 3.611~t nos \emph{pontoons} abaixa o KG, custa +6,9\%
-de aço e mantém $\Hz = 1{,}55$~m. Essa condição é detalhada na Seção~\ref{sec:lastro}.
-\end{itemize}
+Com $h_m = 15$~m, o casco da solução escolhida fica 5,3\% mais pesado, com o mesmo $\Hz$, e as
+conclusões qualitativas não mudam. Com o gás no BOE, o pico passa a 202,9 mil boe/dia, a planta a
+16.838~t e a área mínima a 13.421~m$^2$ ($L_p \ge 115{,}85$~m); o casco da solução escolhida fica
+24,8\% mais pesado (18.718~t), e o $\Hz$ cai porque a solução é maior e mais funda
+($T = 27{,}1$~m). É a hipótese de maior impacto do projeto (Seção~\ref{sec:disc-boe}). Por fim, exigir
+lastro mínimo de 10\% coloca 3.611~t nos \emph{pontoons}, abaixa o KG, custa 6,9\% de aço e mantém
+$\Hz = 1{,}55$~m; essa condição é detalhada na Seção~\ref{sec:lastro}.
 
 \subsection{Parâmetros do \emph{heave}}
 
-\begin{table}[H]
+Os parâmetros hidrodinâmicos foram variados com a geometria fixa (Tabela~\ref{tab:sensheave}).
+
+\begin{table}[!htb]
 \centering
 \caption{$\Hz$ da solução final para diferentes $\xi$ e $\gamma$ (geometria fixa).}\label{tab:sensheave}
 \begin{tabular}{lrrrr}
@@ -1850,14 +1994,21 @@ $\xi$ & $\Hz$, $\gamma = 1$ [m] & $\Hz$, $\gamma = 3{,}3$ [m] & RAO máximo & $\
 \end{table}
 
 O $\Hz$ varia 6,7\% entre $\gamma = 1$ e $\gamma = 3{,}3$ e 12\% entre $\xi = 0{,}03$ e 0,08. O
-amortecimento afeta sobretudo o pico do RAO em $\omega_n$ (de 2,22 para 1,12), e não a resposta
-no pico do mar. O efeito no $\amin$ é menor que 0,2~m, desprezível diante da folga de 19~m.
+amortecimento afeta sobretudo o pico do RAO em $\omega_n$, que cai de 2,22 para 1,12, e pouco a
+resposta no pico do mar. No $\amin$, o efeito é menor que 0,2~m, desprezível diante da folga de
+19~m.
 
 \subsection{Síntese}
 
-\begin{table}[H]
+A Tabela~\ref{tab:sensresumo} resume as reotimizações. A hipótese dominante é a inclusão do gás no
+BOE. As alturas do convés não podem mudar sem reotimizar, mas, reotimizada, a plataforma com
+$h_m = 15$~m custa só 5,3\% a mais de casco. As incertezas hidrodinâmicas alteram o $\Hz$ em 7\% a
+12\% e o \emph{air gap} mínimo em menos de 0,2~m.
+
+\begin{table}[!htb]
 \centering
-\caption{Resumo da sensibilidade às hipóteses (solução escolhida de cada caso).}\label{tab:sensresumo}
+\caption[Resumo da sensibilidade às hipóteses]{Resumo da sensibilidade às hipóteses (solução
+escolhida de cada caso).}\label{tab:sensresumo}
 \small
 \begin{tabular}{lrrrr}
 \toprule
@@ -1871,90 +2022,100 @@ Lastro mínimo de 10\% & 16.026 t & +6,9\% & 1,549 m & 3.611 t \\
 \end{tabular}
 \end{table}
 
-A hipótese dominante é a inclusão do gás no BOE. As alturas do convés não podem mudar sem
-reotimizar, mas, reotimizado, $h_m = 15$~m custa só 5,3\% de casco. As incertezas hidrodinâmicas
-alteram o $\Hz$ em 7\% a 12\% e o \emph{air gap} mínimo em menos de 0,2~m.
-
 
 % =============================================================================
 \section{Condição de 10\% de lastro}\label{sec:lastro}
 
+A solução do caso-base tem um ponto fraco já apontado na Seção~\ref{sec:escolha}: o lastro é de só
+11~t, uma margem numérica. Esta seção repete o projeto inteiro com lastro mínimo obrigatório e
+compara o resultado com o caso-base. As tabelas marcadas como ``gerada'' vêm diretamente dos CSVs
+das duas versões, pelo script \path{analises_condicao_10pct_lastro.py}.
+
 \subsection{Motivação e formulação}
 
-Na solução escolhida do caso-base, o lastro é de só 11~t, uma margem numérica: casco,
-\emph{topside}, \emph{risers} e amarração consomem todo o deslocamento. Uma plataforma assim não
-teria como ajustar calado entre trânsito e operação, corrigir banda e trim causados por cargas
-variáveis nem compensar o crescimento de peso ao longo da vida útil. Essa versão do projeto repete
-a otimização inteira com uma restrição adicional obrigatória:
+No caso-base, casco, \emph{topside}, \emph{risers} e amarração consomem todo o deslocamento. Uma
+plataforma assim não teria como ajustar o calado entre trânsito e operação, corrigir banda e trim
+causados por cargas variáveis nem compensar o crescimento de peso ao longo da vida útil. A
+condição de 10\% de lastro acrescenta, por isso, uma restrição obrigatória,
 \begin{equation}
 V_{lastro} \ge 0{,}10\,V_{pontoons}, \qquad V_{pontoons} = 2 L_p b_p h_p ,
 \end{equation}
-isto é, pelo menos 10\% do volume interno dos \emph{pontoons} deve estar ocupado por lastro na
-condição de projeto. A fração foi aplicada ao volume dos \emph{pontoons}, onde o lastro fica, e não
-ao deslocamento. Os dados, o modelo, a validação, o domínio, os objetivos e as demais restrições
-são os do caso-base.
+que exige pelo menos 10\% do volume interno dos \emph{pontoons} ocupado por lastro na condição de
+projeto. A fração foi aplicada ao volume dos \emph{pontoons}, onde o lastro fica, e não ao
+deslocamento. Todo o resto (dados, modelo, validação, domínio, objetivos e demais restrições)
+permanece igual ao caso-base.
 
-\paragraph{Efeito esperado.} O lastro precisa de deslocamento, porque $\Delta = \sum W$: o casco
-cresce. Por outro lado, a água fica no fundo dos \emph{pontoons}, com centro em $n/2$, e baixa o
-KG. Com KG menor, o $GM_T = KB + BM_T - KG$ chega a 4~m com BM menor, e a GZ cresce mais em ângulos
-grandes, o que facilita o critério de áreas. O resultado líquido em peso de casco não é óbvio e só
-sai da otimização.
+O efeito da restrição não é óbvio de antemão. Por um lado, o lastro precisa de deslocamento, porque
+$\Delta = \sum W$, e o casco tem de crescer. Por outro, a água fica no fundo dos \emph{pontoons},
+com centro em $n/2$, e baixa o KG. Com KG menor, o $GM_T = KB + BM_T - KG$ chega a 4~m com um BM
+menor, e a GZ cresce mais em ângulos grandes, o que facilita o critério de áreas. O saldo em peso de
+casco só aparece com a otimização.
 
-\paragraph{Implementação.} O código desta versão está na pasta \path{condicao_10pct_lastro/codigo/}.
-Ele é o código do caso-base com \texttt{LASTRO\_MIN\_FRAC = 0.10} por padrão, o que acrescenta a
-restrição à função \texttt{tabela\_restricoes()}, e com a pasta de saída e os rótulos trocados. A
-Listagem~\ref{lst:diff} mostra todas as diferenças. As tabelas desta seção marcadas como geradas vêm
-do script \path{analises_condicao_10pct_lastro.py}, que lê os CSVs das duas versões.
+No código, a mudança se resume a um valor padrão: \texttt{LASTRO\_MIN\_FRAC = 0.10}, que acrescenta
+a restrição em \texttt{tabela\_restricoes()}. As outras diferenças trocam a pasta de saída e os
+rótulos, como mostra o \emph{diff} completo da \lst{diff}.
 
 \subsection{Variação sistemática e fronteira de Pareto}
 
-\begin{itemize}
-\item \textbf{Hipercubo latino.} Das 20.000 amostras (mesma semente), 517 atendem às restrições
-estáticas, de \emph{heave}, de \emph{air gap} e de lastro, e 209 (1,0\%) também ao critério de
-áreas; o vento reprova sozinho 308 cascos. A nova restrição tira 30 cascos do conjunto pré-viável.
-\item \textbf{Soma ponderada.} Os 21 valores de $w_1$ terminam em pontos viáveis; 7 ficam dominados
-($w_1$ = 0,05; 0,15; 0,45; 0,50; 0,55; 0,70 e 0,75), porque a fronteira continua não convexa.
-\item \textbf{$\varepsilon$-restrito.} Os 12 níveis terminam em pontos viáveis com
-\texttt{success = True}; os dois níveis mais altos convergem para o mesmo ponto.
-\item \textbf{Fronteira.} Das 242 soluções viáveis (209 + 21 + 12), 23 são não dominadas: 12 da
-soma ponderada e 11 do $\varepsilon$-restrito (Figura~\ref{fig:paretoL}; lista no
-Apêndice~\ref{ap:fronteiraL}). A rodada completa levou 176~s em 8 processos.
-\end{itemize}
+O procedimento é o mesmo da Seção~\ref{sec:procedimento}. Das 20.000 amostras do LHS, com a mesma
+semente, 517 atendem às restrições estáticas, de \emph{heave}, de \emph{air gap} e de lastro, e 209
+(1,0\%) também ao critério de áreas; o vento reprova sozinho 308 cascos, e a nova restrição tira 30
+cascos do conjunto pré-viável. Na soma ponderada, os 21 valores de $w_1$ terminam em pontos viáveis,
+mas 7 ficam dominados ($w_1$ = 0,05; 0,15; 0,45; 0,50; 0,55; 0,70 e 0,75), porque a fronteira
+continua não convexa. Os 12 níveis do $\varepsilon$-restrito terminam em pontos viáveis com
+\texttt{success = True}, e os dois mais altos convergem para o mesmo ponto. Das 242 soluções viáveis
+(209 + 21 + 12), 23 são não dominadas, 12 da soma ponderada e 11 do $\varepsilon$-restrito
+(Figura~\ref{fig:paretoL}; lista no Apêndice~\ref{ap:fronteiraL}). A rodada completa levou 176~s
+em 8 processos.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.9\textwidth]{\RL/01_pareto.png}
+\includegraphics[width=0.88\textwidth]{\RL/01_pareto.png}
 \caption{Conjunto viável e fronteira de Pareto na condição de 10\% de lastro.}\label{fig:paretoL}
 \end{figure}
 
-\begin{table}[H]
+Como no caso-base, $GM_T = 4$~m e $A/B = 1{,}30$ estão ativos em todos os pontos
+(Tabela~\ref{tab:ativasL}). A restrição de lastro está ativa em 16 dos 23: o otimizador põe
+exatamente o lastro mínimo, e só os cascos mais profundos têm lastro acima dele. A área de convés
+fica ativa em 6 pontos, contra 4 no caso-base, um primeiro sinal de que o lastro empurra $L_p$ para
+o mínimo.
+
+\begin{table}[!htb]
 \centering
-\caption{Restrições ativas ao longo da fronteira na condição de 10\% de lastro (gerada).}\label{tab:ativasL}
+\caption[Restrições ativas ao longo da fronteira (10\% de lastro)]{Restrições ativas ao longo da
+fronteira na condição de 10\% de lastro (gerada).}\label{tab:ativasL}
 \input{tabelas_lastro10/tab_ativas.tex}
 \end{table}
 
-Como no caso-base, $GM_T = 4$~m e $A/B = 1{,}30$ estão ativos em todos os pontos
-(Tabela~\ref{tab:ativasL}). A restrição de lastro está ativa em 16 dos 23 pontos: o otimizador põe
-exatamente o lastro mínimo, e só os cascos mais profundos têm lastro acima dele. A área de convés
-fica ativa em 6 pontos, contra 4 no caso-base.
+A Figura~\ref{fig:variaveisL} mostra que as duas famílias de projeto do caso-base se mantêm. Até
+15.995~t, a fronteira é formada por cascos rasos e largos, com $T$ de 12 a 22~m, $L_p$ crescendo até
+150~m e $T_n$ de 31 a 46~s. A partir de 16.026~t, passa a cascos compactos e profundos, com $L_p$ de
+107,5 a 116~m, $T$ de 26 a 40~m e $T_n$ de 21,7 a 23~s. A solução escolhida é o primeiro ponto da
+família compacta.
 
-A Figura~\ref{fig:variaveisL} mostra as mesmas duas famílias do caso-base. Até 15.995~t a fronteira
-é formada por cascos rasos e largos ($T$ de 12 a 22~m, $L_p$ crescendo até 150~m e $T_n$ de 31 a
-46~s). A partir de 16.026~t ela passa a cascos compactos e profundos ($L_p$ de 107,5 a 116~m, $T$ de
-26 a 40~m e $T_n$ de 21,7 a 23~s). A solução escolhida é o primeiro ponto da família compacta.
-
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=0.85\textwidth]{\RLC/12_variaveis_fronteira.png}
-\caption{Variáveis normalizadas pelos limites ao longo da fronteira (condição de 10\% de lastro).}\label{fig:variaveisL}
+\caption[Variáveis ao longo da fronteira (10\% de lastro)]{Variáveis normalizadas pelos limites ao
+longo da fronteira (condição de 10\% de lastro).}\label{fig:variaveisL}
 \end{figure}
 
 \subsection{Três cenários}
 
-\needspace{0.45\textheight}
-{\small
+A Tabela~\ref{tab:fichaL} e a Figura~\ref{fig:geo3L} apresentam os três cenários desta condição. O
+de mínimo peso, com 11.892~t, continua sendo uma semissubmersível rasa, com $b_c$, $h_c$ e $T$ no
+limite mínimo, mas agora com $L_p = 141{,}6$~m e \emph{pontoons} de 19,4~m de largura para carregar
+3.991~t de lastro. Tem $T_n = 46{,}5$~s, mas o maior \emph{heave} dos três ($\Hz/H_s = 42\%$) e
+ângulo de alagamento de só 8,7$^\circ$ (Figura~\ref{fig:gz1L}). O de mínimo \emph{heave}, com
+23.634~t, é o mesmo casco do caso-base: com $T = 40$~m e $h_c = 50$~m, ele já tinha 18.081~t de
+lastro (37,5\% dos \emph{pontoons}), e a nova restrição não o afeta. A solução escolhida, com
+16.026~t, é detalhada a seguir.
+
+\needspace{0.75\textheight}
+{\small\renewcommand{\arraystretch}{1.04}
 \begin{longtable}{lrrr}
-\caption{Ficha técnica dos três cenários na condição de 10\% de lastro (gerada).}\label{tab:fichaL}\\
+\caption[Ficha técnica dos três cenários (10\% de lastro)]{Ficha técnica dos três cenários na
+condição de 10\% de lastro (gerada).}\label{tab:fichaL}\\
 \toprule
  & 1. Mín. peso & 2. Mín. \emph{heave} & 3. Escolhida \\
 \midrule
@@ -1968,24 +2129,13 @@ Origem & $w_1 = 0$ & $w_1 = 1$ & $\varepsilon = 1{,}549$ m \\
 \bottomrule
 \end{longtable}}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RL/05_geometria_3_cenarios.png}
 \caption{Vista lateral dos três cenários na condição de 10\% de lastro.}\label{fig:geo3L}
 \end{figure}
 
-\begin{itemize}
-\item \textbf{Cenário 1 (mínimo peso, 11.892~t).} Semissubmersível rasa, com $b_c$, $h_c$ e $T$ no
-limite mínimo, como no caso-base, mas com $L_p = 141{,}6$~m e \emph{pontoons} de 19,4~m de largura
-para carregar as 3.991~t de lastro. Tem $T_n = 46{,}5$~s, mas o \emph{heave} é o maior dos três
-($\Hz/H_s = 42\%$) e o ângulo de alagamento é de só 8,7$^\circ$ (Figura~\ref{fig:gz1L}).
-\item \textbf{Cenário 2 (mínimo \emph{heave}, 23.634~t).} É o mesmo casco do caso-base: com
-$T = 40$~m e $h_c = 50$~m, ele já tinha 18.081~t de lastro (37,5\% dos \emph{pontoons}), e a nova
-restrição não o afeta.
-\item \textbf{Cenário 3 (escolhida, 16.026~t).} Detalhado a seguir.
-\end{itemize}
-
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RL/04a_gz_min_peso.png}
 \caption{Cenário 1 na condição de 10\% de lastro: curvas GZ e HA.}\label{fig:gz1L}
@@ -1993,46 +2143,56 @@ restrição não o afeta.
 
 \subsection{Solução final com lastro mínimo de 10\%}
 
-\paragraph{Dimensões, pesos e centros.} A solução escolhida tem $L_p = 107{,}53$~m (no mínimo dado
-pela área de convés), $b_p = 13{,}17$~m, $h_p = 12{,}43$~m, $b_c = 12{,}85$~m, $h_c = 36{,}52$~m e
-$T = 25{,}90$~m.
+\paragraph{Dimensões, pesos e centros}
+A solução escolhida tem $L_p = 107{,}53$~m, no mínimo dado pela área de convés, $b_p = 13{,}17$~m,
+$h_p = 12{,}43$~m, $b_c = 12{,}85$~m, $h_c = 36{,}52$~m e $T = 25{,}90$~m
+(Tabela~\ref{tab:pesosL}). As 3.611~t de lastro ocupam 10\% do volume dos \emph{pontoons}, com nível
+de 1,25~m e centro a 0,62~m da quilha. Com KB = 8,83~m e $KM_T = 42{,}38$~m, resultam
+$GM_T = 4{,}00$~m e $GM_L = 4{,}22$~m, e o KG, de 38,38~m, fica 4,44~m abaixo do caso-base.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Pesos e centros da solução final na condição de 10\% de lastro (gerada).}\label{tab:pesosL}
+\caption[Pesos e centros da solução final (10\% de lastro)]{Pesos e centros da solução final na
+condição de 10\% de lastro (gerada).}\label{tab:pesosL}
 \input{tabelas_lastro10/tab_pesos.tex}
 \end{table}
 
-As 3.611~t de lastro ocupam 10\% do volume dos \emph{pontoons}, com nível de 1,25~m e centro a
-0,62~m da quilha. Com KB = 8,83~m e $KM_T = 42{,}38$~m, resulta $GM_T = 4{,}00$~m e
-$GM_L = 4{,}22$~m. O KG de 38,38~m é 4,44~m menor que o do caso-base.
+\paragraph{Estabilidade e critério de vento}
+O critério é atendido nos quatro casos (Figura~\ref{fig:gzfinalL} e Tabelas~\ref{tab:ventofL}
+a~\ref{tab:criterioL}), com mínimo de 1,303 sob tempestade no plano transversal e 1,304 no
+longitudinal. Em todos os casos $\varphi_2 > \phial$ e a GZ é positiva até $\phial$, que vale
+20,7$^\circ$ no plano transversal e 22,7$^\circ$ no longitudinal. A face inferior do convés gera 3,0
+vezes o momento das parcelas laterais. Sob tempestade, a plataforma inclina 12,0$^\circ$ em
+equilíbrio no plano transversal, contra 14,1$^\circ$ no caso-base, porque o convés menor e o
+deslocamento maior reduzem o braço de vento inicial, $HA(0)$, de 0,746 para 0,612~m.
 
-\paragraph{Estabilidade e critério de vento.}
-
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RL/02_gz_ha_solucao_final.png}
-\caption{Solução final com lastro mínimo de 10\%: curvas GZ e HA nos dois planos
-($\bullet$ $\varphi_1$, $\blacksquare$ $\varphi_2$).}\label{fig:gzfinalL}
+\caption[Solução final com 10\% de lastro: curvas GZ e HA]{Solução final com lastro mínimo de 10\%:
+curvas GZ e HA nos dois planos ($\bullet$ $\varphi_1$, $\blacksquare$ $\varphi_2$).}\label{fig:gzfinalL}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Forças e braços de vento por parcela, condição de 10\% de lastro (gerada).}\label{tab:ventofL}
-\small
+\caption[Forças e braços de vento (10\% de lastro)]{Forças e braços de vento por parcela, condição
+de 10\% de lastro (gerada).}\label{tab:ventofL}
+\small\setlength{\tabcolsep}{4.5pt}
 \input{tabelas_lastro10/tab_vento_forcas.tex}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Momentos de vento por parcela [kN$\cdot$m], condição de 10\% de lastro (gerada).}\label{tab:ventomL}
+\caption[Momentos de vento (10\% de lastro)]{Momentos de vento por parcela [kN$\cdot$m], condição de
+10\% de lastro (gerada).}\label{tab:ventomL}
 \small
 \input{tabelas_lastro10/tab_vento_momentos.tex}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Critério de áreas nos quatro casos, condição de 10\% de lastro (gerada).}\label{tab:criterioL}
+\caption[Critério de áreas (10\% de lastro)]{Critério de áreas nos quatro casos, condição de 10\% de
+lastro (gerada).}\label{tab:criterioL}
 \small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{llrrrrrrrc}
 \toprule
@@ -2044,45 +2204,44 @@ $\phial$ [$^\circ$] & $A$ [m$\cdot$rad] & $B$ [m$\cdot$rad] & $A/B$ \\
 \end{tabular}
 \end{table}
 
-O critério é atendido nos quatro casos, com mínimo de 1,303 sob tempestade no plano transversal; o
-longitudinal fica em 1,304. Em todos os casos $\varphi_2 > \phial$ e a GZ é positiva até $\phial$
-(20,7$^\circ$ no plano transversal e 22,7$^\circ$ no longitudinal). A face inferior do convés gera
-3,0 vezes o momento $HM_0$. Sob tempestade, a plataforma inclina 12,0$^\circ$ em equilíbrio no
-plano transversal, contra 14,1$^\circ$ no caso-base: o convés menor ($L_p$ no mínimo) e o
-deslocamento maior reduzem o braço de vento inicial, $HA(0)$, de 0,746 para 0,612~m.
+\paragraph{\emph{Heave}}
+O período natural de 21,73~s fica 8,6\% acima do limite de 20~s (Figura~\ref{fig:heaveL} e
+Tabela~\ref{tab:heaveL}). A força de excitação se anula em 0,318~rad/s, logo acima de
+$\omega_n = 0{,}289$~rad/s, o que limita o pico do RAO a 1,52. No pico do mar, o fator de
+defasagem vale 0,680 e o RAO é de 0,32, e o espectro de resposta tem, como no caso-base, um pico
+pequeno em $\omega_n$ e o principal no pico da onda. O $\Hz$ resulta em 1,549~m (28\% de $H_s$),
+praticamente o do caso-base.
 
-\paragraph{\emph{Heave}.}
-
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RL/03_heave_solucao_final.png}
-\caption{Solução final com lastro mínimo de 10\%: força de excitação, RAO, espectro do mar e
-espectro de resposta.}\label{fig:heaveL}
+\caption[Solução final com 10\% de lastro: \emph{heave}]{Solução final com lastro mínimo de 10\%:
+força de excitação, RAO, espectro do mar e espectro de resposta.}\label{fig:heaveL}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Resultados de \emph{heave}, condição de 10\% de lastro (gerada).}\label{tab:heaveL}
+\caption[Resultados de \emph{heave} (10\% de lastro)]{Resultados de \emph{heave}, condição de 10\% de
+lastro (gerada).}\label{tab:heaveL}
 \input{tabelas_lastro10/tab_heave.tex}
 \end{table}
 
-O período natural de 21,73~s fica 8,6\% acima do limite de 20~s. A força de excitação se anula em
-0,318~rad/s, logo acima de $\omega_n = 0{,}289$~rad/s, o que limita o pico do RAO a 1,52. No pico do
-mar o fator de defasagem vale 0,680 e o RAO é 0,32; o espectro de resposta tem um pico pequeno em
-$\omega_n$ e o principal no pico da onda. O $\Hz = 1{,}549$~m (28\% de $H_s$) é praticamente o do
-caso-base.
+\paragraph{\emph{Air gap} e restrições}
+A folga de \emph{air gap} cai para 16,4~m, ainda ampla (Tabela~\ref{tab:airgapL}). No quadro das
+restrições (Tabela~\ref{tab:resumoL}), ficam ativas a área de convés, com $L_p$ no mínimo, o $GM_T$
+máximo, o lastro mínimo de 10\% e o critério de áreas.
 
-\paragraph{\emph{Air gap} e restrições.}
-
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Verificação do \emph{air gap}, condição de 10\% de lastro (gerada).}\label{tab:airgapL}
+\caption[\emph{Air gap} (10\% de lastro)]{Verificação do \emph{air gap}, condição de 10\% de lastro
+(gerada).}\label{tab:airgapL}
 \input{tabelas_lastro10/tab_airgap.tex}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Valor de cada restrição na solução final e folga, condição de 10\% de lastro (gerada).}\label{tab:resumoL}
+\caption[Restrições da solução final (10\% de lastro)]{Valor de cada restrição na solução final e
+folga, condição de 10\% de lastro (gerada).}\label{tab:resumoL}
 \small
 \begin{tabular}{llrcrrrl}
 \toprule
@@ -2093,17 +2252,20 @@ Restrição & Unid. & Valor & & Limite & Folga & Folga [\%] & \\
 \end{tabular}
 \end{table}
 
-A folga de \emph{air gap} de 16,4~m continua ampla. Ficam ativas a área de convés ($L_p$ no mínimo),
-o $GM_T$ máximo, o lastro mínimo de 10\% e o critério de áreas.
+\paragraph{Escolha}
+A solução escolhida também é o joelho desta fronteira. Em relação ao cenário de mínimo peso, aumenta
+o casco em 34,8\% e reduz o $\Hz$ em 34,3\%; em relação ao de mínimo \emph{heave}, economiza 32,2\%
+do aço com um $\Hz$ 48,5\% maior. Entre os extremos, cortar o \emph{heave} em 56\% custa 99\% a mais
+de peso, e a solução escolhida captura 62\% do ganho de movimento com 35\% do acréscimo de massa.
+Depois dela, cada milímetro de \emph{heave} custa 2,9 vezes mais aço (Tabela~\ref{tab:custoL}), e o
+ângulo de alagamento, de 20,7$^\circ$, é bem maior que os 8,7$^\circ$ do cenário de mínimo peso. Ao
+contrário do caso-base, uma variável fica no limite, $L_p$ no mínimo, mas esse limite é a própria
+restrição de área de convés, e não uma escolha de domínio.
 
-\paragraph{Escolha.} A solução 3 é o joelho da fronteira. Em relação ao cenário 1, ela aumenta o
-peso do casco em 34,8\% e reduz o $\Hz$ em 34,3\%; em relação ao cenário 2, economiza 32,2\% do peso
-com $\Hz$ 48,5\% maior. Entre os extremos, cortar o \emph{heave} em 56\% custa +99\% de peso, e a
-solução escolhida captura 62\% do ganho de movimento com 35\% do acréscimo de massa.
-
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Custo marginal de redução do \emph{heave}, condição de 10\% de lastro (gerada).}\label{tab:custoL}
+\caption[Custo marginal de redução do \emph{heave} (10\% de lastro)]{Custo marginal de redução do
+\emph{heave}, condição de 10\% de lastro (gerada).}\label{tab:custoL}
 \begin{tabular}{lrrr}
 \toprule
 Trecho & Peso adicional & Redução de $\Hz$ & Custo [t/mm] \\
@@ -2113,28 +2275,28 @@ Trecho & Peso adicional & Redução de $\Hz$ & Custo [t/mm] \\
 \end{tabular}
 \end{table}
 
-Depois da solução escolhida, cada milímetro de \emph{heave} custa 2,9 vezes mais aço. Ela tem ângulo
-de alagamento de 20,7$^\circ$, contra 8,7$^\circ$ do cenário de mínimo peso. Diferente do caso-base,
-uma variável fica no limite: $L_p$ está no mínimo, mas esse limite é a própria restrição de área de
-convés, e não uma escolha de domínio.
-
 \subsection{Comparação com o caso-base}\label{sec:lastro-comp}
 
-\begin{table}[H]
+As Tabelas~\ref{tab:cenbase} e~\ref{tab:comparacao} e a Figura~\ref{fig:fronteiras} colocam as duas
+versões lado a lado.
+
+\begin{table}[!htb]
 \centering
-\caption{Os três cenários no caso-base e na condição de 10\% de lastro (gerada).}\label{tab:cenbase}
+\caption[Os três cenários nas duas versões]{Os três cenários no caso-base e na condição de 10\% de
+lastro (gerada).}\label{tab:cenbase}
 \input{tabelas_lastro10/tab_cenarios_base_x_lastro.tex}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.85\textwidth]{\RLC/11_fronteiras_base_x_lastro10.png}
+\includegraphics[width=0.82\textwidth]{\RLC/11_fronteiras_base_x_lastro10.png}
 \caption{Fronteiras de Pareto do caso-base e da condição de 10\% de lastro.}\label{fig:fronteiras}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
-\caption{Solução escolhida: caso-base contra condição de 10\% de lastro (gerada).}\label{tab:comparacao}
+\caption[Solução escolhida: caso-base contra 10\% de lastro]{Solução escolhida: caso-base contra
+condição de 10\% de lastro (gerada).}\label{tab:comparacao}
 \begin{tabular}{lrrr}
 \toprule
 Grandeza & Caso-base & Lastro $\ge$ 10\% & Variação \\
@@ -2144,34 +2306,41 @@ Grandeza & Caso-base & Lastro $\ge$ 10\% & Variação \\
 \end{tabular}
 \end{table}
 
-\begin{itemize}
-\item \textbf{Comparação a igual \emph{heave}.} As duas soluções escolhidas vêm do mesmo nível do
-$\varepsilon$-restrito (o quinto de doze, $\varepsilon = 1{,}5523$~m no caso-base e 1,5494~m com
-lastro), porque os extremos de $\Hz$ das duas fronteiras são quase iguais (2,366 e 2,359~m;
-1,043~m nos dois casos). A restrição $\Hz \le \varepsilon$ está ativa nas duas. Por isso o $\Hz$
-(1,552 contra 1,549~m) e o $T_n$ (21,85 contra 21,73~s) praticamente coincidem, e a diferença de
-peso é o custo do lastro a igual \emph{heave}.
-\item \textbf{Fronteira.} A restrição desloca a parte leve da fronteira para a direita (o mínimo
-peso sobe 14,9\%, de 10.346 para 11.892~t) e deixa intacto o extremo de mínimo \emph{heave}, que já
+A primeira observação é que a comparação é feita a igual \emph{heave}. As duas soluções escolhidas
+vêm do mesmo nível do $\varepsilon$-restrito, o quinto de doze ($\varepsilon = 1{,}5523$~m no
+caso-base e 1,5494~m com lastro), porque os extremos de $\Hz$ das duas fronteiras são quase iguais
+(2,366 e 2,359~m de um lado e 1,043~m dos dois lados do outro). Como a restrição
+$\Hz \le \varepsilon$ está ativa nas duas, o $\Hz$ (1,552 contra 1,549~m) e o $T_n$ (21,85 contra
+21,73~s) praticamente coincidem, e a diferença de peso mede o custo do lastro a igual
+\emph{heave}.
+
+Esse custo é menor do que o lastro faria supor. As 3.611~t de lastro exigem 4.976~t a mais de
+deslocamento (+12,4\%): 3.600~t de lastro, 1.028~t de casco e 349~t de \emph{risers} e amarração. O
+casco cresce só 6,9\% porque o volume extra vem de \emph{pontoons} mais altos ($h_p$ +2,2~m,
++1.252~t de aço; cada m$^3$ de \emph{pontoon} desloca 1,025~t e custa 0,27~t de aço), enquanto as
+colunas ficam 224~t mais leves. A água no fundo baixa o KG em 4,44~m; com KG mais baixo, o
+$GM_T = 4$~m é obtido com BM menor (33,6 contra 39,1~m), o que aproxima as colunas e leva $L_p$ ao
+mínimo. A GZ também cresce mais em ângulos grandes, e a área $A$ sai com colunas mais curtas ($h_c$
+$-$3,1~m), mantendo $GM_T$ e $A/B$ ativos. A folga de \emph{air gap}, por sua vez, cai 2,8~m.
+
+Na fronteira como um todo, a restrição desloca a parte leve para a direita, com o mínimo peso
+subindo 14,9\%, de 10.346 para 11.892~t, e deixa intacto o extremo de mínimo \emph{heave}, que já
 tinha lastro. Perto da solução escolhida, a fronteira fica cerca de 1.000~t à direita da do
 caso-base.
-\item \textbf{Peso e KG.} As 3.611~t de lastro exigem 4.976~t a mais de deslocamento (+12,4\%):
-3.600~t de lastro, 1.028~t de casco e 349~t de \emph{risers} e amarração. O casco cresce só 6,9\%,
-porque o volume extra vem de \emph{pontoons} mais altos ($h_p$ +2,2~m, +1.252~t de aço; cada
-m$^3$ de \emph{pontoon} desloca 1,025~t e custa 0,27~t de aço), enquanto as colunas ficam 224~t
-mais leves. A água no fundo baixa o
-KG em 4,44~m.
-\item \textbf{Estabilidade.} Com KG mais baixo, o $GM_T = 4$~m é obtido com BM menor (33,6 contra
-39,1~m), o que aproxima as colunas e leva $L_p$ ao mínimo. A GZ cresce mais em ângulos grandes, e a
-área $A$ sai com colunas mais curtas ($h_c$ $-$3,1~m). $GM_T$ e $A/B$ continuam ativos.
-\item \textbf{\emph{Air gap}.} A folga cai 2,8~m, para 16,4~m, ainda ampla.
-\end{itemize}
 
 \subsection{Comparação com a frota real}
 
-\begin{table}[H]
+O lastro também aproxima a plataforma da frota real (Tabela~\ref{tab:posterL} e
+Figura~\ref{fig:posterL}). O deslocamento específico sobe para 285~t por mil bopd, o nível da Troll C
+(286~t), enquanto no caso-base era de 253~t, abaixo de toda a frota. Isso confirma que a leveza do
+caso-base vinha da falta de lastro. Calado, altura e lado da coluna e largura do \emph{pontoon}
+ficam dentro da faixa da frota; o \emph{pontoon}, de 12,4~m, fica mais alto que o maior do pôster
+(10,1~m), efeito do volume extra para o lastro.
+
+\begin{table}[!htb]
 \centering
-\caption{Solução escolhida (10\% de lastro) contra as semissubmersíveis do pôster de 2011 (gerada).}\label{tab:posterL}
+\caption[Solução com 10\% de lastro contra a frota do pôster]{Solução escolhida (10\% de lastro)
+contra as semissubmersíveis do pôster de 2011 (gerada).}\label{tab:posterL}
 \small
 \begin{tabular}{lrrrrr}
 \toprule
@@ -2182,128 +2351,119 @@ Grandeza & $n$ & Mínimo & Mediana & Máximo & G02 (10\%) \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 \centering
 \includegraphics[width=\textwidth]{\RLC/13_poster2011.png}
-\caption{Solução escolhida com lastro mínimo de 10\% contra o pôster de 2011: (a) dimensões do
-casco; (b) deslocamento por mil bopd.}\label{fig:posterL}
+\caption[Solução com 10\% de lastro contra o pôster de 2011]{Solução escolhida com lastro mínimo de
+10\% contra o pôster de 2011: (a) dimensões do casco; (b) deslocamento por mil bopd.}\label{fig:posterL}
 \end{figure}
 
-O deslocamento específico sobe para 285~t por mil bopd, o nível da Troll C (286~t). No caso-base, o
-valor era 253~t, abaixo de toda a frota, o que confirma que a leveza do caso-base vinha da falta de
-lastro. Calado, altura e lado da coluna e largura do \emph{pontoon} ficam dentro da faixa da frota;
-o \emph{pontoon} (12,4~m) é mais alto que o maior do pôster (10,1~m), efeito do volume extra para o
-lastro.
-
-\subsection{Síntese}
-
+\begin{sintese}
 As duas configurações são tecnicamente válidas e equivalentes em hidrodinâmica ($\Hz = 1{,}55$~m e
-$T_n \approx 21{,}8$~s). Incluir 3.611~t de lastro custa +6,9\% de aço (16.026~t), reduz o KG em
-4,44~m e alinha o deslocamento à frota real. A condição de 10\% de lastro é a recomendada para a
+$T_n \approx 21{,}8$~s). Incluir 3.611~t de lastro custa 6,9\% a mais de aço (16.026~t), reduz o KG
+em 4,44~m e alinha o deslocamento à frota real. A condição de 10\% de lastro é a recomendada para a
 fase seguinte do projeto.
-
+\end{sintese}
 
 % =============================================================================
 \section{Discussão das hipóteses e limitações}\label{sec:discussao}
 
+Os resultados das seções anteriores dependem de algumas entradas que o enunciado não fixa. Esta
+seção discute cada uma delas e, em seguida, as limitações do próprio modelo.
+
 \subsection{BOE só com óleo ou com gás}\label{sec:disc-boe}
 
-O caso-base dimensiona a planta só pelo pico de óleo (158.894~bpd). Os argumentos para essa escolha
-são: o enunciado trata de uma plataforma de produção de óleo; a curva de produção dada é de óleo; e,
-em reservatórios com capa de gás, o gás costuma ser reinjetado ou produzido depois do óleo, de modo
-que os dois picos não coincidem. Os argumentos a favor de incluir o gás são: unidades reais tratam o
-gás associado a bordo, e somar o gás é o lado conservador para o peso. Incluído com o mesmo perfil de
+O caso-base dimensiona a planta só pelo pico de óleo, de 158.894~bpd. Três argumentos sustentam
+essa escolha: o enunciado trata de uma plataforma de produção de óleo, a curva de produção dada é
+de óleo e, em reservatórios com capa de gás, o gás costuma ser reinjetado ou produzido depois do
+óleo, de modo que os dois picos não coincidem. Em sentido contrário, unidades reais tratam o gás
+associado a bordo, e somar o gás é o lado conservador para o peso. Incluído com o mesmo perfil de
 produção, o gás eleva o pico a 202,9 mil boe/dia, a planta a 16.838~t e o casco da solução escolhida
-em 24,8\% (Seção~\ref{sec:sensibilidade}). É a hipótese de maior impacto do projeto e deve ser
-confirmada com o professor. A rota de exportação do gás (gasoduto de 190~km ou reinjeção) também
-não é dada no enunciado.
+em 24,8\% (Seção~\ref{sec:sensibilidade}). Como é a hipótese de maior impacto do projeto, ela deve
+ser confirmada com o professor, assim como a rota de exportação do gás (gasoduto de 190~km ou
+reinjeção), que o enunciado também não define.
 
 \subsection{Peso da planta de 83~kg/boe}\label{sec:disc-planta}
 
-O valor de 0,083~t por boe/dia vem do código original do grupo. O grupo não identificou a fonte
-desse número nos materiais da disciplina, mas duas verificações indiretas o sustentam:
-\begin{itemize}
-\item na plataforma de referência dos Exercícios 7 a 10 (BOE = 120.000), ele dá uma planta de
-9.960~t e um KG de 33,21~m, contra 33,00~m da aula. Como o \emph{topside} domina o KG, um peso de
-planta muito diferente do usado em aula apareceria nessa comparação;
-\item o \emph{topside} resultante, 141~t por mil bopd, coincide com a mediana das semissubmersíveis
-reais do pôster de 2011 (145~t por mil bopd).
-\end{itemize}
+O valor de 0,083~t por boe/dia vem do código original do grupo, e o grupo não identificou sua fonte
+nos materiais da disciplina. Duas verificações indiretas, porém, o sustentam. Na plataforma de
+referência dos Exercícios 7 a 10, com BOE = 120.000, ele dá uma planta de 9.960~t e um KG de
+33,21~m, contra 33,00~m da aula; como o \emph{topside} domina o KG, um peso de planta muito
+diferente do usado em aula apareceria nessa comparação. Além disso, o \emph{topside} resultante, de
+141~t por mil bopd, coincide com a mediana das semissubmersíveis reais do pôster de 2011, de 145~t
+por mil bopd.
 
 \subsection{Limites das variáveis}\label{sec:disc-limites}
 
-Só o limite inferior de $L_p$ decorre dos dados do campo (área mínima de convés). Os outros limites
-vêm do código original do grupo e não têm fonte no enunciado. Eles são mais amplos que a faixa da
-frota do pôster (Tabela~\ref{tab:limites}), o que tem duas consequências:
-\begin{itemize}
-\item os extremos da fronteira dependem dos limites: o cenário 1 tem colunas de 8~m e calado de
-12~m, e o cenário 2 tem calado de 40~m com colunas de 50~m, cascos sem precedente na frota;
-\item a solução escolhida tem todas as variáveis no interior do domínio e, portanto, não depende
-deles. Ela também está dentro da faixa da frota, exceto pela altura do \emph{pontoon}, 0,1~m acima
-do máximo do pôster.
-\end{itemize}
-Uma alternativa seria usar a faixa do pôster como domínio. Os extremos da fronteira mudariam; essa
-rodada não foi feita.
+Só o limite inferior de $L_p$ decorre dos dados do campo. Os outros vêm do código original do grupo,
+sem fonte no enunciado, e são mais amplos que a faixa da frota do pôster (Tabela~\ref{tab:limites}).
+A consequência é que os extremos da fronteira dependem desses limites: o cenário 1 tem colunas de
+8~m e calado de 12~m, e o cenário 2 tem calado de 40~m com colunas de 50~m, cascos sem precedente na
+frota. A solução escolhida, ao contrário, tem todas as variáveis no interior do domínio e não depende
+deles; ela também está dentro da faixa da frota, exceto pela altura do \emph{pontoon}, 0,1~m acima
+do máximo do pôster. Uma alternativa seria usar a faixa do pôster como domínio, o que mudaria os
+extremos da fronteira; essa rodada não foi feita.
 
 \subsection{Alturas do \emph{deck box} e dos módulos}
 
-$h_d = 8$~m tem referência indireta no pôster (11~m para dois níveis na Independence Hub) e foi
-mantido porque dá o melhor ajuste conjunto de KG e $A/B$ na validação. $h_m = 12$~m é uma estimativa
-do grupo. A solução final só é viável com esses valores (Tabela~\ref{tab:sensdh}), mas a
-reotimização com $h_m = 15$~m custa só 5,3\% de casco. As conclusões qualitativas não dependem
+O valor $h_d = 8$~m tem referência indireta no pôster (11~m para dois níveis na Independence Hub) e
+foi mantido porque dá o melhor ajuste conjunto de KG e $A/B$ na validação. Já $h_m = 12$~m é uma
+estimativa do grupo. A solução final só é viável com esses valores (Tabela~\ref{tab:sensdh}), mas a
+reotimização com $h_m = 15$~m custa só 5,3\% de casco, e as conclusões qualitativas não dependem
 dessas alturas.
 
 \subsection{Limitações do modelo}\label{sec:disc-limitacoes}
 
+O modelo paramétrico simplifica a plataforma em vários pontos, e alguns deles merecem atenção nas
+fases seguintes:
 \begin{itemize}
-\item \textbf{Estabilidade:} a GZ 2D não inclui o volume do convés nem o acoplamento com o trim, e
-não há verificação de estabilidade em avaria nem de superfície livre do lastro.
-\item \textbf{Inclinação sob vento:} o critério de áreas é atendido, mas a inclinação de equilíbrio
-sob tempestade (14,1$^\circ$ no caso-base, 12,0$^\circ$ com lastro) é alta e deve ser verificada.
-\item \textbf{Movimentos:} só o \emph{heave} em ondas de través é calculado. \emph{Roll} e
-\emph{pitch} não entram no \emph{air gap}, e o amortecimento é uma fração fixa do crítico.
-\item \textbf{\emph{Air gap}:} linear, sem a amplificação da crista pelas colunas nem cristas
-não lineares (DNVGL-OTG-13~\cite{otg13}); a folga de 16 a 19~m torna essa limitação pouco
-relevante para o mar do campo.
-\item \textbf{Pesos:} correlações sem margens de projeto (aço secundário, equipamentos de casco,
-crescimento de peso).
-\item \textbf{Escopo:} ancoragem, corrente, \emph{risers} e escoamento da produção (FSO ou oleoduto
-de 190~km) estão fora do modelo paramétrico.
+\item na estabilidade, a GZ 2D não inclui o volume do convés nem o acoplamento com o trim, e não há
+verificação de estabilidade em avaria nem de superfície livre do lastro. A inclinação de equilíbrio
+sob tempestade, de 14,1$^\circ$ no caso-base e 12,0$^\circ$ com lastro, atende ao critério, mas é
+alta e deve ser verificada;
+\item nos movimentos, só o \emph{heave} em ondas de través é calculado, \emph{roll} e \emph{pitch}
+não entram no \emph{air gap}, e o amortecimento é uma fração fixa do crítico;
+\item no \emph{air gap}, o cálculo é linear, sem a amplificação da crista pelas colunas nem cristas
+não lineares (DNVGL-OTG-13~\cite{otg13}); com folgas de 16 a 19~m, essa limitação pouco importa no
+mar do campo;
+\item nos pesos, as correlações não têm margens de projeto para aço secundário, equipamentos de
+casco e crescimento de peso;
+\item no escopo, ancoragem, corrente, \emph{risers} e escoamento da produção (FSO ou oleoduto de
+190~km) ficam fora do modelo paramétrico.
 \end{itemize}
 
 % =============================================================================
 \section{Conclusões e recomendações}\label{sec:conclusoes}
 
-\begin{enumerate}
-\item \textbf{Modelo validado.} O modelo calcula todos os itens pedidos e reproduz os resultados das
-aulas na plataforma de referência com erros de 0,0\% a 3,7\%; aplicado a três semissubmersíveis
-reais de 2 \emph{pontoons} e 4 colunas, reproduz o deslocamento com erro de até 10\%.
-\item \textbf{Domínio pouco viável.} Das 20.000 combinações amostradas, só 1,1\% são viáveis; o
-critério de áreas é a restrição mais seletiva.
-\item \textbf{Fronteira.} A fronteira de Pareto do caso-base vai de 10.346~t ($\Hz = 2{,}37$~m) a
-23.634~t ($\Hz = 1{,}04$~m), é não convexa e tem duas famílias de projeto, rasa e larga, e compacta
-e profunda. A soma ponderada sozinha deixaria vazios que o $\varepsilon$-restrito preenche.
-\item \textbf{Estabilidade governante.} Em todas as soluções ótimas, $GM_T = 4$~m e $A/B = 1{,}30$
-estão ativos, enquanto \emph{air gap} e $T_n$ têm folga.
-\item \textbf{Escolha no ponto de inflexão.} A solução escolhida pesa 14.998~t, tem
-$\Hz = 1{,}55$~m, $T_n = 21{,}85$~s, $A/B = 1{,}303$ e $\phial = 21{,}6^\circ$, e fica no ponto a
-partir do qual reduzir o \emph{heave} custa três vezes mais aço. No caso-base, todas as suas
-variáveis estão no interior do domínio.
-\item \textbf{Frota real.} As dimensões e o \emph{topside} da solução escolhida estão na faixa das
-semissubmersíveis reais, mas o deslocamento específico (253~t por mil bopd) fica abaixo de toda a
-frota, por falta de lastro. Na região, os análogos reais (CLOV e Moho/Bilondo) têm casco de navio.
-\item \textbf{Equivalência com lastro.} Com lastro mínimo de 10\% do volume dos \emph{pontoons}, a
-solução escolhida continua equivalente em hidrodinâmica ($\Hz = 1{,}55$~m e $T_n \approx 21{,}8$~s).
-Incluir 3.611~t de lastro custa +6,9\% de aço (16.026~t), reduz o KG em 4,44~m e leva o
-deslocamento específico a 285~t por mil bopd, o nível da Troll C.
-\item \textbf{Hipótese dominante.} Incluir o gás no BOE aumentaria o casco em 24,8\%; as demais
-hipóteses testadas mudam o casco em 5\% a 7\% e o $\Hz$ em até 12\%.
-\end{enumerate}
+O modelo paramétrico desenvolvido calcula todos os itens pedidos e é confiável para a escala do
+projeto: reproduz os resultados das aulas com erros de 0,0\% a 3,7\% e o deslocamento de três
+semissubmersíveis reais de 2 \emph{pontoons} e 4 colunas com erro de até 10\%.
 
-\paragraph{Recomendações.}
+Aplicado ao campo, ele mostra que o domínio de projeto é pouco viável, com só 1,1\% das 20.000
+combinações amostradas atendendo a todas as restrições, e que o critério de áreas é a restrição mais
+seletiva. A fronteira de Pareto do caso-base vai de 10.346~t ($\Hz = 2{,}37$~m) a 23.634~t
+($\Hz = 1{,}04$~m), é não convexa e tem duas famílias de projeto, uma rasa e larga e outra compacta
+e profunda; sem o $\varepsilon$-restrito, a soma ponderada deixaria vazios nessa fronteira. Em
+todas as soluções ótimas, $GM_T = 4$~m e $A/B = 1{,}30$ estão ativos, enquanto \emph{air gap} e
+$T_n$ têm folga: o projeto é governado pela estabilidade.
+
+A solução escolhida pesa 14.998~t e tem $\Hz = 1{,}55$~m, $T_n = 21{,}85$~s, $A/B = 1{,}303$ e
+$\phial = 21{,}6^\circ$. Ela está no ponto a partir do qual reduzir o \emph{heave} custa três vezes
+mais aço e, no caso-base, tem todas as variáveis no interior do domínio. Suas dimensões e seu
+\emph{topside} estão na faixa das semissubmersíveis reais, mas o deslocamento específico, de 253~t
+por mil bopd, fica abaixo de toda a frota por falta de lastro. Na região, os análogos reais (CLOV e
+Moho/Bilondo) têm casco de navio.
+
+Com lastro mínimo de 10\% do volume dos \emph{pontoons}, a solução escolhida continua equivalente em
+hidrodinâmica ($\Hz = 1{,}55$~m e $T_n \approx 21{,}8$~s). Incluir 3.611~t de lastro custa 6,9\% a
+mais de aço (16.026~t), reduz o KG em 4,44~m e leva o deslocamento específico a 285~t por mil bopd,
+o nível da Troll C. Entre as hipóteses testadas, a dominante é a inclusão do gás no BOE, que
+aumentaria o casco em 24,8\%; as demais mudam o casco em 5\% a 7\% e o $\Hz$ em até 12\%.
+
+Para a fase seguinte, o grupo recomenda:
 \begin{itemize}
-\item adotar a condição de 10\% de lastro na fase seguinte, para garantir ajuste de calado e de
-trim e margem para crescimento de peso;
+\item adotar a condição de 10\% de lastro, que garante ajuste de calado e de trim e margem para
+crescimento de peso;
 \item confirmar com o professor se o gás deve entrar no BOE;
 \item fundamentar $h_m$ e o peso de planta de 83~kg/boe com dados de unidades semelhantes;
 \item verificar a inclinação de 12 a 14$^\circ$ sob vento de tempestade, a estabilidade em avaria e
@@ -2363,35 +2523,38 @@ designs}. Offshore Magazine, nov. 2019.
 \appendix
 \section{Implementação computacional}\label{ap:codigo}
 
+Este apêndice complementa as seções de teoria com a implementação: a organização dos scripts, a
+correspondência entre funções e equações, as medidas de desempenho e os trechos do código real.
+
 \subsection{Estrutura do repositório e scripts}
 
-O projeto foi implementado em Python 3 com NumPy, SciPy, pandas e Matplotlib
-(\path{requirements.txt}). A Tabela~\ref{tab:scripts} lista os scripts e o que cada um produz.
+O projeto foi implementado em Python~3 com NumPy, SciPy, pandas e Matplotlib, listados no arquivo
+\path{requirements.txt}. A Tabela~\ref{tab:scripts} mostra os scripts e o que cada um produz.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering
 \caption{Scripts do repositório e saídas.}\label{tab:scripts}
 \small
-\begin{tabular}{>{\raggedright\arraybackslash}p{6.3cm}>{\raggedright\arraybackslash}p{8.6cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{6.2cm}>{\raggedright\arraybackslash}p{8.2cm}}
 \toprule
 Script & Função e saídas \\
 \midrule
-\path{caso_base/codigo/pnv3425_grupo02.py} & modelo, validação, variação sistemática,
-soma ponderada, $\varepsilon$-restrito, fronteira, três cenários e solução final;
-figuras 00--05 e CSVs em \path{caso_base/resultados/} \\
+\path{caso_base/codigo/pnv3425_grupo02.py} & modelo, validação, variação sistemática, soma
+ponderada, $\varepsilon$-restrito, fronteira, três cenários e solução final; figuras 00--05 e CSVs
+em \path{caso_base/resultados/} \\
 \path{caso_base/codigo/analises_complementares.py} & curva de produção, restrições ativas e
 variáveis ao longo da fronteira, sensibilidade a $h_d$/$h_m$, $\xi$ e $\gamma$, custo marginal
 (figuras 06--08) \\
-\path{caso_base/codigo/comparativo_plataformas_reais.py} & CLOV, Scarabeo 5 e semis do Golfo
-do México (figura 09) \\
-\path{caso_base/codigo/comparativo_poster_2011.py} & validação do casco com o pôster de 2011
-e comparação com a frota (figura 10) \\
+\path{caso_base/codigo/comparativo_plataformas_reais.py} & CLOV, Scarabeo 5 e semis do Golfo do
+México (figura 09) \\
+\path{caso_base/codigo/comparativo_poster_2011.py} & validação do casco com o pôster de 2011 e
+comparação com a frota (figura 10) \\
 \path{caso_base/codigo/figuras_apresentacao.py} & figuras no padrão visual da apresentação
 (\path{resultados/figuras_apresentacao/}) \\
-\path{condicao_10pct_lastro/codigo/pnv3425_grupo02_condicao_10pct_lastro.py} & o mesmo
-modelo com lastro mínimo de 10\%; saídas em \path{resultados_lastro10/} \\
-\path{condicao_10pct_lastro/codigo/analises_condicao_10pct_lastro.py} & comparação com o
-caso-base e com o pôster (figuras 11--13) e tabelas \path{relatorio/tabelas_lastro10/} \\
+\path{condicao_10pct_lastro/codigo/pnv3425_grupo02_condicao_10pct_lastro.py} & o mesmo modelo com
+lastro mínimo de 10\%; saídas em \path{resultados_lastro10/} \\
+\path{condicao_10pct_lastro/codigo/analises_condicao_10pct_lastro.py} & comparação com o caso-base
+e com o pôster (figuras 11--13) e tabelas em \path{relatorio/tabelas_lastro10/} \\
 \path{relatorio/gerar_trechos.py} & copia do código os trechos deste apêndice
 (\path{relatorio/trechos/}) e gera o \emph{diff} entre as duas versões \\
 \bottomrule
@@ -2400,11 +2563,14 @@ caso-base e com o pôster (figuras 11--13) e tabelas \path{relatorio/tabelas_las
 
 \subsection{Funções do modelo e equações}
 
-\begin{table}[H]
+A Tabela~\ref{tab:funcoes} liga cada função do modelo às grandezas que ela calcula, à seção em que
+a teoria correspondente foi apresentada e à listagem com o código.
+
+\begin{table}[!htb]
 \centering
 \caption{Funções do modelo, grandezas calculadas e seção da teoria.}\label{tab:funcoes}
 \small
-\begin{tabular}{>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{7.1cm}rr}
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{6.9cm}rr}
 \toprule
 Função & Calcula & Seção & Listagem \\
 \midrule
@@ -2443,33 +2609,29 @@ viabilidade & \ref{sec:airgap-teoria}, \ref{sec:restricoes} & \ref{lst:avaliar} 
 \subsection{Desempenho e robustez numérica}\label{sec:cod-desempenho}
 
 A curva GZ é a parte mais cara do modelo, porque exige resolver a linha d'água a volume constante
-em cada ângulo. Quatro medidas reduziram a rodada completa de 1.555~s para 329~s; a rodada final
-registrada no log levou 241~s em 8 processos:
-\begin{itemize}
-\item \textbf{Newton com derivada exata}, em vez de bissecção pura, com o calado $T$ como chute
-inicial;
-\item \textbf{vetorização}: todos os ângulos de uma curva são resolvidos ao mesmo tempo, em
-operações de arrays (ângulos nas linhas, retângulos nas colunas);
-\item \textbf{\texttt{pandas} fora do laço}: as tabelas de pesos e de vento são listas durante a
-otimização e só viram \texttt{DataFrame} no relatório;
-\item \textbf{\emph{cache} e paralelismo}: objetivo e restrições do SLSQP compartilham as avaliações,
-e as partidas de cada etapa rodam em processos separados.
-\end{itemize}
+em cada ângulo. Quatro medidas reduziram a rodada completa de 1.555~s para 329~s, e a rodada final
+registrada no log levou 241~s em 8 processos. A primeira foi trocar a bissecção pura pelo método de
+Newton com derivada exata, usando o calado $T$ como chute inicial. A segunda foi vetorizar o
+cálculo, resolvendo todos os ângulos de uma curva ao mesmo tempo em operações de \emph{arrays}, com
+ângulos nas linhas e retângulos nas colunas. A terceira foi tirar o \texttt{pandas} do laço: as
+tabelas de pesos e de vento são listas durante a otimização e só viram \texttt{DataFrame} no
+relatório. A quarta foi compartilhar as avaliações entre objetivo e restrições do SLSQP por meio de
+um \emph{cache} e rodar as partidas de cada etapa em processos separados.
 
-\paragraph{Correção dos picos na GZ.} A primeira versão com Newton produzia picos isolados nas
-curvas GZ. A causa era o Newton ciclando entre as duas pontas do intervalo de busca quando a linha
-d'água passava por um canto de retângulo, onde $V(\alpha)$ tem quina e a derivada muda de valor. A
-versão final mantém, para cada ângulo, o intervalo $[lo, hi]$ da bissecção; aceita o passo de Newton
-só quando ele cai estritamente dentro do intervalo e usa bissecção nos outros casos; testa a
-convergência ângulo a ângulo; e, se o limite de iterações for atingido, termina com bissecção pura.
-A comparação com a bissecção em 2.030 geometrias, nos dois planos e de 0 a $85^\circ$, deu
-diferença máxima de $1{,}2\times10^{-8}$~m em GZ, e as curvas ficaram sem picos.
+A troca para Newton trouxe, na primeira versão, picos isolados nas curvas GZ. A causa era o método
+ciclar entre as duas pontas do intervalo de busca quando a linha d'água passava por um canto de
+retângulo, onde $V(\alpha)$ tem quina e a derivada muda de valor. A versão final mantém, para cada
+ângulo, o intervalo $[lo, hi]$ da bissecção, aceita o passo de Newton só quando ele cai estritamente
+dentro desse intervalo e usa bissecção nos outros casos; a convergência é testada ângulo a ângulo,
+e, se o limite de iterações for atingido, o cálculo termina com bissecção pura. Comparada à
+bissecção em 2.030 geometrias, nos dois planos e de 0 a $85^\circ$, a versão final deu diferença
+máxima de $1{,}2\times10^{-8}$~m em GZ, e as curvas ficaram sem picos.
 
 \subsection{Listagens do código}
 
-As listagens a seguir são cópias exatas do arquivo \path{caso_base/codigo/pnv3425_grupo02.py},
-com a numeração de linhas original, extraídas por \path{relatorio/gerar_trechos.py}. O arquivo da
-condição de 10\% de lastro é idêntico, exceto pelas linhas da Listagem~\ref{lst:diff}.
+As listagens a seguir são cópias exatas do arquivo \path{caso_base/codigo/pnv3425_grupo02.py}, com a
+numeração de linhas original, extraídas por \path{relatorio/gerar_trechos.py}. O arquivo da condição
+de 10\% de lastro é idêntico, exceto pelas linhas da \lst{diff}.
 
 \listagem{dados}{Dados fixos, coeficientes do Código MODU, limites das restrições e hipóteses parametrizadas}
 \listagem{cenario}{Cenário de projeto, plataforma de referência e domínio das variáveis}
@@ -2490,19 +2652,22 @@ condição de 10\% de lastro é idêntico, exceto pelas linhas da Listagem~\ref{
 
 \subsection{Diferenças da condição de 10\% de lastro}
 
-A Listagem~\ref{lst:diff} é o \emph{diff} unificado entre o código do caso-base e o da condição de
-10\% de lastro. Linhas com ``$-$'' existem só no caso-base, linhas com ``+'' só na condição de 10\%,
-e os cabeçalhos \texttt{@@} dão as linhas de cada arquivo. A única mudança de cálculo é o valor
-padrão de \texttt{LASTRO\_MIN\_FRAC}, que ativa a restrição $V_{lastro} \ge 0{,}10\,V_{pontoons}$
-em \texttt{tabela\_restricoes()}; as demais mudam a pasta de saída e os textos.
+A \lst{diff}, mostra o \emph{diff} unificado entre o código do caso-base e o da condição de 10\% de
+lastro. Linhas iniciadas por ``$-$'' existem só no caso-base, linhas iniciadas por ``+'' só na
+condição de 10\%, e os cabeçalhos \texttt{@@} indicam as linhas de cada arquivo. A única mudança de
+cálculo é o valor padrão de \texttt{LASTRO\_MIN\_FRAC}, que ativa a restrição
+$V_{lastro} \ge 0{,}10\,V_{pontoons}$ em \texttt{tabela\_restricoes()}; as demais trocam a pasta de
+saída e os textos.
 
-\par\needspace{9\baselineskip}
+\par\needspace{10\baselineskip}\medskip
 \captionof{codigo}[Diferenças entre o código do caso-base e o da condição de 10\% de lastro]{Diferenças
 entre \texttt{caso\_base/codigo/pnv3425\_grupo02.py} e
 \texttt{condicao\_10pct\_lastro/codigo/pnv3425\_grupo02\_condicao\_10pct\_lastro.py}.}\label{lst:diff}
 \VerbatimInput[numbers=none]{trechos/diff_lastro10.txt}
 
 \subsection{Como reproduzir os resultados}
+
+Os comandos abaixo refazem todos os resultados e o relatório, a partir da raiz do repositório.
 
 \begin{Verbatim}[numbers=none]
 pip install -r requirements.txt
@@ -2524,22 +2689,23 @@ tectonic relatorio.tex                            # ou XeLaTeX
 \end{Verbatim}
 
 As hipóteses alternativas da Seção~\ref{sec:sensibilidade} são selecionadas por variáveis de
-ambiente, com \texttt{OUT\_DIR} apontando para outra pasta: \texttt{HM=15},
-\texttt{INCLUIR\_GAS=1} ou \texttt{LASTRO\_MIN\_FRAC=0.10}. Os modelos aceitam também
-\texttt{HD}, \texttt{PASSO\_W}, \texttt{N\_AMOSTRAS}, \texttt{N\_EPSILON}, \texttt{N\_PROCESSOS},
-\texttt{REAPROVEITAR=1} (retoma etapas já salvas) e \texttt{MOSTRAR\_GRAFICOS=0}. O relatório usa
-\texttt{fontspec} e deve ser compilado com XeLaTeX ou Tectonic; no Overleaf, envie o repositório
-inteiro, porque as figuras são lidas das pastas de resultados.
+ambiente, com \texttt{OUT\_DIR} apontando para outra pasta: \texttt{HM=15}, \texttt{INCLUIR\_GAS=1}
+ou \texttt{LASTRO\_MIN\_FRAC=0.10}. Os modelos aceitam também \texttt{HD}, \texttt{PASSO\_W},
+\texttt{N\_AMOSTRAS}, \texttt{N\_EPSILON}, \texttt{N\_PROCESSOS}, \texttt{REAPROVEITAR=1}, que
+retoma etapas já salvas, e \texttt{MOSTRAR\_GRAFICOS=0}. O relatório usa \texttt{fontspec} e deve
+ser compilado com XeLaTeX ou Tectonic; no Overleaf, é preciso enviar o repositório inteiro, porque
+as figuras são lidas das pastas de resultados.
 
 % =============================================================================
-\clearpage
 \section{Fronteiras de Pareto completas}
+
+Este apêndice lista todos os pontos não dominados das duas versões do projeto, ordenados por peso.
+Na última coluna, SP indica a soma ponderada e $\varepsilon$ o método $\varepsilon$-restrito.
 
 \subsection{Caso-base}\label{ap:fronteira}
 
 \begin{longtable}{rrrrrrrrl}
-\caption{Pontos não dominados do caso-base, ordenados por peso. SP = soma ponderada;
-$\varepsilon$ = $\varepsilon$-restrito.}\label{tab:fronteira}\\
+\caption{Pontos não dominados do caso-base.}\label{tab:fronteira}\\
 \toprule
 \# & $L_p$ & $b_p$ & $h_p$ & $b_c$ & $h_c$ & $T$ & $\Wc$ [t] & $\Hz$ [m] / origem \\
 \midrule
@@ -2573,13 +2739,14 @@ $\varepsilon$ = $\varepsilon$-restrito.}\label{tab:fronteira}\\
 23 & 107,53 & 15,85 & 12,87 & 14,59 & 50,00 & 40,00 & 23.346 & 1,045 / SP \\
 24 & 109,17 & 14,77 & 14,25 & 14,35 & 50,00 & 40,00 & 23.531 & 1,044 / SP \\
 25 & 110,11 & 14,22 & 15,03 & 14,22 & 50,00 & 40,00 & 23.634 & 1,043 / SP (cen. 2) \\
-\bottomrule\end{longtable}
+\bottomrule
+\end{longtable}
 
+\clearpage
 \subsection{Condição de 10\% de lastro}\label{ap:fronteiraL}
 
 \begin{longtable}{rrrrrrrrl}
-\caption{Pontos não dominados na condição de 10\% de lastro, ordenados por peso (gerada).
-SP = soma ponderada; $\varepsilon$ = $\varepsilon$-restrito.}\label{tab:fronteiraL}\\
+\caption{Pontos não dominados na condição de 10\% de lastro (gerada).}\label{tab:fronteiraL}\\
 \toprule
 \# & $L_p$ & $b_p$ & $h_p$ & $b_c$ & $h_c$ & $T$ & $\Wc$ [t] & $\Hz$ [m] / origem \\
 \midrule
